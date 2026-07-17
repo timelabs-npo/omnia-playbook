@@ -1,0 +1,7 @@
+{
+  "id": "example",
+  "name": "Example Environment",
+  "description": "Reference environment for local validation and development.",
+  "platforms": ["macos", "windows", "linux", "openwrt"],
+  "adapters": ["apple", "google-cloud", "azure", "openwrt", "macos", "windows"]
+}

@@ -1,0 +1,24 @@
+name: docs
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'scripts/validate.sh'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - 'scripts/validate.sh'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check internal markdown links
+        run: ./scripts/validate.sh --links-only

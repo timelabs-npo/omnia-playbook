@@ -1,0 +1,10 @@
+{
+  "id": "inv-dns-invalid",
+  "title": "Broken invariant fixture",
+  "description": "Missing required fields and invalid severity",
+  "rationale": "Used to test schema rejection",
+  "scope": "developer-workstation",
+  "severity": "urgent",
+  "platforms": [],
+  "expected_state": {}
+}

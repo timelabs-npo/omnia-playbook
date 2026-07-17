@@ -1,0 +1,14 @@
+{
+  "id": "chk-dns-linux-openwrt-observe",
+  "invariant": "inv-dns-explicit-observable-resolvers",
+  "command": "cat /etc/resolv.conf",
+  "platform": "linux-openwrt",
+  "requires": ["cat"],
+  "timeout": 10,
+  "expected_exit_code": 0,
+  "expected_output": {
+    "regex": "^nameserver\\\\s+"
+  },
+  "failure_message": "Could not observe explicit DNS resolver state on Linux/OpenWrt.",
+  "remediation_playbook": "playbooks/recovery/dns-explicit-resolvers.md"
+}

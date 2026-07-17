@@ -1,0 +1,22 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install validation deps
+        run: python3 -m pip install --upgrade pip jsonschema
+      - name: Validate repository
+        run: make validate
+      - name: Run safe unit tests
+        run: make test

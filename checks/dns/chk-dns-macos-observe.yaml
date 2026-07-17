@@ -1,0 +1,13 @@
+id: chk-dns-macos-observe
+invariant: inv-dns-explicit-observable-resolvers
+command: scutil --dns
+platform: macos
+requires:
+  - scutil
+timeout: 15
+expected_exit_code: 0
+expected_output:
+  contains:
+    - nameserver
+failure_message: Could not observe explicit DNS resolver state on macOS.
+remediation_playbook: playbooks/recovery/dns-explicit-resolvers.md

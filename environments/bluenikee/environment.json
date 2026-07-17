@@ -1,0 +1,7 @@
+{
+  "id": "bluenikee",
+  "name": "Bluenikee Environment",
+  "description": "Organization-specific profile with no secrets or topology details.",
+  "platforms": ["macos", "windows", "linux"],
+  "adapters": ["apple", "google-cloud", "azure", "macos", "windows"]
+}
