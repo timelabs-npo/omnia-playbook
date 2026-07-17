@@ -1,0 +1,13 @@
+id: chk-dns-windows-observe
+invariant: inv-dns-explicit-observable-resolvers
+command: powershell -NoProfile -Command "Get-DnsClientServerAddress | Format-List"
+platform: windows
+requires:
+  - powershell
+timeout: 20
+expected_exit_code: 0
+expected_output:
+  contains:
+    - ServerAddresses
+failure_message: Could not observe explicit DNS resolver state on Windows.
+remediation_playbook: playbooks/recovery/dns-explicit-resolvers.md

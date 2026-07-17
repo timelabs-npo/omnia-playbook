@@ -1,0 +1,25 @@
+{
+  "id": "inv-dns-explicit-observable-resolvers",
+  "title": "Explicit and observable DNS resolvers",
+  "description": "Developer machines expose explicit DNS resolvers.",
+  "rationale": "Known resolvers improve reliability and incident handling.",
+  "scope": "developer-workstation",
+  "severity": "high",
+  "platforms": ["macos", "windows", "linux", "openwrt"],
+  "expected_state": {
+    "resolvers_explicit": true,
+    "resolvers_observable": true
+  },
+  "check": {
+    "ids": [
+      "chk-dns-macos-observe",
+      "chk-dns-windows-observe",
+      "chk-dns-linux-openwrt-observe"
+    ]
+  },
+  "remediation": {
+    "playbook": "playbooks/recovery/dns-explicit-resolvers.md"
+  },
+  "sources": ["foundation/dns.md"],
+  "last_verified": "2026-07-17"
+}

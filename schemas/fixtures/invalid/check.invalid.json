@@ -1,0 +1,11 @@
+{
+  "id": "chk-invalid",
+  "invariant": "inv-dns-explicit-observable-resolvers",
+  "command": "",
+  "platform": "linux-openwrt",
+  "requires": ["cat"],
+  "timeout": 0,
+  "expected_exit_code": -1,
+  "expected_output": {},
+  "failure_message": "x"
+}
