@@ -1,0 +1,3 @@
+# Populate this file only after verifying host fingerprints out of band.
+# Example placeholder; do not use as a trusted key.
+# blueshoes ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI_REPLACE_AFTER_VERIFICATION
