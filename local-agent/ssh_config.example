@@ -1,0 +1,15 @@
+# Copy selected entries to ~/.ssh/config on the local operator machine.
+# Never put passwords or private-key material in this file.
+
+Host blueshoes
+    HostName 192.0.2.10
+    User root
+    Port 22
+    IdentityFile ~/.ssh/omnia_agent_ed25519
+    IdentitiesOnly yes
+    StrictHostKeyChecking yes
+    UserKnownHostsFile ~/.ssh/omnia_known_hosts
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    ConnectTimeout 10
+    LogLevel VERBOSE
