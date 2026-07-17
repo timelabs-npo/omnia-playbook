@@ -1,0 +1,18 @@
+# Initial read-only command allowlist for Linux/OpenWrt targets.
+# This is documentation, not an enforcement mechanism.
+
+hostname
+uname -a
+cat /etc/os-release
+ubus call system board
+ip -brief address
+ip route show
+ip rule show
+cat /etc/resolv.conf
+uci show network
+uci show dhcp
+uci show firewall
+uci show wireless
+logread -e netifd
+logread -e dnsmasq
+ss -lntup
