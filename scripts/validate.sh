@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LINKS_ONLY="${1:-}"
+export ROOT_DIR
 
 require_paths() {
   local required=(
@@ -45,10 +46,11 @@ validate_json_syntax() {
 validate_schemas_and_fixtures() {
   python3 - <<'PY'
 import json
+import os
 from pathlib import Path
 from jsonschema import Draft202012Validator
 
-root = Path("/home/runner/work/omnia-playbook/omnia-playbook")
+root = Path(os.environ['ROOT_DIR'])
 
 mapping = {
     "invariant": (root / "schemas/invariant.schema.json", root / "schemas/fixtures/valid/invariant.valid.json", root / "schemas/fixtures/invalid/invariant.invalid.json"),
@@ -83,10 +85,11 @@ lint_shell_scripts() {
 
 check_internal_markdown_links() {
   python3 - <<'PY'
+import os
 import re
 from pathlib import Path
 
-root = Path('/home/runner/work/omnia-playbook/omnia-playbook')
+root = Path(os.environ['ROOT_DIR'])
 pattern = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
 errors = []
 
