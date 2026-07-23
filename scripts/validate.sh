@@ -2,16 +2,40 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LINKS_ONLY="${1:-}"
+MODE="${1:-}"
 export ROOT_DIR
+
+usage() {
+  cat <<'EOF'
+Usage: ./scripts/validate.sh [--links-only|--structure-only]
+
+With no option, run the complete repository validation.
+  --links-only      Check internal Markdown links only.
+  --structure-only  Check the required current repository structure only.
+EOF
+}
+
+case "${MODE}" in
+  ""|--links-only|--structure-only)
+    ;;
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  *)
+    echo "Unknown option: ${MODE}" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
 
 require_paths() {
   local required=(
-    README.md LICENSE CONTRIBUTING.md SECURITY.md Makefile .editorconfig .gitignore
+    README.md LICENSE CONTRIBUTING.md SECURITY.md Makefile requirements-dev.txt .editorconfig .gitignore
     .github/workflows/validate.yml .github/workflows/docs.yml .github/pull_request_template.md
     foundation/identity.md foundation/networking.md foundation/dns.md foundation/secrets.md foundation/storage.md foundation/observability.md foundation/cicd.md
     adapters/apple adapters/google-cloud adapters/azure adapters/openwrt adapters/macos adapters/windows
-    checks/dns checks/routing checks/connectivity checks/certificates checks/secrets checks/system
+    checks/dns
     playbooks/bootstrap playbooks/diagnostics playbooks/recovery playbooks/migration
     schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json
     environments/example environments/bluenikee
@@ -26,6 +50,42 @@ require_paths() {
       missing=1
     fi
   done
+  if [ "${missing}" -ne 0 ]; then
+    return 1
+  fi
+}
+
+require_command() {
+  local command_name="$1"
+  local install_hint="$2"
+  if ! command -v "${command_name}" >/dev/null 2>&1; then
+    echo "Missing required command: ${command_name}. ${install_hint}" >&2
+    return 1
+  fi
+}
+
+require_toolchain() {
+  local missing=0
+
+  require_command python3 "Install Python 3.11 or newer." || missing=1
+  require_command ruby "Install Ruby with the standard yaml library." || missing=1
+  require_command jq "Install jq 1.6 or newer." || missing=1
+  require_command shellcheck "Install the dependencies from requirements-dev.txt in the active Python environment." || missing=1
+
+  if command -v python3 >/dev/null 2>&1; then
+    if ! python3 -c 'import jsonschema' >/dev/null 2>&1; then
+      echo "Missing required Python module: jsonschema. Install the dependencies from requirements-dev.txt." >&2
+      missing=1
+    fi
+  fi
+
+  if command -v ruby >/dev/null 2>&1; then
+    if ! ruby -e 'require "yaml"' >/dev/null 2>&1; then
+      echo "Ruby is present but its standard yaml library is unavailable." >&2
+      missing=1
+    fi
+  fi
+
   if [ "${missing}" -ne 0 ]; then
     return 1
   fi
@@ -77,10 +137,9 @@ PY
 }
 
 lint_shell_scripts() {
-  mapfile -t shell_files < <(find "${ROOT_DIR}/scripts" "${ROOT_DIR}/checks" -type f -name '*.sh' | sort)
-  if [ "${#shell_files[@]}" -gt 0 ]; then
-    shellcheck "${shell_files[@]}"
-  fi
+  while IFS= read -r file; do
+    shellcheck "$file"
+  done < <(find "${ROOT_DIR}/scripts" "${ROOT_DIR}/checks" -type f -name '*.sh' | sort)
 }
 
 check_internal_markdown_links() {
@@ -114,13 +173,22 @@ PY
 
 cd "${ROOT_DIR}"
 
-check_internal_markdown_links
-if [ "${LINKS_ONLY}" = "--links-only" ]; then
+if [ "${MODE}" = "--links-only" ]; then
+  require_command python3 "Install Python 3.11 or newer."
+  check_internal_markdown_links
   exit 0
 fi
 
 require_paths
+if [ "${MODE}" = "--structure-only" ]; then
+  echo "Required repository structure passed"
+  exit 0
+fi
+
+require_toolchain
+check_internal_markdown_links
 validate_yaml_syntax
 validate_json_syntax
 validate_schemas_and_fixtures
 lint_shell_scripts
+echo "Repository validation passed"
