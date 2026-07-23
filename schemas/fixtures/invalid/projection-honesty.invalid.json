@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "projection_id": "view-false-lossless-claim",
+  "status": "experimental",
+  "source": {
+    "record": "log.0",
+    "event_schema": 1,
+    "projector_version": 1
+  },
+  "lossless": true,
+  "preserves": ["average value"],
+  "drops": [
+    {
+      "field_or_relation": "event ordering",
+      "reason": "values are averaged",
+      "consequence": "short transients disappear"
+    }
+  ],
+  "aggregations": [
+    {
+      "output": "average",
+      "operation": "mean",
+      "window": "five minutes",
+      "loss_note": "individual samples are not recoverable"
+    }
+  ],
+  "questions": {
+    "answers": ["What is the five-minute average?"],
+    "refuses": []
+  },
+  "replay": {
+    "order": "sequence",
+    "arithmetic": "integer",
+    "invariant": "same inputs produce the same average"
+  },
+  "probes": [
+    {
+      "probe_id": "probe-hidden-spike",
+      "stimulus_fixture": "fixtures/views/hidden-spike.log.0",
+      "expected_detectability": "invisible"
+    }
+  ]
+}

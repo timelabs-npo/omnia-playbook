@@ -36,6 +36,20 @@ class TestSchemaFixtures(unittest.TestCase):
         self._assert_valid("schemas/environment.schema.json", "schemas/fixtures/valid/environment.valid.json")
         self._assert_invalid("schemas/environment.schema.json", "schemas/fixtures/invalid/environment.invalid.json")
 
+    def test_log_event_fixtures(self):
+        self._assert_valid("schemas/log-event.schema.json", "schemas/fixtures/valid/log-event.valid.json")
+        self._assert_invalid("schemas/log-event.schema.json", "schemas/fixtures/invalid/log-event.invalid.json")
+
+    def test_projection_honesty_fixtures(self):
+        self._assert_valid(
+            "schemas/projection-honesty.schema.json",
+            "schemas/fixtures/valid/projection-honesty.valid.json",
+        )
+        self._assert_invalid(
+            "schemas/projection-honesty.schema.json",
+            "schemas/fixtures/invalid/projection-honesty.invalid.json",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

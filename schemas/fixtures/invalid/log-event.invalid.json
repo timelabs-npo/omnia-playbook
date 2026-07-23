@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "not-a-uuid",
+  "sequence": 0,
+  "observed_at": "today",
+  "kind": "certification",
+  "status": "COMPLIANT",
+  "source": {
+    "adapter": "dns"
+  },
+  "subject": {
+    "type": "host",
+    "ref": "contains a secret"
+  },
+  "payload": {},
+  "redaction": {
+    "policy": "none",
+    "applied": false
+  },
+  "previous_digest": "not-a-digest",
+  "digest": "not-a-digest"
+}

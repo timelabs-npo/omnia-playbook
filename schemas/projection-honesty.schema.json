@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/projection-honesty.schema.json",
+  "title": "Omnia projection honesty contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "projection_id",
+    "status",
+    "source",
+    "lossless",
+    "preserves",
+    "drops",
+    "aggregations",
+    "questions",
+    "replay",
+    "probes"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "projection_id": {
+      "type": "string",
+      "pattern": "^view-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "status": { "const": "experimental" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record", "event_schema", "projector_version"],
+      "properties": {
+        "record": { "const": "log.0" },
+        "event_schema": { "type": "integer", "minimum": 1 },
+        "projector_version": { "type": "integer", "minimum": 1 },
+        "calibration_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "lossless": { "type": "boolean" },
+    "preserves": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "drops": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field_or_relation", "reason", "consequence"],
+        "properties": {
+          "field_or_relation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "consequence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "aggregations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["output", "operation", "window", "loss_note"],
+        "properties": {
+          "output": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "operation": {
+            "type": "string",
+            "enum": ["count", "sum", "min", "max", "mean", "median", "histogram", "custom"]
+          },
+          "window": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "loss_note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "questions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["answers", "refuses"],
+      "properties": {
+        "answers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "refuses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      }
+    },
+    "replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order", "arithmetic", "invariant"],
+      "properties": {
+        "order": { "const": "sequence" },
+        "arithmetic": {
+          "type": "string",
+          "enum": ["integer", "fixed-point", "decimal-text"]
+        },
+        "invariant": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "probes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["probe_id", "stimulus_fixture", "expected_detectability"],
+        "properties": {
+          "probe_id": {
+            "type": "string",
+            "pattern": "^probe-[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "stimulus_fixture": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "expected_detectability": {
+            "type": "string",
+            "enum": ["visible", "partially-visible", "invisible"]
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "lossless": { "const": true } },
+        "required": ["lossless"]
+      },
+      "then": {
+        "properties": {
+          "drops": { "maxItems": 0 },
+          "aggregations": { "maxItems": 0 }
+        }
+      }
+    }
+  ]
+}
