@@ -1,6 +1,14 @@
 # Omnia Playbook
 
-Vendor-neutral developer infrastructure playbook scaffold for Apple, Google Cloud, Azure, OpenWrt, macOS, and Windows.
+> **Status: experimental / not a compliance certification.**
+>
+> Omnia is an owner-controlled, local-first assurance prototype. It records
+> bounded observations, produces deterministic findings, and prepares
+> reviewable plans. It does not establish legal compliance, prove that an
+> observation is true, or authorize a system change.
+
+Vendor-neutral developer infrastructure playbook scaffold for Apple, Google
+Cloud, Azure, OpenWrt, macOS, and Windows.
 
 ## Architectural decisions
 
@@ -10,6 +18,10 @@ Vendor-neutral developer infrastructure playbook scaffold for Apple, Google Clou
 4. `playbooks/` contains remediation and operational procedures.
 5. `references/` contains source documentation notes.
 6. `reports/` stores generated output and is excluded from Git except `.gitkeep`.
+7. `log.0` is the append-only source record; SQLite files are disposable,
+   rebuildable read models.
+8. Runtime remains local and dependency-light. Provider tools can supply
+   bounded input through adapters, but are not part of Omnia's authority root.
 
 ## Core models
 
@@ -18,8 +30,31 @@ The data model fields are defined via JSON Schemas:
 - `schemas/invariant.schema.json`
 - `schemas/check.schema.json`
 - `schemas/environment.schema.json`
+- `schemas/log-event.schema.json`
 
 Each schema includes one valid and one intentionally invalid fixture in `schemas/fixtures/`.
+
+The event and projection design is described in
+[`docs/architecture/log0-multi-nqlite.md`](docs/architecture/log0-multi-nqlite.md).
+Here, **multi-NQLite** is a project-local name for three named,
+SQLite-compatible read models: `catalog`, `assurance`, and `workflow`. It is
+not a distributed database, consensus protocol, or third-party service.
+
+The writer-assigned `sequence` is the v0 Deterministic Time System (DTS) tick:
+it orders committed records independently of wall-clock timestamps. With one
+writer this is a central logical sequence, not a claim of distributed
+causality, CRDT convergence, or cross-host consensus.
+
+The future automation boundary is specified as a
+[`fail-fast policy machine`](docs/architecture/fail-fast-policy.md): the Owner
+signs bounded policy rather than approving every event; only `PASS` may enter
+that policy gate, while `FAIL`/`ERROR` abort and `UNKNOWN` quarantines. The
+current repository does not contain a mutating executor.
+
+Unusual or failure-prone work belongs in the
+[`experimental lane`](docs/experiments/README.md). Its first machine-readable
+feature is a Projection Honesty Contract: every derived view declares what it
+preserves, drops, can answer, and must refuse.
 
 ## Development setup
 
@@ -56,7 +91,12 @@ make report
 
 No command mutates DNS, networking, credentials, packages, firewall, or system configuration.
 
-`diagnose` and `report` inspect live host DNS state. The current prototype retains raw resolver output in local, Git-ignored report files, so do not run those commands with sensitive topology until the redaction/provenance work is complete or a separate evidence procedure is approved.
+`diagnose` inspects live host DNS state. `report` additionally writes local
+artifacts. Neither command is a legal or security assessment. Raw resolver
+output is not retained by the default report path.
+
+Before sharing any repository or report outside the owner-controlled
+environment, apply the [`publication gate`](docs/publication-gate.md).
 
 ## Extending the playbook (agent workflow)
 

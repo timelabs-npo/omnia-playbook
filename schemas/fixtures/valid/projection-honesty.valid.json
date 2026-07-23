@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "projection_id": "view-deterministic-lens",
+  "status": "experimental",
+  "source": {
+    "record": "log.0",
+    "event_schema": 1,
+    "projector_version": 1,
+    "calibration_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "lossless": false,
+  "preserves": [
+    "event sequence",
+    "finite-state transition",
+    "quantized joint target",
+    "source event range"
+  ],
+  "drops": [
+    {
+      "field_or_relation": "raw payload fields not selected by the feature projector",
+      "reason": "the rig has a bounded state and joint vocabulary",
+      "consequence": "the pose cannot explain every source-field variation"
+    }
+  ],
+  "aggregations": [
+    {
+      "output": "variability",
+      "operation": "custom",
+      "window": "32 committed events",
+      "loss_note": "event-local ordering remains attributable, but values inside the feature window are compressed"
+    }
+  ],
+  "questions": {
+    "answers": [
+      "Which declared rig state did this event range produce?",
+      "Does exact replay produce the same quantized pose?"
+    ],
+    "refuses": [
+      "Is the source observation true?",
+      "Is the detected change malicious?",
+      "Does this state satisfy a law or regulation?"
+    ]
+  },
+  "replay": {
+    "order": "sequence",
+    "arithmetic": "fixed-point",
+    "invariant": "same event range and calibration digest produce the same state and pose digest"
+  },
+  "probes": [
+    {
+      "probe_id": "probe-short-storm",
+      "stimulus_fixture": "fixtures/lens/short-storm.log.0",
+      "expected_detectability": "visible"
+    },
+    {
+      "probe_id": "probe-dropped-field",
+      "stimulus_fixture": "fixtures/lens/dropped-field-only.log.0",
+      "expected_detectability": "invisible"
+    }
+  ]
+}

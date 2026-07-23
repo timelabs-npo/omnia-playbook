@@ -37,9 +37,10 @@ require_paths() {
     adapters/apple adapters/google-cloud adapters/azure adapters/openwrt adapters/macos adapters/windows
     checks/dns
     playbooks/bootstrap playbooks/diagnostics playbooks/recovery playbooks/migration
-    schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json
+    schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json schemas/log-event.schema.json schemas/projection-honesty.schema.json
+    schemas/sql/catalog.sql schemas/sql/assurance.sql schemas/sql/workflow.sql
     environments/example environments/bluenikee
-    scripts/validate.sh scripts/diagnose.sh scripts/report.sh
+    scripts/validate.sh scripts/diagnose.sh scripts/report.sh scripts/log0.py
     reports/.gitkeep
     references/apple references/google references/microsoft
   )
@@ -116,6 +117,8 @@ mapping = {
     "invariant": (root / "schemas/invariant.schema.json", root / "schemas/fixtures/valid/invariant.valid.json", root / "schemas/fixtures/invalid/invariant.invalid.json"),
     "check": (root / "schemas/check.schema.json", root / "schemas/fixtures/valid/check.valid.json", root / "schemas/fixtures/invalid/check.invalid.json"),
     "environment": (root / "schemas/environment.schema.json", root / "schemas/fixtures/valid/environment.valid.json", root / "schemas/fixtures/invalid/environment.invalid.json"),
+    "log-event": (root / "schemas/log-event.schema.json", root / "schemas/fixtures/valid/log-event.valid.json", root / "schemas/fixtures/invalid/log-event.invalid.json"),
+    "projection-honesty": (root / "schemas/projection-honesty.schema.json", root / "schemas/fixtures/valid/projection-honesty.valid.json", root / "schemas/fixtures/invalid/projection-honesty.invalid.json"),
 }
 
 for name, (schema_path, valid_path, invalid_path) in mapping.items():

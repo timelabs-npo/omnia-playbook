@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "98297066-17de-4d7d-8e1e-549258dd4b81",
+  "sequence": 1,
+  "observed_at": "2026-07-24T00:00:00Z",
+  "kind": "observation",
+  "status": "UNKNOWN",
+  "source": {
+    "adapter": "dns",
+    "collector": "omnia.dns",
+    "version": "1"
+  },
+  "subject": {
+    "type": "host",
+    "ref": "local"
+  },
+  "payload": {
+    "resolver_count": 2,
+    "ipv4_count": 2,
+    "ipv6_count": 0,
+    "limitation": "presence does not establish configuration provenance"
+  },
+  "redaction": {
+    "policy": "omnia-public-v1",
+    "applied": true
+  },
+  "previous_digest": null,
+  "digest": "8b1a9953c4611296a827abf8c47804d7f7d3f5ec0a10b920de42721e388a1b28"
+}
