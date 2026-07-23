@@ -16,9 +16,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.11'
       - name: Install validation deps
-        run: python3 -m pip install --upgrade pip jsonschema
+        run: python3 -m pip install -r requirements-dev.txt
       - name: Validate repository
         run: make validate
       - name: Run safe unit tests
