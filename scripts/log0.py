@@ -141,11 +141,13 @@ def require_utc_seconds(value: str) -> None:
 
 
 def require_uuid4(value: Any, label: str) -> str:
+    if not isinstance(value, str):
+        raise LogError(f"{label} must be a canonical lowercase UUIDv4")
     try:
-        parsed = uuid.UUID(str(value))
+        parsed = uuid.UUID(value)
     except (ValueError, AttributeError) as exc:
         raise LogError(f"{label} must be a UUIDv4") from exc
-    if parsed.version != 4 or str(parsed) != str(value).lower():
+    if parsed.version != 4 or str(parsed) != value:
         raise LogError(f"{label} must be a canonical lowercase UUIDv4")
     return str(parsed)
 

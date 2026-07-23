@@ -69,6 +69,13 @@ class TestLogZero(unittest.TestCase):
             with self.assertRaisesRegex(LOG0.LogError, "different content"):
                 LOG0.append_event(log_path, draft(event_id, {"count": 2}))
 
+    def test_uppercase_uuid_is_not_canonical(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log_path = Path(directory) / "log.0"
+            with self.assertRaisesRegex(LOG0.LogError, "canonical lowercase UUIDv4"):
+                LOG0.append_event(log_path, draft(str(uuid.uuid4()).upper()))
+            self.assertFalse(log_path.exists())
+
     def test_tamper_and_torn_tail_fail_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             directory_path = Path(directory)
