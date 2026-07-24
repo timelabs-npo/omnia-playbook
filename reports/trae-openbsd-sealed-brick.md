@@ -25,6 +25,8 @@
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make validate`
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make test`
 - `chmod +x checks/openbsd/inspect_openbsd_v0.sh`
+- `git commit -m "TRAE: add OpenBSD sealed-brick playbook and checks"`
+- `git push -u origin trae/a0l-audit`
 
 ## Results
 
@@ -32,7 +34,8 @@
 - Full repository validation passed, including schema fixtures, repository artifact validation, and shell linting.
 - `make test` passed with 15 tests.
 - The OpenBSD read-only collection script is executable and contract-tested off-host.
-- Branch publish status is recorded after the git push attempt.
+- Commit `0832e50` was created on `trae/a0l-audit`.
+- Branch publish succeeded to `origin/trae/a0l-audit`.
 
 ## Known Thin Places
 
