@@ -36,6 +36,8 @@
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" python3 -m unittest tests.test_openbsd_contract -v`
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make validate`
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make test`
+- `git commit -m "TRAE: minimize OpenBSD public collection output"`
+- `git push`
 
 ## Results
 
@@ -44,7 +46,7 @@
 - `make test` now passes with 18 tests.
 - The OpenBSD read-only collection script is executable, contract-tested off-host, and its public `--collect` mode now emits minimized posture booleans and counts only.
 - Raw native state is reserved for the explicit `--inspect-private` path with the `LOCAL SENSITIVE OUTPUT` / `DO NOT UPLOAD OR APPEND TO LOG.0` warning.
-- Commit `0832e50` was created on `trae/a0l-audit`.
+- Commit `628d289` was created on `trae/a0l-audit` for the public-output minimization fix.
 - Branch publish succeeded to `origin/trae/a0l-audit`.
 - OpenBSD-specific schema-valid environment, invariant, and check fixtures now pass under the existing schemas and are exercised by `make validate` and `make test`.
 
