@@ -1,0 +1,33 @@
+{
+  "id": "inv-openbsd-sealed-brick-bounded-control",
+  "title": "OpenBSD sealed-brick bounded control surface",
+  "description": "OpenBSD sealed-controller appliances must keep a bounded read-only collection surface and deterministic execution gates.",
+  "rationale": "A narrow observable surface keeps rollback, evidence handling, and operator review inspectable.",
+  "scope": "sealed-controller-appliance",
+  "severity": "critical",
+  "platforms": ["openbsd"],
+  "expected_state": {
+    "web_admin_plane": false,
+    "collection_boundary": "v0-read-only-allowlist",
+    "advisory_workers": {
+      "count": 6,
+      "root": false,
+      "pf_mutation": false,
+      "policy_widening": false,
+      "unrestricted_egress": false
+    },
+    "unknown_is_pass": false,
+    "fail_or_error_abort": true
+  },
+  "check": {
+    "ids": ["chk-openbsd-v0-collection-boundary"]
+  },
+  "remediation": {
+    "playbook": "playbooks/openbsd-sealed-brick/README.md"
+  },
+  "sources": [
+    "adapters/openbsd/README.md",
+    "playbooks/openbsd-sealed-brick/README.md"
+  ],
+  "last_verified": "2026-07-24"
+}

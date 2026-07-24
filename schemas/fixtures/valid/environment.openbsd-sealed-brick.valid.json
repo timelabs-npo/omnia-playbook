@@ -1,0 +1,7 @@
+{
+  "id": "openbsd-sealed-brick",
+  "name": "OpenBSD Sealed Brick Example",
+  "description": "Schema-valid example profile for a sealed OpenBSD controller appliance with a single trusted admin utility.",
+  "platforms": ["openbsd"],
+  "adapters": ["openbsd"]
+}

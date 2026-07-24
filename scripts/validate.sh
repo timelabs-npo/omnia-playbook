@@ -112,25 +112,35 @@ from jsonschema import Draft202012Validator
 
 root = Path(os.environ['ROOT_DIR'])
 
-mapping = {
-    "invariant": (root / "schemas/invariant.schema.json", root / "schemas/fixtures/valid/invariant.valid.json", root / "schemas/fixtures/invalid/invariant.invalid.json"),
-    "check": (root / "schemas/check.schema.json", root / "schemas/fixtures/valid/check.valid.json", root / "schemas/fixtures/invalid/check.invalid.json"),
-    "environment": (root / "schemas/environment.schema.json", root / "schemas/fixtures/valid/environment.valid.json", root / "schemas/fixtures/invalid/environment.invalid.json"),
+schema_map = {
+    "invariant": root / "schemas/invariant.schema.json",
+    "check": root / "schemas/check.schema.json",
+    "environment": root / "schemas/environment.schema.json",
 }
 
-for name, (schema_path, valid_path, invalid_path) in mapping.items():
+for name, schema_path in schema_map.items():
     schema = json.loads(schema_path.read_text())
     validator = Draft202012Validator(schema)
 
-    valid_doc = json.loads(valid_path.read_text())
-    valid_errors = sorted(validator.iter_errors(valid_doc), key=lambda e: e.path)
-    if valid_errors:
-        raise SystemExit(f"{name} valid fixture failed schema validation: {valid_errors[0].message}")
+    valid_paths = sorted((root / "schemas" / "fixtures" / "valid").glob(f"{name}*.valid.json"))
+    invalid_paths = sorted((root / "schemas" / "fixtures" / "invalid").glob(f"{name}*.invalid.json"))
 
-    invalid_doc = json.loads(invalid_path.read_text())
-    invalid_errors = sorted(validator.iter_errors(invalid_doc), key=lambda e: e.path)
-    if not invalid_errors:
-        raise SystemExit(f"{name} invalid fixture unexpectedly passed schema validation")
+    if not valid_paths:
+        raise SystemExit(f"No valid fixtures found for schema: {name}")
+    if not invalid_paths:
+        raise SystemExit(f"No invalid fixtures found for schema: {name}")
+
+    for valid_path in valid_paths:
+        valid_doc = json.loads(valid_path.read_text())
+        valid_errors = sorted(validator.iter_errors(valid_doc), key=lambda e: e.path)
+        if valid_errors:
+            raise SystemExit(f"{valid_path.relative_to(root)} failed schema validation: {valid_errors[0].message}")
+
+    for invalid_path in invalid_paths:
+        invalid_doc = json.loads(invalid_path.read_text())
+        invalid_errors = sorted(validator.iter_errors(invalid_doc), key=lambda e: e.path)
+        if not invalid_errors:
+            raise SystemExit(f"{invalid_path.relative_to(root)} unexpectedly passed schema validation")
 
 print("Schema/fixture validation passed")
 PY

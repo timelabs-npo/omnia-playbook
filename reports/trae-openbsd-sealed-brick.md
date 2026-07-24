@@ -12,7 +12,11 @@
 - `playbooks/openbsd-sealed-brick/README.md`
 - `references/openbsd/README.md`
 - `reports/trae-openbsd-sealed-brick.md`
+- `schemas/fixtures/valid/check.openbsd-sealed-brick.valid.json`
+- `schemas/fixtures/valid/environment.openbsd-sealed-brick.valid.json`
+- `schemas/fixtures/valid/invariant.openbsd-sealed-brick.valid.json`
 - `scripts/validate.sh`
+- `tests/test_schemas.py`
 - `tests/test_openbsd_contract.py`
 - `tests/test_repository_artifacts.py`
 - `tests/test_validation_contract.py`
@@ -27,6 +31,8 @@
 - `chmod +x checks/openbsd/inspect_openbsd_v0.sh`
 - `git commit -m "TRAE: add OpenBSD sealed-brick playbook and checks"`
 - `git push -u origin trae/a0l-audit`
+- `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make validate`
+- `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make test`
 
 ## Results
 
@@ -36,6 +42,7 @@
 - The OpenBSD read-only collection script is executable and contract-tested off-host.
 - Commit `0832e50` was created on `trae/a0l-audit`.
 - Branch publish succeeded to `origin/trae/a0l-audit`.
+- OpenBSD-specific schema-valid environment, invariant, and check fixtures now pass under the existing schemas and are exercised by `make validate` and `make test`.
 
 ## Known Thin Places
 

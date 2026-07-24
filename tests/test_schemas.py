@@ -25,16 +25,28 @@ class TestSchemaFixtures(unittest.TestCase):
         self.assertGreater(len(errors), 0)
 
     def test_invariant_fixtures(self):
-        self._assert_valid("schemas/invariant.schema.json", "schemas/fixtures/valid/invariant.valid.json")
-        self._assert_invalid("schemas/invariant.schema.json", "schemas/fixtures/invalid/invariant.invalid.json")
+        for fixture in sorted((ROOT / "schemas" / "fixtures" / "valid").glob("invariant*.valid.json")):
+            with self.subTest(fixture=fixture.relative_to(ROOT)):
+                self._assert_valid("schemas/invariant.schema.json", str(fixture.relative_to(ROOT)))
+        for fixture in sorted((ROOT / "schemas" / "fixtures" / "invalid").glob("invariant*.invalid.json")):
+            with self.subTest(fixture=fixture.relative_to(ROOT)):
+                self._assert_invalid("schemas/invariant.schema.json", str(fixture.relative_to(ROOT)))
 
     def test_check_fixtures(self):
-        self._assert_valid("schemas/check.schema.json", "schemas/fixtures/valid/check.valid.json")
-        self._assert_invalid("schemas/check.schema.json", "schemas/fixtures/invalid/check.invalid.json")
+        for fixture in sorted((ROOT / "schemas" / "fixtures" / "valid").glob("check*.valid.json")):
+            with self.subTest(fixture=fixture.relative_to(ROOT)):
+                self._assert_valid("schemas/check.schema.json", str(fixture.relative_to(ROOT)))
+        for fixture in sorted((ROOT / "schemas" / "fixtures" / "invalid").glob("check*.invalid.json")):
+            with self.subTest(fixture=fixture.relative_to(ROOT)):
+                self._assert_invalid("schemas/check.schema.json", str(fixture.relative_to(ROOT)))
 
     def test_environment_fixtures(self):
-        self._assert_valid("schemas/environment.schema.json", "schemas/fixtures/valid/environment.valid.json")
-        self._assert_invalid("schemas/environment.schema.json", "schemas/fixtures/invalid/environment.invalid.json")
+        for fixture in sorted((ROOT / "schemas" / "fixtures" / "valid").glob("environment*.valid.json")):
+            with self.subTest(fixture=fixture.relative_to(ROOT)):
+                self._assert_valid("schemas/environment.schema.json", str(fixture.relative_to(ROOT)))
+        for fixture in sorted((ROOT / "schemas" / "fixtures" / "invalid").glob("environment*.invalid.json")):
+            with self.subTest(fixture=fixture.relative_to(ROOT)):
+                self._assert_invalid("schemas/environment.schema.json", str(fixture.relative_to(ROOT)))
 
 
 if __name__ == "__main__":

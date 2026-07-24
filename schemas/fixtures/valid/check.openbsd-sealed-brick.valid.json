@@ -1,0 +1,14 @@
+{
+  "id": "chk-openbsd-v0-collection-boundary",
+  "invariant": "inv-openbsd-sealed-brick-bounded-control",
+  "command": "./checks/openbsd/inspect_openbsd_v0.sh --collect",
+  "platform": "openbsd",
+  "requires": ["uname", "ifconfig", "route", "pfctl", "rcctl", "sysctl", "cat"],
+  "timeout": 20,
+  "expected_exit_code": 0,
+  "expected_output": {
+    "contains": ["contract_version=v0", "read_only=true", "result=PASS"]
+  },
+  "failure_message": "OpenBSD bounded v0 collection failed or returned a non-pass result.",
+  "remediation_playbook": "playbooks/openbsd-sealed-brick/README.md"
+}
