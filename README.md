@@ -1,6 +1,6 @@
 # Omnia Playbook
 
-Vendor-neutral developer infrastructure playbook scaffold for Apple, Google Cloud, Azure, OpenWrt, macOS, and Windows.
+Vendor-neutral developer infrastructure playbook scaffold for Apple, Google Cloud, Azure, OpenWrt, macOS, Windows, and OpenBSD.
 
 ## Architectural decisions
 
@@ -10,6 +10,11 @@ Vendor-neutral developer infrastructure playbook scaffold for Apple, Google Clou
 4. `playbooks/` contains remediation and operational procedures.
 5. `references/` contains source documentation notes.
 6. `reports/` stores generated output and is excluded from Git except `.gitkeep`.
+
+Current recovery coverage includes:
+
+- [DNS explicit resolver recovery](playbooks/recovery/dns-explicit-resolvers.md)
+- [OpenBSD sealed-brick architecture and recovery](playbooks/openbsd-sealed-brick/README.md)
 
 ## Core models
 

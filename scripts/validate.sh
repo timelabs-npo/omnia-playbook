@@ -34,14 +34,14 @@ require_paths() {
     README.md LICENSE CONTRIBUTING.md SECURITY.md Makefile requirements-dev.txt .editorconfig .gitignore
     .github/workflows/validate.yml .github/workflows/docs.yml .github/pull_request_template.md
     foundation/identity.md foundation/networking.md foundation/dns.md foundation/secrets.md foundation/storage.md foundation/observability.md foundation/cicd.md
-    adapters/apple adapters/google-cloud adapters/azure adapters/openwrt adapters/macos adapters/windows
-    checks/dns
-    playbooks/bootstrap playbooks/diagnostics playbooks/recovery playbooks/migration
+    adapters/apple adapters/google-cloud adapters/azure adapters/openwrt adapters/macos adapters/windows adapters/openbsd
+    checks/dns checks/openbsd
+    playbooks/bootstrap playbooks/diagnostics playbooks/recovery playbooks/migration playbooks/openbsd-sealed-brick
     schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json
-    environments/example environments/bluenikee
+    environments/example environments/bluenikee environments/openbsd-sealed-brick
     scripts/validate.sh scripts/diagnose.sh scripts/report.sh
-    reports/.gitkeep
-    references/apple references/google references/microsoft
+    reports/.gitkeep reports/trae-openbsd-sealed-brick.md
+    references/apple references/google references/microsoft references/openbsd
   )
   local missing=0
   for item in "${required[@]}"; do
@@ -136,6 +136,106 @@ print("Schema/fixture validation passed")
 PY
 }
 
+validate_repository_artifacts() {
+  python3 - <<'PY'
+import json
+import os
+import subprocess
+from pathlib import Path
+from jsonschema import Draft202012Validator
+
+root = Path(os.environ['ROOT_DIR'])
+
+
+def load_json(path: Path):
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def load_yaml(path: Path):
+    result = subprocess.run(
+        [
+            "ruby",
+            "-e",
+            'require "yaml"; require "json"; puts JSON.generate(YAML.safe_load(File.read(ARGV[0]), aliases: false))',
+            str(path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(result.stdout)
+
+
+environment_schema = load_json(root / "schemas/environment.schema.json")
+invariant_schema = load_json(root / "schemas/invariant.schema.json")
+check_schema = load_json(root / "schemas/check.schema.json")
+
+environment_validator = Draft202012Validator(environment_schema)
+invariant_validator = Draft202012Validator(invariant_schema)
+check_validator = Draft202012Validator(check_schema)
+
+environment_files = sorted((root / "environments").rglob("environment.json"))
+invariant_files = sorted((root / "checks").rglob("invariant-*.yaml"))
+check_files = sorted((root / "checks").rglob("chk-*.yaml"))
+
+if not environment_files:
+    raise SystemExit("No environment files found")
+if not invariant_files:
+    raise SystemExit("No invariant files found")
+if not check_files:
+    raise SystemExit("No check files found")
+
+check_docs = {}
+for path in check_files:
+    doc = load_yaml(path)
+    errors = sorted(check_validator.iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed schema validation: {errors[0].message}")
+    if doc["id"] in check_docs:
+        raise SystemExit(f"Duplicate check id: {doc['id']}")
+    check_docs[doc["id"]] = (path, doc)
+    remediation_path = root / doc["remediation_playbook"]
+    if not remediation_path.exists():
+        raise SystemExit(f"{path.relative_to(root)} references missing remediation playbook: {doc['remediation_playbook']}")
+
+invariant_docs = {}
+for path in invariant_files:
+    doc = load_yaml(path)
+    errors = sorted(invariant_validator.iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed schema validation: {errors[0].message}")
+    if doc["id"] in invariant_docs:
+        raise SystemExit(f"Duplicate invariant id: {doc['id']}")
+    invariant_docs[doc["id"]] = (path, doc)
+    remediation_path = root / doc["remediation"]["playbook"]
+    if not remediation_path.exists():
+        raise SystemExit(f"{path.relative_to(root)} references missing remediation playbook: {doc['remediation']['playbook']}")
+    for source in doc["sources"]:
+        source_path = root / source
+        if not source_path.exists():
+            raise SystemExit(f"{path.relative_to(root)} references missing source: {source}")
+    for check_id in doc["check"]["ids"]:
+        if check_id not in check_docs:
+            raise SystemExit(f"{path.relative_to(root)} references missing check id: {check_id}")
+
+for path, doc in check_docs.values():
+    if doc["invariant"] not in invariant_docs:
+        raise SystemExit(f"{path.relative_to(root)} references missing invariant id: {doc['invariant']}")
+
+for path in environment_files:
+    doc = load_json(path)
+    errors = sorted(environment_validator.iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed schema validation: {errors[0].message}")
+    for adapter in doc["adapters"]:
+        adapter_path = root / "adapters" / adapter
+        if not adapter_path.exists():
+            raise SystemExit(f"{path.relative_to(root)} references missing adapter directory: adapters/{adapter}")
+
+print("Repository artifact validation passed")
+PY
+}
+
 lint_shell_scripts() {
   while IFS= read -r file; do
     shellcheck "$file"
@@ -190,5 +290,6 @@ check_internal_markdown_links
 validate_yaml_syntax
 validate_json_syntax
 validate_schemas_and_fixtures
+validate_repository_artifacts
 lint_shell_scripts
 echo "Repository validation passed"

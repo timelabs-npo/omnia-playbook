@@ -1,5 +1,6 @@
 reports/*.json
 reports/*.md
+!reports/trae-openbsd-sealed-brick.md
 !reports/.gitkeep
 __pycache__/
 *.pyc

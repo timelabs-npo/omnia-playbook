@@ -35,6 +35,17 @@ class TestValidationContract(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn("Missing required path: foundation/dns.md", result.stderr)
 
+    def test_missing_openbsd_playbook_path_fails_clearly(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            copied_root = Path(temp_dir) / "omnia-playbook"
+            shutil.copytree(ROOT, copied_root, ignore=shutil.ignore_patterns(".git"))
+            shutil.rmtree(copied_root / "playbooks" / "openbsd-sealed-brick")
+
+            result = self._run(copied_root, "--structure-only")
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("Missing required path: playbooks/openbsd-sealed-brick", result.stderr)
+
     def test_future_check_domains_are_not_required(self):
         script = VALIDATE.read_text(encoding="utf-8")
         for future_domain in (
