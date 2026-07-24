@@ -25,6 +25,13 @@ The v0 collection boundary is intentionally small and bounded. It is limited to 
 - `sysctl net.inet.ip.forwarding`
 - `cat /etc/resolv.conf`
 
+Public collection must emit minimized posture booleans and counts only. It must not emit IPs, MACs, interface names, route bodies, rule bodies, resolver addresses, search domains, or hostnames.
+
+Raw native state is reserved for the explicit `--inspect-private` operator path, which must begin with:
+
+- `LOCAL SENSITIVE OUTPUT`
+- `DO NOT UPLOAD OR APPEND TO LOG.0`
+
 The v0 boundary does not mutate `pf`, does not write configuration, does not widen policy, does not restart services, and does not grant shell-mediated authority to advisory workers.
 
 See the architecture and rollback procedure in [playbooks/openbsd-sealed-brick/README.md](../../playbooks/openbsd-sealed-brick/README.md).

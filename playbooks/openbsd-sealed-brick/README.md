@@ -60,6 +60,8 @@ The evidence path is:
 
 The v0 deliverable in this repository stops at the bounded collection contract and playbook/reporting structure. It does not implement a signed policy gate yet.
 
+Public `--collect` evidence is posture-only: booleans and counts with no IPs, MACs, interface names, route bodies, rule bodies, resolver addresses, search domains, or hostnames. Raw native inspection is reserved for the explicit `--inspect-private` path and must remain local with the `LOCAL SENSITIVE OUTPUT` / `DO NOT UPLOAD OR APPEND TO LOG.0` warning.
+
 ## Hardening Targets
 
 Measure hardening instead of claiming perfect safety:

@@ -33,21 +33,26 @@
 - `git push -u origin trae/a0l-audit`
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make validate`
 - `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make test`
+- `PATH="/tmp/omnia-playbook-venv/bin:$PATH" python3 -m unittest tests.test_openbsd_contract -v`
+- `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make validate`
+- `PATH="/tmp/omnia-playbook-venv/bin:$PATH" make test`
 
 ## Results
 
 - Internal Markdown links passed.
 - Full repository validation passed, including schema fixtures, repository artifact validation, and shell linting.
-- `make test` passed with 15 tests.
-- The OpenBSD read-only collection script is executable and contract-tested off-host.
+- `make test` now passes with 18 tests.
+- The OpenBSD read-only collection script is executable, contract-tested off-host, and its public `--collect` mode now emits minimized posture booleans and counts only.
+- Raw native state is reserved for the explicit `--inspect-private` path with the `LOCAL SENSITIVE OUTPUT` / `DO NOT UPLOAD OR APPEND TO LOG.0` warning.
 - Commit `0832e50` was created on `trae/a0l-audit`.
 - Branch publish succeeded to `origin/trae/a0l-audit`.
 - OpenBSD-specific schema-valid environment, invariant, and check fixtures now pass under the existing schemas and are exercised by `make validate` and `make test`.
 
 ## Known Thin Places
 
-- The OpenBSD collection script is contract-tested on non-OpenBSD hosts, but full `--collect` execution still needs a real OpenBSD target.
+- The OpenBSD collection script is contract-tested off-host with mocked native outputs, but the minimized posture summary still needs one real OpenBSD run for end-to-end confirmation.
 - The repository models the evidence path and deterministic gate contract, but does not yet implement the future signed policy gate.
+- The `--inspect-private` path is intentionally local and sensitive; it is not suitable for append-only evidence until a separate redaction gate exists.
 - The playbook is deliberately documentation-first; it does not automate rollback on live hardware.
 
 ## Next Smallest Hardware Experiment

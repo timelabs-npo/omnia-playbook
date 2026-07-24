@@ -3,6 +3,7 @@ invariant: inv-openbsd-sealed-brick-bounded-control
 command: ./checks/openbsd/inspect_openbsd_v0.sh --collect
 platform: openbsd
 requires:
+  - awk
   - uname
   - ifconfig
   - route
@@ -10,12 +11,13 @@ requires:
   - rcctl
   - sysctl
   - cat
+  - grep
 timeout: 20
 expected_exit_code: 0
 expected_output:
   contains:
     - contract_version=v0
-    - read_only=true
+    - output_mode=public_minimized
     - result=PASS
 failure_message: OpenBSD bounded v0 collection failed or returned a non-pass result.
 remediation_playbook: playbooks/openbsd-sealed-brick/README.md
