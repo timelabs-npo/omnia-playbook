@@ -1,0 +1,42 @@
+{
+  "id": "adapter-google-cloud-reference",
+  "name": "Google Cloud Vendor Reference Adapter",
+  "ontology": {
+    "type": "cloud_vendor",
+    "platform_vendor": "cloud_vendor",
+    "platform_name": "Google Cloud Platform",
+    "vendor_name": "Google LLC"
+  },
+  "support_tier": "unsupported",
+  "status": "UNIMPLEMENTED",
+  "description": "Placeholder-only Google Cloud vendor reference adapter. Directory presence alone does NOT grant supported status; this manifest declares the adapter UNIMPLEMENTED with no validated capability mappings. Ambiguous taxonomy must fail validation, so ontology is explicitly declared.",
+  "primary_platforms": ["google-cloud"],
+  "primary_vendors": ["google-llc"],
+  "declared_capabilities": [
+    {
+      "id": "cap-google-cloud-reference-notes-only",
+      "name": "Google Cloud reference note storage",
+      "operation": "references.storage.notes",
+      "mode": "documentation_only",
+      "interface_type": "base_system_file",
+      "support_tier": "unsupported",
+      "status": "UNIMPLEMENTED",
+      "description": "Stores documentation notes for Google Cloud references. No diagnostic commands, no operational mapping, no mutation authority.",
+      "sources": [
+        "adapters/google-cloud/README.md",
+        "references/google/README.md"
+      ],
+      "evidence": {
+        "type": "unit_test",
+        "references": [
+          "tests/test_validation_contract.py",
+          "tests/test_repository_artifacts.py"
+        ]
+      },
+      "evidence_notes": "UNIMPLEMENTED adapter; evidence is repo structure and documentation only."
+    }
+  ],
+  "validated_capability_ids": [],
+  "last_verified": "2026-08-13",
+  "notes": "Explicit UNIMPLEMENTED status. Supported adapters require at least one validated capability mapping and support_tier=supported."
+}

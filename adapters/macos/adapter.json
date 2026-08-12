@@ -1,0 +1,44 @@
+{
+  "id": "adapter-macos-dns-v0",
+  "name": "macOS DNS v0 DNS Resolver Inspection Adapter",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "macOS",
+    "vendor_name": "Apple Inc."
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "description": "Supported adapter mapping for macOS read-only DNS resolver inspection via scutil --dns. Placeholder-only OS-wide adapter mappings are UNIMPLEMENTED; this manifest intentionally limited to the validated DNS v0 invariant mapping.",
+  "primary_platforms": ["macos"],
+  "primary_vendors": ["apple-inc"],
+  "declared_capabilities": [
+    {
+      "id": "cap-macos-dns-resolver-inspect-v0",
+      "name": "macOS DNS resolver inspection v0",
+      "operation": "dns.resolver.inspect.v0",
+      "mode": "read_only",
+      "interface_type": "base_system_command",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "description": "Read-only observation of explicit and observable DNS resolver configuration on macOS via scutil --dns for the DNS explicit resolver invariant.",
+      "sources": [
+        "adapters/macos/README.md",
+        "foundation/dns.md",
+        "checks/dns/chk-dns-macos-observe.yaml"
+      ],
+      "evidence": {
+        "type": "check_reference",
+        "references": [
+          "checks/dns/chk-dns-macos-observe.yaml",
+          "tests/test_repository_artifacts.py"
+        ]
+      }
+    }
+  ],
+  "validated_capability_ids": [
+    "cap-macos-dns-resolver-inspect-v0"
+  ],
+  "last_verified": "2026-08-13",
+  "notes": "Full OS-wide macOS adapter beyond DNS v0 remains UNIMPLEMENTED; only the DNS inspection capability above is supported. Directory presence alone is not support status."
+}

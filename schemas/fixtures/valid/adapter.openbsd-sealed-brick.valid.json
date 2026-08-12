@@ -1,0 +1,42 @@
+{
+  "id": "adapter-openbsd-sealed-controller-fixture",
+  "name": "OpenBSD Supported Adapter Fixture",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "OpenBSD",
+    "vendor_name": "OpenBSD Project"
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "description": "Schema fixture showing the OpenBSD adapter manifest with declared ontology and at least one validated capability mapping. Adapter support is determined by manifest content + capability validation, not by directory presence alone.",
+  "primary_platforms": ["openbsd"],
+  "primary_vendors": ["openbsd-project"],
+  "declared_capabilities": [
+    {
+      "id": "cap-openbsd-bounded-collect-v0",
+      "name": "Bounded read-only v0 posture collection",
+      "operation": "inspect.collect.public_v0",
+      "mode": "read_only",
+      "interface_type": "shell_script",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "description": "Minimized public collection of OpenBSD networking and packet-filter posture booleans and counts. Explicitly excludes raw topology classes.",
+      "sources": [
+        "adapters/openbsd/adapter.json",
+        "checks/openbsd/chk-openbsd-v0-collection-boundary.yaml"
+      ],
+      "evidence": {
+        "type": "check_reference",
+        "references": [
+          "checks/openbsd/chk-openbsd-v0-collection-boundary.yaml",
+          "tests/test_openbsd_contract.py"
+        ]
+      }
+    }
+  ],
+  "validated_capability_ids": [
+    "cap-openbsd-bounded-collect-v0"
+  ],
+  "last_verified": "2026-08-13"
+}

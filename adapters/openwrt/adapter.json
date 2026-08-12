@@ -1,0 +1,44 @@
+{
+  "id": "adapter-openwrt-dns-v0",
+  "name": "OpenWrt DNS v0 Resolver Inspection Adapter",
+  "ontology": {
+    "type": "device_operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "OpenWrt",
+    "vendor_name": "OpenWrt Project"
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "description": "Supported adapter mapping for Linux/OpenWrt read-only DNS resolver inspection via /etc/resolv.conf for the DNS explicit resolver invariant. The OpenWrt adapter directory presence alone is UNIMPLEMENTED outside the validated DNS v0 capability.",
+  "primary_platforms": ["openwrt", "linux-openwrt"],
+  "primary_vendors": ["openwrt-project"],
+  "declared_capabilities": [
+    {
+      "id": "cap-openwrt-dns-resolver-inspect-v0",
+      "name": "OpenWrt/Linux DNS resolver inspection v0",
+      "operation": "dns.resolver.inspect.v0",
+      "mode": "read_only",
+      "interface_type": "base_system_file",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "description": "Read-only observation of explicit resolver configuration in /etc/resolv.conf for the DNS explicit resolver invariant on Linux/OpenWrt targets.",
+      "sources": [
+        "adapters/openwrt/README.md",
+        "foundation/dns.md",
+        "checks/dns/chk-dns-linux-openwrt-observe.yaml"
+      ],
+      "evidence": {
+        "type": "check_reference",
+        "references": [
+          "checks/dns/chk-dns-linux-openwrt-observe.yaml",
+          "tests/test_repository_artifacts.py"
+        ]
+      }
+    }
+  ],
+  "validated_capability_ids": [
+    "cap-openwrt-dns-resolver-inspect-v0"
+  ],
+  "last_verified": "2026-08-13",
+  "notes": "Only the DNS v0 capability above is supported; adapter directory alone is not support status."
+}

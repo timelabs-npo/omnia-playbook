@@ -1,0 +1,13 @@
+{
+  "id": "adapter-ambiguous-placeholder",
+  "name": "Broken Adapter: no ontology, no capabilities, inconsistent supported tier",
+  "description": "Invalid adapter fixture designed to fail schema validation + taxonomy rules. Placeholder adapters with missing ontology or missing capability mappings must fail validation. Directory existence alone must not grant supported status.",
+  "primary_platforms": ["broken-phantom-platform"],
+  "primary_vendors": ["broken-phantom-vendor"],
+  "ontology": null,
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "declared_capabilities": [],
+  "validated_capability_ids": ["does-not-exist"],
+  "last_verified": "not-a-date"
+}

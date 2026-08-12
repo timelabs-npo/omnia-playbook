@@ -68,5 +68,56 @@ class TestValidationContract(unittest.TestCase):
         self.assertIn("Usage:", result.stderr)
 
 
+    def test_missing_adapter_manifest_fails_ambiguous_taxonomy(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            copied_root = Path(temp_dir) / "omnia-playbook"
+            shutil.copytree(ROOT, copied_root, ignore=shutil.ignore_patterns(".git"))
+            (copied_root / "adapters" / "apple" / "adapter.json").unlink()
+
+            structure_result = self._run(copied_root, "--structure-only")
+            artifacts_result = self._run(copied_root, "--artifacts-only")
+
+        self.assertNotEqual(0, structure_result.returncode)
+        self.assertNotEqual(0, artifacts_result.returncode)
+        combined = f"{structure_result.stderr}\n{artifacts_result.stdout}\n{artifacts_result.stderr}"
+        self.assertIn("adapters/apple/adapter.json", combined)
+
+    def test_supported_adapter_without_validated_capability_fails(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            copied_root = Path(temp_dir) / "omnia-playbook"
+            shutil.copytree(ROOT, copied_root, ignore=shutil.ignore_patterns(".git"))
+            manifest_path = copied_root / "adapters" / "macos" / "adapter.json"
+            import json as _json
+            manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["validated_capability_ids"] = []
+            manifest_path.write_text(_json.dumps(manifest, indent=2), encoding="utf-8")
+
+            result = self._run(copied_root, "--artifacts-only")
+
+        self.assertNotEqual(0, result.returncode)
+        combined = f"{result.stdout}\n{result.stderr}"
+        self.assertIn("validated_capability_ids", combined)
+
+    def test_unimplemented_adapter_cannot_be_supported_tier(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            copied_root = Path(temp_dir) / "omnia-playbook"
+            shutil.copytree(ROOT, copied_root, ignore=shutil.ignore_patterns(".git"))
+            manifest_path = copied_root / "adapters" / "apple" / "adapter.json"
+            import json as _json
+            manifest = _json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["support_tier"] = "supported"
+            manifest_path.write_text(_json.dumps(manifest, indent=2), encoding="utf-8")
+
+            result = self._run(copied_root, "--artifacts-only")
+
+        self.assertNotEqual(0, result.returncode)
+        combined = f"{result.stdout}\n{result.stderr}"
+        self.assertIn(
+            "requires status=VALIDATED",
+            combined,
+            "support_tier=supported with UNIMPLEMENTED status must fail taxonomy consistency checks.",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

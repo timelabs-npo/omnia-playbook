@@ -1,0 +1,42 @@
+{
+  "id": "adapter-azure-reference",
+  "name": "Azure Vendor Reference Adapter",
+  "ontology": {
+    "type": "cloud_vendor",
+    "platform_vendor": "cloud_vendor",
+    "platform_name": "Microsoft Azure",
+    "vendor_name": "Microsoft Corporation"
+  },
+  "support_tier": "unsupported",
+  "status": "UNIMPLEMENTED",
+  "description": "Placeholder-only Azure vendor reference adapter. Directory name alone does NOT make Azure supported; this manifest declares the adapter UNIMPLEMENTED and explicitly labels ontology type to prevent ambiguous taxonomy validation failures.",
+  "primary_platforms": ["azure"],
+  "primary_vendors": ["microsoft-corporation"],
+  "declared_capabilities": [
+    {
+      "id": "cap-azure-reference-notes-only",
+      "name": "Azure reference note storage",
+      "operation": "references.storage.notes",
+      "mode": "documentation_only",
+      "interface_type": "base_system_file",
+      "support_tier": "unsupported",
+      "status": "UNIMPLEMENTED",
+      "description": "Documentation-only adapter for Azure references with no validated diagnostic or operational mappings.",
+      "sources": [
+        "adapters/azure/README.md",
+        "references/microsoft/README.md"
+      ],
+      "evidence": {
+        "type": "unit_test",
+        "references": [
+          "tests/test_validation_contract.py",
+          "tests/test_repository_artifacts.py"
+        ]
+      },
+      "evidence_notes": "UNIMPLEMENTED adapter; repo-level structure tests confirm existence only."
+    }
+  ],
+  "validated_capability_ids": [],
+  "last_verified": "2026-08-13",
+  "notes": "Supported adapters require validated capability mappings and support_tier=supported. Placeholder adapters are explicitly UNIMPLEMENTED."
+}

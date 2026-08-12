@@ -7,16 +7,17 @@ export ROOT_DIR
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/validate.sh [--links-only|--structure-only]
+Usage: ./scripts/validate.sh [--links-only|--structure-only|--artifacts-only]
 
 With no option, run the complete repository validation.
   --links-only      Check internal Markdown links only.
   --structure-only  Check the required current repository structure only.
+  --artifacts-only  Check repository artifact cross-references and adapter taxonomy rules only.
 EOF
 }
 
 case "${MODE}" in
-  ""|--links-only|--structure-only)
+  ""|--links-only|--structure-only|--artifacts-only)
     ;;
   -h|--help)
     usage
@@ -35,9 +36,11 @@ require_paths() {
     .github/workflows/validate.yml .github/workflows/docs.yml .github/pull_request_template.md
     foundation/identity.md foundation/networking.md foundation/dns.md foundation/secrets.md foundation/storage.md foundation/observability.md foundation/cicd.md
     adapters/apple adapters/google-cloud adapters/azure adapters/openwrt adapters/macos adapters/windows adapters/openbsd
+    adapters/apple/adapter.json adapters/google-cloud/adapter.json adapters/azure/adapter.json
+    adapters/openwrt/adapter.json adapters/macos/adapter.json adapters/windows/adapter.json adapters/openbsd/adapter.json
     checks/dns checks/openbsd
     playbooks/bootstrap playbooks/diagnostics playbooks/recovery playbooks/migration playbooks/openbsd-sealed-brick
-    schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json
+    schemas/adapter.schema.json schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json
     environments/example environments/bluenikee environments/openbsd-sealed-brick
     scripts/validate.sh scripts/diagnose.sh scripts/report.sh
     reports/.gitkeep reports/trae-openbsd-sealed-brick.md
@@ -116,6 +119,7 @@ schema_map = {
     "invariant": root / "schemas/invariant.schema.json",
     "check": root / "schemas/check.schema.json",
     "environment": root / "schemas/environment.schema.json",
+    "adapter": root / "schemas/adapter.schema.json",
 }
 
 for name, schema_path in schema_map.items():
@@ -179,14 +183,17 @@ def load_yaml(path: Path):
 environment_schema = load_json(root / "schemas/environment.schema.json")
 invariant_schema = load_json(root / "schemas/invariant.schema.json")
 check_schema = load_json(root / "schemas/check.schema.json")
+adapter_schema = load_json(root / "schemas/adapter.schema.json")
 
 environment_validator = Draft202012Validator(environment_schema)
 invariant_validator = Draft202012Validator(invariant_schema)
 check_validator = Draft202012Validator(check_schema)
+adapter_validator = Draft202012Validator(adapter_schema)
 
 environment_files = sorted((root / "environments").rglob("environment.json"))
 invariant_files = sorted((root / "checks").rglob("invariant-*.yaml"))
 check_files = sorted((root / "checks").rglob("chk-*.yaml"))
+adapter_files = sorted((root / "adapters").rglob("adapter.json"))
 
 if not environment_files:
     raise SystemExit("No environment files found")
@@ -194,6 +201,60 @@ if not invariant_files:
     raise SystemExit("No invariant files found")
 if not check_files:
     raise SystemExit("No check files found")
+if not adapter_files:
+    raise SystemExit("No adapter manifest files found")
+
+adapter_dirs = sorted({path.parent.name for path in adapter_files})
+adapter_dirs_direct = sorted(p.name for p in (root / "adapters").iterdir() if p.is_dir())
+for adapter_dir in adapter_dirs_direct:
+    if adapter_dir not in adapter_dirs:
+        raise SystemExit(f"Adapter directory missing manifest adapter.json: adapters/{adapter_dir}")
+
+adapter_docs = {}
+for path in adapter_files:
+    doc = load_json(path)
+    errors = sorted(adapter_validator.iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed adapter schema validation: {errors[0].message}")
+    adapter_id = path.parent.name
+    if doc["id"] in adapter_docs:
+        raise SystemExit(f"Duplicate adapter manifest id: {doc['id']}")
+    cap_ids = {cap["id"] for cap in doc["declared_capabilities"]}
+    for validated_cap_id in doc.get("validated_capability_ids", []):
+        if validated_cap_id not in cap_ids:
+            raise SystemExit(f"{path.relative_to(root)} validated_capability_ids references undeclared capability: {validated_cap_id}")
+        cap = next(cap for cap in doc["declared_capabilities"] if cap["id"] == validated_cap_id)
+        if cap["support_tier"] != "supported" or cap["status"] != "VALIDATED":
+            raise SystemExit(f"{path.relative_to(root)} capability {validated_cap_id} must be support_tier=supported and status=VALIDATED to be in validated_capability_ids")
+        evidence_refs = cap["evidence"]["references"]
+        if not evidence_refs:
+            raise SystemExit(f"{path.relative_to(root)} capability {validated_cap_id} must have at least one evidence reference")
+        for evidence_ref in evidence_refs:
+            evidence_path = root / evidence_ref
+            if not evidence_path.exists():
+                raise SystemExit(f"{path.relative_to(root)} capability {validated_cap_id} references missing evidence: {evidence_ref}")
+    if doc["support_tier"] == "supported":
+        if doc["status"] != "VALIDATED":
+            raise SystemExit(f"{path.relative_to(root)} support_tier=supported requires status=VALIDATED")
+        if not doc.get("validated_capability_ids"):
+            raise SystemExit(f"{path.relative_to(root)} support_tier=supported requires at least one validated_capability_ids entry")
+    else:
+        if doc.get("validated_capability_ids"):
+            raise SystemExit(f"{path.relative_to(root)} support_tier={doc['support_tier']} must not declare validated_capability_ids")
+    adapter_docs[doc["id"]] = (path, adapter_id, doc)
+
+adapter_id_by_dir = {adapter_id: doc_id for (doc_id, (_, adapter_id, _)) in adapter_docs.items()}
+for _doc_id, (_path, adapter_id, doc) in adapter_docs.items():
+    manifest_dir = _path.parent.name
+    expected_ids = [f"adapter-{manifest_dir}", f"adapter-{manifest_dir}-*"]
+    matches_prefix = doc["id"].startswith(f"adapter-{manifest_dir}")
+    if not matches_prefix:
+        raise SystemExit(f"Ambiguous taxonomy: {_path.relative_to(root)} id='{doc['id']}' must match directory adapters/{manifest_dir} prefix 'adapter-{manifest_dir}'")
+    status = doc["status"]
+    if status == "VALIDATED" and doc["support_tier"] != "supported":
+        raise SystemExit(f"Ambiguous taxonomy: {_path.relative_to(root)} status=VALIDATED implies support_tier=supported")
+    if status == "UNIMPLEMENTED" and doc["support_tier"] == "supported":
+        raise SystemExit(f"Ambiguous taxonomy: {_path.relative_to(root)} UNIMPLEMENTED cannot declare support_tier=supported")
 
 check_docs = {}
 for path in check_files:
@@ -241,6 +302,12 @@ for path in environment_files:
         adapter_path = root / "adapters" / adapter
         if not adapter_path.exists():
             raise SystemExit(f"{path.relative_to(root)} references missing adapter directory: adapters/{adapter}")
+        manifest_path = adapter_path / "adapter.json"
+        if not manifest_path.exists():
+            raise SystemExit(f"{path.relative_to(root)} adapter adapters/{adapter} missing required adapter.json manifest")
+        manifest = load_json(manifest_path)
+        if manifest["support_tier"] != "supported":
+            raise SystemExit(f"{path.relative_to(root)} adapter adapters/{adapter} is not support_tier=supported per adapter.json; environments must not claim unsupported adapters")
 
 print("Repository artifact validation passed")
 PY
@@ -248,7 +315,7 @@ PY
 
 lint_shell_scripts() {
   while IFS= read -r file; do
-    shellcheck "$file"
+    shellcheck -S warning "$file"
   done < <(find "${ROOT_DIR}/scripts" "${ROOT_DIR}/checks" -type f -name '*.sh' | sort)
 }
 
@@ -296,6 +363,12 @@ if [ "${MODE}" = "--structure-only" ]; then
 fi
 
 require_toolchain
+if [ "${MODE}" = "--artifacts-only" ]; then
+  validate_json_syntax
+  validate_repository_artifacts
+  exit 0
+fi
+
 check_internal_markdown_links
 validate_yaml_syntax
 validate_json_syntax

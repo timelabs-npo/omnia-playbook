@@ -1,7 +1,7 @@
 {
   "id": "bluenikee",
   "name": "Bluenikee Environment",
-  "description": "Organization-specific profile with no secrets or topology details.",
-  "platforms": ["macos", "windows", "linux"],
-  "adapters": ["apple", "google-cloud", "azure", "macos", "windows"]
+  "description": "Organization-specific profile with no secrets or topology details. Adapter support is determined by adapter manifest ontology and validated capability mappings, not directory presence alone.",
+  "platforms": ["macos", "windows"],
+  "adapters": ["macos", "windows"]
 }

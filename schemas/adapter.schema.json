@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/adapter.schema.json",
+  "title": "Adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "ontology",
+    "support_tier",
+    "status",
+    "description",
+    "primary_platforms",
+    "primary_vendors",
+    "declared_capabilities",
+    "last_verified"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 3 },
+    "name": { "type": "string", "minLength": 3 },
+    "ontology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "platform_vendor", "platform_name", "vendor_name"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["operating_system", "cloud_vendor", "device_operating_system", "cloud_platform_vendor", "cloud_vendor_operating_system", "vendor_platform_operating_system"]
+        },
+        "platform_vendor": {
+          "type": "string",
+          "enum": ["operating_system", "cloud_vendor", "operating_system_vendor", "cloud_platform", "vendor_platform"]
+        },
+        "platform_name": { "type": "string", "minLength": 2 },
+        "vendor_name": { "type": "string", "minLength": 2 }
+      }
+    },
+    "support_tier": {
+      "type": "string",
+      "enum": ["unsupported", "advisory", "supported"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["UNIMPLEMENTED", "MAPPED", "VALIDATED"]
+    },
+    "description": { "type": "string", "minLength": 10 },
+    "primary_platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2 }
+    },
+    "primary_vendors": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2 }
+    },
+    "declared_capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "operation",
+          "mode",
+          "interface_type",
+          "support_tier",
+          "status",
+          "description",
+          "sources",
+          "evidence"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 3 },
+          "name": { "type": "string", "minLength": 3 },
+          "operation": { "type": "string", "minLength": 3 },
+          "mode": { "type": "string", "enum": ["read_only", "documentation_only", "mutating_admin_only"] },
+          "interface_type": {
+            "type": "string",
+            "enum": ["base_system_command", "base_system_file", "rest_api", "cli_wrapper", "shell_script"]
+          },
+          "support_tier": {
+            "type": "string",
+            "enum": ["unsupported", "advisory", "supported"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["UNIMPLEMENTED", "MAPPED", "VALIDATED"]
+          },
+          "description": { "type": "string", "minLength": 10 },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 2 }
+          },
+          "evidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "references"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["check_reference", "schema_fixture", "unit_test", "script_contract", "live_hardware_plan"]
+              },
+              "references": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 2 }
+              }
+            }
+          },
+          "evidence_notes": { "type": "string" }
+        }
+      }
+    },
+    "validated_capability_ids": {
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "last_verified": { "type": "string", "format": "date" },
+    "notes": { "type": "string" }
+  }
+}

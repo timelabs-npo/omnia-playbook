@@ -1,0 +1,44 @@
+{
+  "id": "adapter-windows-dns-v0",
+  "name": "Windows DNS v0 Resolver Inspection Adapter",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "Windows",
+    "vendor_name": "Microsoft Corporation"
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "description": "Supported adapter mapping for Windows read-only DNS resolver inspection via PowerShell Get-DnsClientServerAddress. The Windows adapter directory beyond DNS v0 remains UNIMPLEMENTED by policy.",
+  "primary_platforms": ["windows"],
+  "primary_vendors": ["microsoft-corporation"],
+  "declared_capabilities": [
+    {
+      "id": "cap-windows-dns-resolver-inspect-v0",
+      "name": "Windows DNS resolver inspection v0",
+      "operation": "dns.resolver.inspect.v0",
+      "mode": "read_only",
+      "interface_type": "cli_wrapper",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "description": "Read-only Windows DNS resolver observation for the DNS explicit resolver invariant using Get-DnsClientServerAddress | Format-List.",
+      "sources": [
+        "adapters/windows/README.md",
+        "foundation/dns.md",
+        "checks/dns/chk-dns-windows-observe.yaml"
+      ],
+      "evidence": {
+        "type": "check_reference",
+        "references": [
+          "checks/dns/chk-dns-windows-observe.yaml",
+          "tests/test_repository_artifacts.py"
+        ]
+      }
+    }
+  ],
+  "validated_capability_ids": [
+    "cap-windows-dns-resolver-inspect-v0"
+  ],
+  "last_verified": "2026-08-13",
+  "notes": "The adapter directory alone does not equal supported status. Only the DNS v0 capability is supported; rest is UNIMPLEMENTED."
+}

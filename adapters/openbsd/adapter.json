@@ -1,0 +1,65 @@
+{
+  "id": "adapter-openbsd-sealed-controller",
+  "name": "OpenBSD Sealed Controller Base Adapter",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "OpenBSD",
+    "vendor_name": "OpenBSD Project"
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "description": "Supported adapter mapping for the OpenBSD sealed-brick controller target using only base system interfaces (pf, pfctl, ifconfig, route, rcctl, sysctl, canonical files). No web-admin plane, no LuCI/OpenWrt-style UI replica, smallest practical service surface.",
+  "primary_platforms": ["openbsd"],
+  "primary_vendors": ["openbsd-project"],
+  "declared_capabilities": [
+    {
+      "id": "cap-openbsd-bounded-collect-v0",
+      "name": "Bounded read-only v0 posture collection",
+      "operation": "inspect.collect.public_v0",
+      "mode": "read_only",
+      "interface_type": "shell_script",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "description": "Minimized public collection of OpenBSD networking and packet-filter posture booleans and counts. Does not emit IPs, MACs, interface names, routes, rule bodies, resolver values, search domains, or hostnames.",
+      "sources": [
+        "adapters/openbsd/README.md",
+        "playbooks/openbsd-sealed-brick/README.md"
+      ],
+      "evidence": {
+        "type": "check_reference",
+        "references": [
+          "checks/openbsd/chk-openbsd-v0-collection-boundary.yaml",
+          "tests/test_openbsd_contract.py"
+        ]
+      },
+      "evidence_notes": "Evidence contract includes mocked-native outputs proving public output does not contain sensitive topology classes, and explicit separate --inspect-private path with LOCAL SENSITIVE OUTPUT warning."
+    },
+    {
+      "id": "cap-openbsd-pf-syntax-check-offline",
+      "name": "Offline pf syntax validation rehearsal",
+      "operation": "pf.validate.offline_only",
+      "mode": "documentation_only",
+      "interface_type": "base_system_command",
+      "support_tier": "advisory",
+      "status": "MAPPED",
+      "description": "Operator-rehearsed offline pfctl -n syntax validation against candidate pf.conf files. Explicitly local only, no auto-load or mutation from this repo.",
+      "sources": [
+        "playbooks/openbsd-sealed-brick/README.md",
+        "references/openbsd/README.md"
+      ],
+      "evidence": {
+        "type": "live_hardware_plan",
+        "references": [
+          "reports/trae-openbsd-sealed-brick.md"
+        ]
+      },
+      "evidence_notes": "Validated through recovery-sequence gates and operator order in the sealed-brick playbook; pending live-hardware confirmation on isolated blueshoes harness."
+    }
+  ],
+  "validated_capability_ids": [
+    "cap-openbsd-bounded-collect-v0"
+  ],
+  "last_verified": "2026-08-13",
+  "notes": "This adapter is explicitly SUPPORTED for the sealed OpenBSD controller target because it exposes at least one validated capability mapping. Directory name alone is intentionally NOT sufficient for support status."
+}

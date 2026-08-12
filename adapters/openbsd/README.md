@@ -1,6 +1,16 @@
 # OpenBSD Adapter
 
+Adapter manifest: [adapter.json](adapter.json)
+
 OpenBSD is the substrate. The real interface is the base system itself: `pf`, `pfctl`, `ifconfig`, `route`, `rcctl`, `sysctl`, and the canonical files they manage.
+
+Ontology (declared in manifest):
+- ontology.type: operating_system
+- ontology.platform_vendor: operating_system_vendor
+- ontology.platform_name: OpenBSD
+- ontology.vendor_name: OpenBSD Project
+
+Support tier: `supported` for the declared validated capability(s). Directory existence alone does **not** grant support status; see manifest.
 
 ## Base interfaces
 

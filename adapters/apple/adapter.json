@@ -1,0 +1,42 @@
+{
+  "id": "adapter-apple-platform-docs",
+  "name": "Apple Platform Vendor Reference Adapter",
+  "ontology": {
+    "type": "cloud_platform_vendor",
+    "platform_vendor": "vendor_platform",
+    "platform_name": "Apple Platform Ecosystem",
+    "vendor_name": "Apple Inc."
+  },
+  "support_tier": "unsupported",
+  "status": "UNIMPLEMENTED",
+  "description": "Placeholder-only vendor reference adapter for Apple platform mappings. The adapter directory alone does NOT grant supported status; this manifest declares the adapter UNIMPLEMENTED with no validated capability mappings.",
+  "primary_platforms": ["apple-platform-ecosystem"],
+  "primary_vendors": ["apple-inc"],
+  "declared_capabilities": [
+    {
+      "id": "cap-apple-reference-notes-only",
+      "name": "Apple vendor reference storage",
+      "operation": "references.storage.notes",
+      "mode": "documentation_only",
+      "interface_type": "base_system_file",
+      "support_tier": "unsupported",
+      "status": "UNIMPLEMENTED",
+      "description": "Stores documentation notes for Apple platform references. No read-only diagnostic, no mutation, no validated operational mapping.",
+      "sources": [
+        "adapters/apple/README.md",
+        "references/apple/README.md"
+      ],
+      "evidence": {
+        "type": "unit_test",
+        "references": [
+          "tests/test_validation_contract.py",
+          "tests/test_repository_artifacts.py"
+        ]
+      },
+      "evidence_notes": "Adapter is UNIMPLEMENTED. Repository artifact tests confirm existence only; no supported capability mapping is declared."
+    }
+  ],
+  "validated_capability_ids": [],
+  "last_verified": "2026-08-13",
+  "notes": "Placeholder-only adapter. Directory existence != supported status. Ambiguous taxonomy is a validation failure; ontology is explicitly declared to prevent ambiguity."
+}

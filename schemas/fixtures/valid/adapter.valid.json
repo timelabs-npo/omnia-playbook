@@ -1,0 +1,34 @@
+{
+  "id": "adapter.valid",
+  "name": "Example Valid Adapter",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "ExampleOS",
+    "vendor_name": "Example Vendor"
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "description": "Schema fixture example for a valid adapter manifest with declared ontology and at least one validated capability mapping.",
+  "primary_platforms": ["example-os"],
+  "primary_vendors": ["example-vendor"],
+  "declared_capabilities": [
+    {
+      "id": "cap-example-valid",
+      "name": "Example validated capability",
+      "operation": "example.inspect.v0",
+      "mode": "read_only",
+      "interface_type": "base_system_command",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "description": "Example validated adapter capability for fixture validation.",
+      "sources": ["schemas/adapter.schema.json"],
+      "evidence": {
+        "type": "schema_fixture",
+        "references": ["schemas/fixtures/valid/adapter.valid.json"]
+      }
+    }
+  ],
+  "validated_capability_ids": ["cap-example-valid"],
+  "last_verified": "2026-08-13"
+}

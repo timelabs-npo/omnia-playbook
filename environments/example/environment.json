@@ -1,7 +1,7 @@
 {
   "id": "example",
   "name": "Example Environment",
-  "description": "Template profile for local and CI validation only.",
-  "platforms": ["macos", "windows", "linux", "openwrt"],
-  "adapters": ["apple", "google-cloud", "azure", "openwrt", "macos", "windows"]
+  "description": "Template profile for local and CI validation only. Adapter support is determined by adapter manifest ontology and validated capability mappings, not directory presence alone.",
+  "platforms": ["macos", "windows", "linux-openwrt"],
+  "adapters": ["macos", "windows", "openwrt"]
 }
