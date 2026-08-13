@@ -45,7 +45,7 @@ require_paths() {
     schemas/tribunal_participant_claim.schema.json schemas/disagreement_resolution.schema.json
     environments/example environments/bluenikee environments/openbsd-sealed-brick
     scripts/validate.sh scripts/diagnose.sh scripts/report.sh scripts/export_runtime_bundle.py
-    reports/.gitkeep reports/trae-openbsd-sealed-brick.md reports/SEMANTIC_NEIGHBOURS_MATRIX.md reports/REUSE_DECISION_REGISTER.md reports/RECONCILIATION_MAIN_TRAE_CODEX_COPILOT.md
+    reports/.gitkeep reports/trae-openbsd-sealed-brick.md reports/SEMANTIC_NEIGHBOURS_MATRIX.md reports/REUSE_DECISION_REGISTER.md reports/RECONCILIATION_MAIN_TRAE_CODEX_COPILOT.md reports/BLUESHOES_REPRESENTATION_V0_HANDOFF.md
     references/apple references/google references/microsoft references/openbsd
     schemas/deterministic_decision_kernel.schema.json schemas/provider_capability.schema.json
     schemas/evidence_privacy_tier.schema.json schemas/openbsd_support_tier.schema.json schemas/tribunal_advisory_ceiling.schema.json
