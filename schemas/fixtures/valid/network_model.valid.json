@@ -1,0 +1,152 @@
+{
+  "schema_version": "omnia.network.v1",
+  "id": "net-model-example-001",
+  "version": "1.0.0",
+  "layer": "operational",
+  "operator_intents": [
+    {
+      "id": "oi-dns-explicit-001",
+      "name": "Explicit DNS resolver intent",
+      "desired_behavior": "All outbound DNS queries must use explicitly declared resolvers only.",
+      "business_requirements": [
+        "No reliance on unvetted third-party resolvers",
+        "Deterministic observable resolver state"
+      ],
+      "scope_refs": {
+        "policy_boundary_ids": ["pb-lan-egress-01"],
+        "flow_ids": ["flow-dns-recursive-01"]
+      }
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow-dns-recursive-01",
+      "name": "LAN recursive DNS to upstream",
+      "src": "lan-subnet",
+      "dst": "upstream-resolver",
+      "protocol": "udp/53",
+      "properties": {
+        "bandwidth_class": "low",
+        "latency_budget_ms": 50,
+        "reliability_slo_nines": 3.5
+      },
+      "path_refs": ["path-dns-upstream-01"],
+      "depends_on_flow_ids": [],
+      "policy_boundary_ids": ["pb-lan-egress-01"]
+    }
+  ],
+  "dependency_graph": {
+    "nodes": [
+      {
+        "id": "node-flow-01",
+        "node_type": "flow",
+        "refs": ["flow-dns-recursive-01"]
+      },
+      {
+        "id": "node-obs-01",
+        "node_type": "observation_point",
+        "refs": ["obs-point-dns-egress-01"]
+      },
+      {
+        "id": "node-int-01",
+        "node_type": "intervention_point",
+        "refs": ["int-point-resolver-swap-01"]
+      },
+      {
+        "id": "node-pb-01",
+        "node_type": "policy_boundary",
+        "refs": ["pb-lan-egress-01"]
+      }
+    ],
+    "edges": [
+      {
+        "from": "node-obs-01",
+        "to": "node-flow-01",
+        "relation": "observes"
+      },
+      {
+        "from": "node-int-01",
+        "to": "node-flow-01",
+        "relation": "can_intervene_on"
+      },
+      {
+        "from": "node-pb-01",
+        "to": "node-flow-01",
+        "relation": "enforces"
+      }
+    ]
+  },
+  "paths": [
+    {
+      "id": "path-dns-upstream-01",
+      "hops": [
+        {
+          "node": "lan-router",
+          "interface_ref": "lan-router:eth0",
+          "hop_type": "physical"
+        },
+        {
+          "node": "upstream-resolver",
+          "interface_ref": "upstream:53",
+          "hop_type": "service_endpoint"
+        }
+      ],
+      "logical_route_id": "route-dns-default-upstream"
+    }
+  ],
+  "policy_boundaries": [
+    {
+      "id": "pb-lan-egress-01",
+      "name": "LAN egress policy envelope",
+      "scope": "lan-to-internet-egress",
+      "enforcement_refs": ["pf:lan-egress-ruleset"],
+      "intervention_allowed_classes": ["passive_observe", "safe_active_probe", "bounded_reversible_mutation"]
+    }
+  ],
+  "observation_points": [
+    {
+      "id": "obs-point-dns-egress-01",
+      "name": "Egress DNS query observer",
+      "location_ref": "lan-router:egress-interface",
+      "validated_metrics": ["metric-dns-latency-p50", "metric-dns-resolution-count"],
+      "evidence_tier": "validated_mock",
+      "provenance_refs": ["schemas/fixtures/valid/network_model.valid.json"]
+    }
+  ],
+  "intervention_points": [
+    {
+      "id": "int-point-resolver-swap-01",
+      "name": "Temporary resolver swap point",
+      "location_ref": "lan-router:resolver-config",
+      "approved_mutation_classes": ["safe_active_probe", "bounded_reversible_mutation"],
+      "max_blast_radius_flows": 1,
+      "max_blast_radius_users": 10,
+      "requires_approval_ref": "approval-template-dns-resolver-swap",
+      "rollback_contract_ref": "rollback-restore-resolver-config",
+      "evidence_tier": "validated_mock"
+    }
+  ],
+  "evidence_snapshots": [
+    {
+      "id": "snap-before-dns-exp-001",
+      "snapshot_type": "configuration_state",
+      "timestamp_utc": "2026-08-13T00:00:00Z",
+      "referenced_flow_ids": ["flow-dns-recursive-01"],
+      "referenced_observation_point_ids": ["obs-point-dns-egress-01"],
+      "state_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "receipt_signed_jws_ref": "jws-snapshot-before-001",
+      "before_or_after": "before_mutation"
+    },
+    {
+      "id": "snap-after-dns-exp-001",
+      "snapshot_type": "configuration_state",
+      "timestamp_utc": "2026-08-13T00:05:00Z",
+      "referenced_flow_ids": ["flow-dns-recursive-01"],
+      "referenced_observation_point_ids": ["obs-point-dns-egress-01"],
+      "state_hash_sha256": "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210",
+      "receipt_signed_jws_ref": "jws-snapshot-after-001",
+      "before_or_after": "after_mutation"
+    }
+  ],
+  "causal_experiment_registry_refs": ["causal-exp-dns-001"]
+}

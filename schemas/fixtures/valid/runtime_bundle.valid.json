@@ -1,0 +1,355 @@
+{
+  "schema_version": "omnia.runtime.v1",
+  "generated_at_utc": "2026-08-13T00:00:00Z",
+  "source_commit": "abcdef1",
+  "canonical_digest_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "layer_inclusion": {
+    "normative": true,
+    "operational": true,
+    "explanatory_stripped": true
+  },
+  "registry": {
+    "invariant_ids": ["inv-example-001"],
+    "capability_ids": ["cap-example-dns-v0"],
+    "operation_ids": ["op-dns-read-resolvconf"],
+    "check_ids": ["chk-example-001"],
+    "adapter_ids": ["adapter-example-001"],
+    "environment_ids": ["env-example"],
+    "owner_intent_ids": ["owner-intent-example-001"],
+    "disagreement_resolution_ids": ["disagree-dns-example-001"],
+    "causal_experiment_ids": ["causal-exp-dns-001"],
+    "network_model_ids": ["net-model-example-001"],
+    "deterministic_procedure_ids": ["det-proc-inv-001"]
+  },
+  "capabilities": [
+    {
+      "id": "cap-example-dns-v0",
+      "version": "1.0.0",
+      "name": "Example DNS inspect capability",
+      "operation": "example.inspect.dns.v0",
+      "mode": "read_only",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "evidence_tier": "validated_mock",
+      "provenance_refs": [],
+      "observation_ids": ["obs-dns-resolvers"]
+    }
+  ],
+  "operations": [
+    {
+      "id": "op-dns-read-resolvconf",
+      "capability_id": "cap-example-dns-v0",
+      "adapter_id_hint": "adapter-example-001",
+      "command": "cat /etc/resolv.conf",
+      "timeout_seconds": 10,
+      "observation_schema_refs": ["obs-dns-resolvers"],
+      "requires": ["cat"]
+    }
+  ],
+  "adapters": [
+    {
+      "id": "adapter-example-001",
+      "version": "1.0.0",
+      "ontology": {
+        "type": "operating_system",
+        "platform_vendor": "operating_system_vendor",
+        "platform_name": "ExampleOS",
+        "vendor_name": "Example Vendor"
+      },
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "evidence_tier_highest": "validated_mock",
+      "primary_platforms": ["example-os"],
+      "primary_vendors": ["example-vendor"],
+      "authority_ceiling": {
+        "max_authority": "read_only_evidence",
+        "decides_truth": false,
+        "decides_policy": false,
+        "decides_remediation": false
+      },
+      "capability_ids": ["cap-example-dns-v0"]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "inv-example-001",
+      "version": "1.0.0",
+      "status": "validated_mock",
+      "severity": "high",
+      "runtime_host_independent": true,
+      "applicability": {
+        "target_platforms": ["macos", "linux"]
+      },
+      "preconditions": {
+        "unknown_behavior": {}
+      },
+      "required_observation_ids": ["obs-dns-resolvers"],
+      "required_capability_ids": ["cap-example-dns-v0"],
+      "decision_rule_id": "dr-inv-001",
+      "decision_rule": {},
+      "outcomes": {
+        "pass_semantics": "Invariant holds.",
+        "fail_semantics": "Invariant fails.",
+        "unknown_semantics": "Invariant unknown.",
+        "error_semantics": "Invariant error."
+      },
+      "evidence_requirements": {
+        "classes_allowed": ["schema_fixture"],
+        "min_tier_for_pass": "validated_mock"
+      },
+      "remediation_ref": "playbooks/recovery/example.md",
+      "dependency_ids": [],
+      "check_ref_ids": ["chk-example-001"],
+      "authority_ceiling": {
+        "max_authority": "advisory_remediation_only",
+        "no_promotion_reasoning": true,
+        "forbidden_policy_domains": ["policy_widening"]
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "chk-example-001",
+      "version": "1.0.0",
+      "status": "validated_mock",
+      "invariant_ref": "inv-example-001",
+      "target_platform": "linux",
+      "runtime_host_independent": true,
+      "authority_ceiling": {
+        "max_authority": "read_only_evidence"
+      },
+      "capability_ref": {
+        "capability_id": "cap-example-dns-v0",
+        "operation_id": "op-dns-read-resolvconf",
+        "adapter_ref_hint": "adapter-example-001"
+      },
+      "evidence_tier_claim": "validated_mock",
+      "evidence_tier_support": {
+        "declared_only": true,
+        "implemented": true,
+        "validated_mock": true,
+        "validated_live_target": false
+      },
+      "command": "cat /etc/resolv.conf",
+      "requires": ["cat"],
+      "timeout_seconds": 10,
+      "observation_ids": ["obs-dns-resolvers"],
+      "unknown_semantics": {
+        "when_required_observation_missing": "UNKNOWN",
+        "when_command_missing": "ERROR"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_contradictory_stdout": "ERROR",
+        "on_unauthorized_subprocess": "ERROR"
+      },
+      "remediation_ref": "playbooks/recovery/example.md",
+      "provenance_refs": {}
+    }
+  ],
+  "environments": [
+    {
+      "id": "env-example",
+      "version": "1.0.0",
+      "runtime_host": {
+        "platform": "linux",
+        "vendor": "example-vendor",
+        "adapter_id_hint": "adapter-linux-example",
+        "host_substrate_only": true
+      },
+      "estate_targets": [
+        {
+          "target_id": "target-router-01",
+          "platform": "openwrt",
+          "vendor": "openwrt-project",
+          "adapter_id_hint": "adapter-openwrt-example",
+          "capabilities_required": ["cap-example-dns-v0"]
+        }
+      ]
+    }
+  ],
+  "owner_intents": [
+    {
+      "id": "owner-intent-example-001",
+      "version": "1.0.0",
+      "owner_id": "owner-example-org",
+      "named_service_ids": ["svc-dns-resolution"],
+      "named_capability_ids": ["cap-dns-inspect-v0"],
+      "separation_of_concerns": {
+        "invariant_not_auto_service": true,
+        "service_not_auto_policy": true,
+        "observation_not_auto_invariant": true
+      }
+    }
+  ],
+  "disagreement_resolutions": [
+    {
+      "id": "disagree-dns-example-001",
+      "decision_class": "dns_explicit_resolvers",
+      "disagreement_allowed": true,
+      "resolution_refs": {},
+      "fail_closed": true,
+      "action_under_unresolved": "LAST_KNOWN_GOOD_RESTORE_ONLY",
+      "convergence": {
+        "sufficient_convergence_type": "deterministic_omnia_unanimous",
+        "required_evidence_tier": "validated_mock",
+        "participant_claims_must_share_evidence_refs": true,
+        "must_recompute_after_measurement": true
+      },
+      "majority_vote_alone_must_not_override": true
+    }
+  ],
+  "causal_experiments": [
+    {
+      "id": "causal-exp-dns-001",
+      "hypothesis_ids": ["hyp-a", "hyp-b"],
+      "target_flow_ids": ["flow-dns-recursive"],
+      "baseline_metric_ids": ["metric-dns-latency-p50"],
+      "authority_required_level": "safe_active_probe",
+      "mutation_id": "mut-dns-resolver-swap-temp",
+      "blast_radius_max_flows": 1,
+      "time_bound_seconds": 300,
+      "rollback_idempotent_command_ref": "rb-cmd-restore-resolvconf",
+      "commit_condition_id": "cc-dns-all-hypotheses-resolved",
+      "fail_closed_condition_id": "fc-dns-anomaly-rollback",
+      "evidence_receipt_contract_ref": "erc-dns-exp-001",
+      "evidence_method_hierarchy": [
+        "passive_observational_evidence_no_modification",
+        "safe_active_probes_minimal_risk",
+        "bounded_fully_reversible_mutations_blast_radius_contained",
+        "controlled_causal_observations_during_approved_experiment",
+        "formal_rollback_or_commit_only_upon_completion_or_failure"
+      ],
+      "network_model_refs": {
+        "operator_intent_ref_ids": [],
+        "flow_ref_ids": [],
+        "dependency_graph_ref": "dep-graph-001",
+        "path_ref_ids": [],
+        "policy_boundary_ref_ids": [],
+        "observation_point_ref_ids": [],
+        "intervention_point_ref_ids": [],
+        "before_evidence_snapshot_ref_id": "snap-before-001",
+        "after_evidence_snapshot_ref_id": "snap-after-001"
+      }
+    }
+  ],
+  "network_models": [
+    {
+      "id": "net-model-example-001",
+      "operator_intent_ids": ["oi-dns-explicit"],
+      "flow_ids": ["flow-dns-recursive"],
+      "dependency_graph_id": "dep-graph-001",
+      "path_ids": ["path-dns-upstream-01"],
+      "policy_boundary_ids": ["pb-lan-egress"],
+      "observation_point_ids": ["obs-point-dns-egress"],
+      "intervention_point_ids": ["int-point-resolver-swap"],
+      "snapshot_before_ids": ["snap-before-001"],
+      "snapshot_after_ids": ["snap-after-001"],
+      "causal_experiment_ref_ids": ["causal-exp-dns-001"]
+    }
+  ],
+  "tribunal_participant_claim_model": {
+    "claim_required_fields": ["claim_id", "result", "evidence_refs"],
+    "participant_identity_independent_fields": ["result", "confidence_numeric"],
+    "no_specific_vendor_lock": true,
+    "no_specific_model_lock": true,
+    "deterministic_omnia_semantics_owner_is_omnia_not_participant": true,
+    "result_must_be_same_across_runtimes_for_deterministic": true
+  },
+  "deterministic_procedure_exports": [
+    {
+      "id": "det-proc-inv-001",
+      "name": "Invariant inv-example-001 decision rule",
+      "decision_class_ref": "dns_explicit_resolvers",
+      "invariant_ref": "inv-example-001",
+      "format": "omnia_deterministic_v1_json",
+      "encoding": "utf-8",
+      "observations_input_refs": ["obs-dns-resolvers"],
+      "logic_rules": {},
+      "output_result_schema": {
+        "result_enum": ["PASS", "FAIL", "UNKNOWN", "ERROR", "INAPPLICABLE"],
+        "result_refs_required": ["evidence_ref_ids", "justification_refs"]
+      },
+      "portable_across_runtimes_must_match_ref_implementation": true
+    }
+  ],
+  "multi_interpreter_conformance_refs": {
+    "scenario_a_unanimous": "ref/scenario_a_unanimous.json",
+    "scenario_b_contradicts_deterministic": "ref/scenario_b_contradicts.json",
+    "scenario_c_disagree_missing_evidence": "ref/scenario_c_missing.json",
+    "scenario_d_contradictory_evidence": "ref/scenario_d_contradictory.json",
+    "scenario_e_majority_wrong_one_identifies": "ref/scenario_e_majority_wrong.json",
+    "scenario_f_resolved_by_one_bounded_obs": "ref/scenario_f_resolved.json",
+    "scenario_g_unresolved_fail_closed": "ref/scenario_g_unresolved.json",
+    "majority_count_alone_must_not_override": true
+  },
+  "indexes": {
+    "by_target_platform_to_invariant_ids": {
+      "linux": ["inv-example-001"]
+    },
+    "by_target_vendor_to_invariant_ids": {
+      "example-vendor": ["inv-example-001"]
+    },
+    "by_invariant_to_required_capability_ids": {
+      "inv-example-001": ["cap-example-dns-v0"]
+    },
+    "by_invariant_to_check_ids": {
+      "inv-example-001": ["chk-example-001"]
+    },
+    "by_capability_id_to_operation_ids": {
+      "cap-example-dns-v0": ["op-dns-read-resolvconf"]
+    },
+    "by_evidence_tier_to_check_ids": {
+      "validated_mock": ["chk-example-001"]
+    },
+    "closure_refs": {
+      "inv-example-001": {
+        "invariant_ids": ["inv-example-001"],
+        "capability_ids": ["cap-example-dns-v0"],
+        "check_ids": ["chk-example-001"],
+        "adapter_ids": ["adapter-example-001"],
+        "operation_ids": ["op-dns-read-resolvconf"],
+        "environment_ids": ["env-example"],
+        "size_bytes_approx": 1024
+      }
+    }
+  },
+  "metrics": {
+    "counts": {
+      "invariants_runtime_addressable": 1,
+      "capabilities": 1,
+      "operations": 1,
+      "adapters_total": 1,
+      "adapters_by_evidence_tier": {
+        "validated_mock": 1
+      },
+      "checks_total": 1
+    },
+    "sizes": {
+      "canonical_bundle_bytes": 8192,
+      "normative_core_bytes_approx": 4096,
+      "largest_rule_closure_bytes": 2048,
+      "median_rule_closure_bytes": 1024,
+      "representative_task_closure_bytes": {
+        "dns-check": 1024
+      }
+    },
+    "closures": {
+      "largest_single_rule_dependency_closure_size": 3,
+      "median_rule_dependency_closure_size": 1,
+      "unresolved_semantic_reference_count": 0
+    }
+  },
+  "execution_contract": {
+    "tribunal_prompt_only": "Omnia tribunal evaluates invariants using declared decision rules and provided evidence only. Never invents policy, never elevates authority. Missing required evidence produces UNKNOWN. Return typed result plus evidence references.",
+    "never_invent_policy": true,
+    "missing_required_evidence_is_unknown": true,
+    "use_declared_decision_rules_only": true,
+    "never_increase_authority": true,
+    "return_typed_result_plus_evidence_refs": true,
+    "model_swappability": {
+      "no_model_name_dependency": true,
+      "no_vendor_lock": true
+    }
+  }
+}

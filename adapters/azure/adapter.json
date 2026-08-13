@@ -1,39 +1,82 @@
 {
-  "id": "adapter-azure-reference",
-  "name": "Azure Vendor Reference Adapter",
+  "id": "adapter-azure-vendor",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "Microsoft Azure placeholder reference adapter (UNIMPLEMENTED)",
   "ontology": {
     "type": "cloud_vendor",
     "platform_vendor": "cloud_vendor",
     "platform_name": "Microsoft Azure",
-    "vendor_name": "Microsoft Corporation"
+    "vendor_name": "Microsoft Corporation",
+    "interface_type": "base_system_file",
+    "adapter_is_evidence_provider_only": true
   },
   "support_tier": "unsupported",
-  "status": "UNIMPLEMENTED",
-  "description": "Placeholder-only Azure vendor reference adapter. Directory name alone does NOT make Azure supported; this manifest declares the adapter UNIMPLEMENTED and explicitly labels ontology type to prevent ambiguous taxonomy validation failures.",
-  "primary_platforms": ["azure"],
-  "primary_vendors": ["microsoft-corporation"],
+  "status": "declared_only",
+  "description": "Placeholder-only Azure reference adapter. UNIMPLEMENTED operational mappings. Explicitly declared ontology and tier to avoid support elevation via directory-name folklore.",
+  "primary_platforms": ["azure", "azure-entra", "azure-virtual-network"],
+  "primary_vendors": ["microsoft-corp"],
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-azure-mutation",
+      "action": "az create|update|delete|role assignment|policy assignment or tenant/subscription mutation",
+      "reason": "Adapter is documentation/UNIMPLEMENTED only; no mutation authority granted."
+    }
+  ],
   "declared_capabilities": [
     {
       "id": "cap-azure-reference-notes-only",
-      "name": "Azure reference note storage",
-      "operation": "references.storage.notes",
+      "version": "1.0.0",
+      "name": "Azure reference storage (documentation only)",
+      "operation": "op-azure-reference-storage-notes",
       "mode": "documentation_only",
-      "interface_type": "base_system_file",
       "support_tier": "unsupported",
-      "status": "UNIMPLEMENTED",
+      "status": "declared_only",
+      "evidence_tier": "declared_only",
       "description": "Documentation-only adapter for Azure references with no validated diagnostic or operational mappings.",
       "sources": [
         "adapters/azure/README.md",
         "references/microsoft/README.md"
       ],
-      "evidence": {
-        "type": "unit_test",
-        "references": [
-          "tests/test_validation_contract.py",
-          "tests/test_repository_artifacts.py"
-        ]
+      "provenance_refs": [
+        "tests/test_validation_contract.py",
+        "tests/test_repository_artifacts.py"
+      ],
+      "observation_contract": {
+        "observations": [],
+        "output_schema": {
+          "format": "none_documentation_only",
+          "encoding": "utf-8",
+          "top_level_keys": []
+        }
       },
-      "evidence_notes": "UNIMPLEMENTED adapter; repo-level structure tests confirm existence only."
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      }
     }
   ],
   "validated_capability_ids": [],

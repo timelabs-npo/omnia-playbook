@@ -1,0 +1,86 @@
+{
+  "id": "causal-invalid-001",
+  "version": "1.0.0",
+  "status": "proposed",
+  "layer": "operational",
+  "title": "Invalid causal experiment fixture - missing mandatory fields",
+  "scope": {"target_platforms": ["openbsd"], "target_classes": [], "policy_boundary_ids": []},
+  "competing_hypotheses": [],
+  "target_flows": [],
+  "baseline_metrics": {
+    "pre_experiment_observation_point_ids": [],
+    "pre_experiment_snapshot_ref": "",
+    "required_metric_ids": [],
+    "baseline_window_seconds": 0
+  },
+  "authority_required": {
+    "least_privilege_level": "safe_active_probe",
+    "mutation_ceiling": "",
+    "never_invent_policy": false,
+    "approval_ref": "",
+    "unvetted_mutation_prohibited": false
+  },
+  "mutation_spec": {
+    "temporary_mutation_id": "",
+    "mutation_class": "safe_active_probe",
+    "applies_to_intervention_point_ids": [],
+    "applies_to_flow_ids": [],
+    "rollback_idempotent_command": "",
+    "mutation_command": ""
+  },
+  "blast_radius": {
+    "max_flows_impacted": -1,
+    "max_nodes_impacted": 0,
+    "max_users_impacted": 0,
+    "policy_boundary_envelope": []
+  },
+  "time_bound_seconds": -1,
+  "rollback_procedure_ref": {
+    "id": "",
+    "standardized_rollback_ref": "",
+    "proven_tested_ref": "",
+    "all_failure_paths_covered": false
+  },
+  "hypothesis_validators": [],
+  "commit_condition": {
+    "id": "",
+    "predefined_success_criteria_ids": [],
+    "triggers_permanent_application_only_if": "",
+    "default_without_commit_is_rollback": false
+  },
+  "fail_closed_condition": {
+    "id": "",
+    "triggers_immediate_rollback_on_anomalous_impact": false,
+    "anomaly_metric_ids": [],
+    "service_restoration_required": false
+  },
+  "evidence_receipt_contract": {
+    "id": "",
+    "records_all_actions": false,
+    "records_all_observations": false,
+    "records_outcomes": false,
+    "cryptographic_verification": {"algorithm": "JWS", "requires_signed_receipt": false},
+    "audit_ref": "",
+    "post_experiment_analysis_refs": []
+  },
+  "evidence_method_hierarchy_used": {
+    "hierarchy_order": [
+      "safe_active_probes_minimal_risk",
+      "passive_observational_evidence_no_modification"
+    ],
+    "tribunal_must_propose_from_registered_only": false,
+    "must_attempt_passive_first": false
+  },
+  "network_model_refs_required": {
+    "operator_intent_ref_ids": [],
+    "flow_ref_ids": [],
+    "dependency_graph_ref": "",
+    "path_ref_ids": [],
+    "policy_boundary_ref_ids": [],
+    "observation_point_ref_ids": [],
+    "intervention_point_ref_ids": [],
+    "before_evidence_snapshot_ref_id": "",
+    "after_evidence_snapshot_ref_id": ""
+  },
+  "dependency_ids": []
+}

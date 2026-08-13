@@ -1,5 +1,77 @@
 {
   "id": "x",
-  "name": "y",
-  "description": "z"
+  "name": "B",
+  "version": "1",
+  "layer": "operational",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "x",
+    "vendor_name": "xx"
+  },
+  "support_tier": "supported",
+  "status": "VALIDATED",
+  "evidence_tier_claims": {
+    "declared_only": false,
+    "implemented": true,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "f1",
+      "action": "abcde",
+      "reason": "shortstr"
+    }
+  ],
+  "description": "abcdefghijk",
+  "primary_platforms": ["ab"],
+  "primary_vendors": ["cd"],
+  "declared_capabilities": [
+    {
+      "id": "cap1",
+      "name": "capa",
+      "operation": "oper1",
+      "mode": "read_only",
+      "interface_type": "base_system_command",
+      "support_tier": "supported",
+      "status": "VALIDATED",
+      "evidence_tier": "declared_only",
+      "observation_contract": {
+        "observations": [],
+        "output_schema": {
+          "format": "line_based_kv"
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "ERROR"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      },
+      "description": "abcdefghijk",
+      "sources": ["ab"],
+      "evidence": {
+        "type": "schema_fixture",
+        "references": ["ab"]
+      }
+    }
+  ],
+  "validated_capability_ids": [],
+  "last_verified": "2026-08-13"
 }

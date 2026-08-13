@@ -1,9 +1,27 @@
+---
+omnia_quarantine: "blueshoes orchestration plan — NOT part of the Omnia v1 normative or trusted semantic closure"
+omnia_trusted_surface_include: false
+omnia_category: "external_orchestration_operator_documentation"
+justification: |
+  Blueshoes is an operator-facing live-testing orchestration harness, NOT a
+  runtime-level semantic primitive of Omnia v1. Omnia defines contracts
+  (invariants, checks, adapter capabilities, owner operational intent,
+  disagreement resolution, causal experiment registries, portable
+  deterministic decision procedures). Blueshoes is merely ONE possible
+  downstream ritual that an operator may choose to run, on a specific
+  workstation, to exercise those contracts through repeated advisory worker
+  rounds. Blueshoes decisions are evidence, NOT law. A Tribunal Runtime MUST
+  NOT infer any additional semantic, default, or policy from the presence
+  of this file or of scripts/blueshoes_live_test_runner.sh.
+---
+
 # blueshoes live-testing runner (openbsd sealed brick)
 
 Read-only, bounded, append-only live-testing orchestration plan for blueshoes
 sessions on this repository. The runner itself is
 `scripts/blueshoes_live_test_runner.sh`. This document is the operator-facing
-runbook.
+runbook. It is quarantined from the Omnia v1 normative trusted surface (see
+YAML frontmatter above).
 
 ## Operator hard contract (no exceptions)
 

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/owner_operational_intent.schema.json",
+  "title": "Omnia v1 Owner/Operator Operational Intents (declared pre-failure; no human-ask-during-incident for these)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "layer",
+    "owner_id",
+    "declared_before_failure",
+    "named_services",
+    "named_capabilities",
+    "separation_of_concerns",
+    "source_refs"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.owner_intent.v1" },
+    "id": { "type": "string", "minLength": 3 },
+    "version": { "type": "string" },
+    "layer": { "type": "string", "const": "normative" },
+    "owner_id": { "type": "string" },
+    "declared_before_failure": { "type": "boolean", "const": true },
+    "named_services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "service_class", "description", "required", "expectation_refs", "applies_to_target_ids"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "service_class": { "type": "string", "minLength": 3 },
+          "description": { "type": "string" },
+          "required": { "type": "boolean" },
+          "expectation_refs": { "type": "array", "items": { "type": "string" } },
+          "applies_to_target_ids": { "type": "array", "items": { "type": "string" } },
+          "invariant_refs_required_if_fail": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "named_capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "capability_class", "description", "required", "supporting_service_ids"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "capability_class": { "type": "string", "minLength": 3 },
+          "description": { "type": "string" },
+          "required": { "type": "boolean" },
+          "supporting_service_ids": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "separation_of_concerns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["invariant_not_auto_service", "service_not_auto_policy", "observation_not_auto_invariant"],
+      "properties": {
+        "invariant_not_auto_service": { "type": "boolean", "const": true },
+        "service_not_auto_policy": { "type": "boolean", "const": true },
+        "observation_not_auto_invariant": { "type": "boolean", "const": true }
+      }
+    },
+    "source_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normative", "operational", "explanatory"],
+      "properties": {
+        "normative": { "type": "array", "items": { "type": "string" } },
+        "operational": { "type": "array", "items": { "type": "string" } },
+        "explanatory": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}

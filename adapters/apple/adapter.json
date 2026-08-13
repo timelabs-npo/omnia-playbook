@@ -1,42 +1,85 @@
 {
-  "id": "adapter-apple-platform-docs",
-  "name": "Apple Platform Vendor Reference Adapter",
+  "id": "adapter-apple-vendor",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "Apple Platform Ecosystem placeholder reference adapter (UNIMPLEMENTED)",
   "ontology": {
-    "type": "cloud_platform_vendor",
+    "type": "vendor_platform",
     "platform_vendor": "vendor_platform",
     "platform_name": "Apple Platform Ecosystem",
-    "vendor_name": "Apple Inc."
+    "vendor_name": "Apple Inc.",
+    "interface_type": "base_system_file",
+    "adapter_is_evidence_provider_only": true
   },
   "support_tier": "unsupported",
-  "status": "UNIMPLEMENTED",
-  "description": "Placeholder-only vendor reference adapter for Apple platform mappings. The adapter directory alone does NOT grant supported status; this manifest declares the adapter UNIMPLEMENTED with no validated capability mappings.",
-  "primary_platforms": ["apple-platform-ecosystem"],
+  "status": "declared_only",
+  "description": "Placeholder-only vendor reference adapter. UNIMPLEMENTED operational mappings. Explicitly declared as such so the adapter never elevates support via directory-name folklore.",
+  "primary_platforms": ["apple-platform-ecosystem", "ios", "ipados", "tvos", "watchos"],
   "primary_vendors": ["apple-inc"],
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-apple-mutation",
+      "action": "Any mutation to Apple Platform account, MDM, iCloud service, device, or developer-team state",
+      "reason": "Adapter is documentation/UNIMPLEMENTED only; no mutation or authority granted."
+    }
+  ],
   "declared_capabilities": [
     {
       "id": "cap-apple-reference-notes-only",
-      "name": "Apple vendor reference storage",
-      "operation": "references.storage.notes",
+      "version": "1.0.0",
+      "name": "Apple vendor reference storage (documentation only)",
+      "operation": "op-apple-reference-storage-notes",
       "mode": "documentation_only",
-      "interface_type": "base_system_file",
       "support_tier": "unsupported",
-      "status": "UNIMPLEMENTED",
+      "status": "declared_only",
+      "evidence_tier": "declared_only",
       "description": "Stores documentation notes for Apple platform references. No read-only diagnostic, no mutation, no validated operational mapping.",
       "sources": [
         "adapters/apple/README.md",
         "references/apple/README.md"
       ],
-      "evidence": {
-        "type": "unit_test",
-        "references": [
-          "tests/test_validation_contract.py",
-          "tests/test_repository_artifacts.py"
-        ]
+      "provenance_refs": [
+        "tests/test_validation_contract.py",
+        "tests/test_repository_artifacts.py"
+      ],
+      "observation_contract": {
+        "observations": [],
+        "output_schema": {
+          "format": "none_documentation_only",
+          "encoding": "utf-8",
+          "top_level_keys": []
+        }
       },
-      "evidence_notes": "Adapter is UNIMPLEMENTED. Repository artifact tests confirm existence only; no supported capability mapping is declared."
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      }
     }
   ],
   "validated_capability_ids": [],
   "last_verified": "2026-08-13",
-  "notes": "Placeholder-only adapter. Directory existence != supported status. Ambiguous taxonomy is a validation failure; ontology is explicitly declared to prevent ambiguity."
+  "notes": "Placeholder-only adapter. Directory existence != supported status. Ambiguous taxonomy is a validation failure; ontology is explicitly declared."
 }

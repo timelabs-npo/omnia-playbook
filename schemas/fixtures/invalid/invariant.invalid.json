@@ -1,10 +1,11 @@
 {
-  "id": "inv-dns-invalid",
-  "title": "Broken invariant fixture",
-  "description": "Missing required fields and invalid severity",
-  "rationale": "Used to test schema rejection",
-  "scope": "developer-workstation",
-  "severity": "urgent",
-  "platforms": [],
-  "expected_state": {}
+  "id": "inv-invalid-001",
+  "version": "1.0.0",
+  "status": "INVALID_STATUS_VALUE",
+  "layer": "normative",
+  "title": "Broken Invariant - Invalid status enum, wrong types, missing many required fields",
+  "description": "This fixture intentionally fails Omnia v1 invariant.schema.json validation in multiple ways: 1) status uses invalid enum (not proposed/implemented/validated_mock/validated_live_target/deprecated), 2) runtime_host_independent is string not boolean, 3) severity uses invalid enum value, 4) MANY required properties are missing entirely: scope, applicability, preconditions, required_observations, required_capabilities, decision_rule, outcomes, remediation_refs, source_refs, authority_ceiling, forbidden_actions, dependency_ids, last_verified.",
+  "severity": "invalid_severity_xxx",
+  "runtime_host_independent": "not_a_boolean",
+  "fake_extra_field_should_fail_additionalProperties": "because schema has additionalProperties:false"
 }

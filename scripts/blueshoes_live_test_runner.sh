@@ -1,4 +1,21 @@
 #!/usr/bin/env bash
+# =============================================================================
+# OMNIA v1 TRUSTED-SURFACE QUARANTINE (THIS SCRIPT IS EXPLICITLY OUTSIDE IT)
+# -----------------------------------------------------------------------------
+# omnia_trusted_surface_include: false
+# omnia_quarantine:        "blueshoes orchestration shell harness"
+# omnia_category:          "external_orchestration_operator_tool"
+# justification: |
+#   This script is a convenience orchestrator for the operator-side Blueshoes
+#   live-testing ritual. It is NOT normative Omnia v1 semantics, NOT a
+#   Tribunal Runtime primitive, NOT part of the deterministic portable
+#   procedure contract, and NOT referenced from any adapter, check,
+#   invariant, environment, owner operational intent, disagreement
+#   resolution, causal experiment registry, or runtime bundle export.
+#   Tribunal participants MUST NOT infer any rule, default, or policy from
+#   the presence or contents of this script. Omnia defines the contracts;
+#   Blueshoes is ONE downstream operator ritual that may exercise them.
+# =============================================================================
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/causal_experiment.schema.json",
+  "title": "Omnia v1 Bounded Causal Experiment (flow-based, live-network experimentation)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "status",
+    "layer",
+    "title",
+    "scope",
+    "competing_hypotheses",
+    "target_flows",
+    "baseline_metrics",
+    "authority_required",
+    "mutation_spec",
+    "blast_radius",
+    "time_bound_seconds",
+    "rollback_procedure_ref",
+    "hypothesis_validators",
+    "commit_condition",
+    "fail_closed_condition",
+    "evidence_receipt_contract",
+    "evidence_method_hierarchy_used",
+    "network_model_refs_required",
+    "dependency_ids"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 5 },
+    "version": { "type": "string" },
+    "status": { "type": "string", "enum": ["proposed", "implemented", "validated_mock", "validated_live_target", "deprecated"] },
+    "layer": { "type": "string", "const": "operational" },
+    "title": { "type": "string", "minLength": 6 },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_platforms", "target_classes", "policy_boundary_ids"],
+      "properties": {
+        "target_platforms": { "type": "array", "items": { "type": "string" } },
+        "target_classes": { "type": "array", "items": { "type": "string" } },
+        "policy_boundary_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "competing_hypotheses": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement", "predicts_observations_confirming"],
+        "properties": {
+          "id": { "type": "string" },
+          "statement": { "type": "string" },
+          "predicts_observations_confirming": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "target_flows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["flow_id", "expected_properties", "intervention_point_ref"],
+        "properties": {
+          "flow_id": { "type": "string" },
+          "expected_properties": { "type": "object" },
+          "intervention_point_ref": { "type": "string" }
+        }
+      }
+    },
+    "baseline_metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pre_experiment_observation_point_ids",
+        "pre_experiment_snapshot_ref",
+        "required_metric_ids",
+        "baseline_window_seconds"
+      ],
+      "properties": {
+        "pre_experiment_observation_point_ids": { "type": "array", "items": { "type": "string" } },
+        "pre_experiment_snapshot_ref": { "type": "string" },
+        "required_metric_ids": { "type": "array", "items": { "type": "string" } },
+        "baseline_window_seconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "authority_required": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "least_privilege_level",
+        "mutation_ceiling",
+        "never_invent_policy",
+        "approval_ref",
+        "unvetted_mutation_prohibited"
+      ],
+      "properties": {
+        "least_privilege_level": { "type": "string", "enum": ["safe_active_probe", "bounded_reversible_mutation"] },
+        "mutation_ceiling": { "type": "string" },
+        "never_invent_policy": { "type": "boolean", "const": true },
+        "approval_ref": { "type": "string" },
+        "unvetted_mutation_prohibited": { "type": "boolean", "const": true }
+      }
+    },
+    "mutation_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "temporary_mutation_id",
+        "mutation_class",
+        "applies_to_intervention_point_ids",
+        "applies_to_flow_ids",
+        "rollback_idempotent_command",
+        "mutation_command"
+      ],
+      "properties": {
+        "temporary_mutation_id": { "type": "string" },
+        "mutation_class": { "type": "string", "enum": ["safe_active_probe", "bounded_reversible_mutation"] },
+        "applies_to_intervention_point_ids": { "type": "array", "items": { "type": "string" } },
+        "applies_to_flow_ids": { "type": "array", "items": { "type": "string" } },
+        "rollback_idempotent_command": { "type": "string" },
+        "mutation_command": { "type": "string" }
+      }
+    },
+    "blast_radius": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_flows_impacted",
+        "max_nodes_impacted",
+        "max_users_impacted",
+        "policy_boundary_envelope"
+      ],
+      "properties": {
+        "max_flows_impacted": { "type": "integer", "minimum": 0 },
+        "max_nodes_impacted": { "type": "integer", "minimum": 0 },
+        "max_users_impacted": { "type": "integer", "minimum": 0 },
+        "policy_boundary_envelope": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "time_bound_seconds": { "type": "integer", "minimum": 1 },
+    "rollback_procedure_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "standardized_rollback_ref", "proven_tested_ref", "all_failure_paths_covered"],
+      "properties": {
+        "id": { "type": "string" },
+        "standardized_rollback_ref": { "type": "string" },
+        "proven_tested_ref": { "type": "string" },
+        "all_failure_paths_covered": { "type": "boolean", "const": true }
+      }
+    },
+    "hypothesis_validators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["hypothesis_id", "expected_observation_refs", "deterministic_validator_rule_id"],
+        "properties": {
+          "hypothesis_id": { "type": "string" },
+          "expected_observation_refs": { "type": "array", "items": { "type": "string" } },
+          "deterministic_validator_rule_id": { "type": "string" }
+        }
+      }
+    },
+    "commit_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "predefined_success_criteria_ids",
+        "triggers_permanent_application_only_if",
+        "default_without_commit_is_rollback"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "predefined_success_criteria_ids": { "type": "array", "items": { "type": "string" } },
+        "triggers_permanent_application_only_if": { "type": "string", "enum": ["all_success_criteria_met_and_hypothesis_resolved"] },
+        "default_without_commit_is_rollback": { "type": "boolean", "const": true }
+      }
+    },
+    "fail_closed_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "triggers_immediate_rollback_on_anomalous_impact",
+        "anomaly_metric_ids",
+        "service_restoration_required"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "triggers_immediate_rollback_on_anomalous_impact": { "type": "boolean", "const": true },
+        "anomaly_metric_ids": { "type": "array", "items": { "type": "string" } },
+        "service_restoration_required": { "type": "boolean", "const": true }
+      }
+    },
+    "evidence_receipt_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "records_all_actions",
+        "records_all_observations",
+        "records_outcomes",
+        "cryptographic_verification",
+        "audit_ref",
+        "post_experiment_analysis_refs"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "records_all_actions": { "type": "boolean", "const": true },
+        "records_all_observations": { "type": "boolean", "const": true },
+        "records_outcomes": { "type": "boolean", "const": true },
+        "cryptographic_verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "requires_signed_receipt"],
+          "properties": {
+            "algorithm": { "type": "string", "enum": ["JWS", "COSE", "detached_sha256_signed"] },
+            "requires_signed_receipt": { "type": "boolean", "const": true }
+          }
+        },
+        "audit_ref": { "type": "string" },
+        "post_experiment_analysis_refs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evidence_method_hierarchy_used": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hierarchy_order", "tribunal_must_propose_from_registered_only", "must_attempt_passive_first"],
+      "properties": {
+        "hierarchy_order": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "enum": [
+              "passive_observational_evidence_no_modification",
+              "safe_active_probes_minimal_risk",
+              "bounded_fully_reversible_mutations_blast_radius_contained",
+              "controlled_causal_observations_during_approved_experiment",
+              "formal_rollback_or_commit_only_upon_completion_or_failure"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "tribunal_must_propose_from_registered_only": { "type": "boolean", "const": true },
+        "must_attempt_passive_first": { "type": "boolean", "const": true }
+      }
+    },
+    "network_model_refs_required": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operator_intent_ref_ids",
+        "flow_ref_ids",
+        "dependency_graph_ref",
+        "path_ref_ids",
+        "policy_boundary_ref_ids",
+        "observation_point_ref_ids",
+        "intervention_point_ref_ids",
+        "before_evidence_snapshot_ref_id",
+        "after_evidence_snapshot_ref_id"
+      ],
+      "properties": {
+        "operator_intent_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "flow_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "dependency_graph_ref": { "type": "string" },
+        "path_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "policy_boundary_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "observation_point_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "intervention_point_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "before_evidence_snapshot_ref_id": { "type": "string" },
+        "after_evidence_snapshot_ref_id": { "type": "string" }
+      }
+    },
+    "dependency_ids": { "type": "array", "items": { "type": "string" } },
+    "remediation_refs": {
+      "type": "object",
+      "properties": {
+        "playbook": { "type": "string" },
+        "references": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "source_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normative", "operational", "explanatory"],
+      "properties": {
+        "normative": { "type": "array", "items": { "type": "string" } },
+        "operational": { "type": "array", "items": { "type": "string" } },
+        "explanatory": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "explanatory_notes": { "type": "string" }
+  }
+}

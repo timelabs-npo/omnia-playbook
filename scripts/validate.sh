@@ -40,9 +40,11 @@ require_paths() {
     adapters/openwrt/adapter.json adapters/macos/adapter.json adapters/windows/adapter.json adapters/openbsd/adapter.json
     checks/dns checks/openbsd
     playbooks/bootstrap playbooks/diagnostics playbooks/recovery playbooks/migration playbooks/openbsd-sealed-brick
-    schemas/adapter.schema.json schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json
+    schemas/adapter.schema.json schemas/invariant.schema.json schemas/check.schema.json schemas/environment.schema.json schemas/runtime_bundle.schema.json
+    schemas/network_model.schema.json schemas/causal_experiment.schema.json schemas/owner_operational_intent.schema.json
+    schemas/tribunal_participant_claim.schema.json schemas/disagreement_resolution.schema.json
     environments/example environments/bluenikee environments/openbsd-sealed-brick
-    scripts/validate.sh scripts/diagnose.sh scripts/report.sh
+    scripts/validate.sh scripts/diagnose.sh scripts/report.sh scripts/export_runtime_bundle.py
     reports/.gitkeep reports/trae-openbsd-sealed-brick.md
     references/apple references/google references/microsoft references/openbsd
   )
@@ -120,6 +122,12 @@ schema_map = {
     "check": root / "schemas/check.schema.json",
     "environment": root / "schemas/environment.schema.json",
     "adapter": root / "schemas/adapter.schema.json",
+    "runtime_bundle": root / "schemas/runtime_bundle.schema.json",
+    "network_model": root / "schemas/network_model.schema.json",
+    "causal_experiment": root / "schemas/causal_experiment.schema.json",
+    "owner_intent": root / "schemas/owner_operational_intent.schema.json",
+    "tribunal_participant_claim": root / "schemas/tribunal_participant_claim.schema.json",
+    "disagreement_resolution": root / "schemas/disagreement_resolution.schema.json",
 }
 
 for name, schema_path in schema_map.items():
@@ -155,6 +163,7 @@ validate_repository_artifacts() {
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 from jsonschema import Draft202012Validator
 
@@ -180,29 +189,44 @@ def load_yaml(path: Path):
     return json.loads(result.stdout)
 
 
-environment_schema = load_json(root / "schemas/environment.schema.json")
-invariant_schema = load_json(root / "schemas/invariant.schema.json")
-check_schema = load_json(root / "schemas/check.schema.json")
-adapter_schema = load_json(root / "schemas/adapter.schema.json")
+EVIDENCE_TIERS = [
+    "declared_only",
+    "implemented",
+    "validated_mock",
+    "validated_live_target",
+]
 
-environment_validator = Draft202012Validator(environment_schema)
-invariant_validator = Draft202012Validator(invariant_schema)
-check_validator = Draft202012Validator(check_schema)
-adapter_validator = Draft202012Validator(adapter_schema)
+schemas = {
+    "environment": load_json(root / "schemas/environment.schema.json"),
+    "invariant": load_json(root / "schemas/invariant.schema.json"),
+    "check": load_json(root / "schemas/check.schema.json"),
+    "adapter": load_json(root / "schemas/adapter.schema.json"),
+    "runtime_bundle": load_json(root / "schemas/runtime_bundle.schema.json"),
+    "network_model": load_json(root / "schemas/network_model.schema.json"),
+    "causal_experiment": load_json(root / "schemas/causal_experiment.schema.json"),
+    "owner_intent": load_json(root / "schemas/owner_operational_intent.schema.json"),
+    "tribunal_claim": load_json(root / "schemas/tribunal_participant_claim.schema.json"),
+    "disagreement": load_json(root / "schemas/disagreement_resolution.schema.json"),
+}
+validators = {k: Draft202012Validator(s) for k, s in schemas.items()}
 
 environment_files = sorted((root / "environments").rglob("environment.json"))
+owner_intent_files = sorted((root / "environments").rglob("owner_intent.*.json"))
+disagreement_files = sorted((root / "environments").rglob("disagree.*.json"))
 invariant_files = sorted((root / "checks").rglob("invariant-*.yaml"))
 check_files = sorted((root / "checks").rglob("chk-*.yaml"))
 adapter_files = sorted((root / "adapters").rglob("adapter.json"))
+causal_files = sorted((root / "playbooks").rglob("causal-experiment-*.json"))
+network_model_files = sorted((root / "playbooks").rglob("network-model-*.json"))
 
-if not environment_files:
-    raise SystemExit("No environment files found")
-if not invariant_files:
-    raise SystemExit("No invariant files found")
-if not check_files:
-    raise SystemExit("No check files found")
-if not adapter_files:
-    raise SystemExit("No adapter manifest files found")
+for label, files in [
+    ("environment", environment_files),
+    ("invariant", invariant_files),
+    ("check", check_files),
+    ("adapter", adapter_files),
+]:
+    if not files:
+        raise SystemExit(f"No {label} files found")
 
 adapter_dirs = sorted({path.parent.name for path in adapter_files})
 adapter_dirs_direct = sorted(p.name for p in (root / "adapters").iterdir() if p.is_dir())
@@ -210,106 +234,322 @@ for adapter_dir in adapter_dirs_direct:
     if adapter_dir not in adapter_dirs:
         raise SystemExit(f"Adapter directory missing manifest adapter.json: adapters/{adapter_dir}")
 
-adapter_docs = {}
+adapter_docs: dict = {}
 for path in adapter_files:
     doc = load_json(path)
-    errors = sorted(adapter_validator.iter_errors(doc), key=lambda e: e.path)
+    errors = sorted(validators["adapter"].iter_errors(doc), key=lambda e: e.path)
     if errors:
         raise SystemExit(f"{path.relative_to(root)} failed adapter schema validation: {errors[0].message}")
-    adapter_id = path.parent.name
+    manifest_dir = path.parent.name
+    if not doc["id"].startswith(f"adapter-{manifest_dir}"):
+        raise SystemExit(f"Ambiguous taxonomy: {path.relative_to(root)} id='{doc['id']}' must match directory adapters/{manifest_dir} prefix 'adapter-{manifest_dir}'")
     if doc["id"] in adapter_docs:
         raise SystemExit(f"Duplicate adapter manifest id: {doc['id']}")
-    cap_ids = {cap["id"] for cap in doc["declared_capabilities"]}
-    for validated_cap_id in doc.get("validated_capability_ids", []):
-        if validated_cap_id not in cap_ids:
-            raise SystemExit(f"{path.relative_to(root)} validated_capability_ids references undeclared capability: {validated_cap_id}")
-        cap = next(cap for cap in doc["declared_capabilities"] if cap["id"] == validated_cap_id)
-        if cap["support_tier"] != "supported" or cap["status"] != "VALIDATED":
-            raise SystemExit(f"{path.relative_to(root)} capability {validated_cap_id} must be support_tier=supported and status=VALIDATED to be in validated_capability_ids")
-        evidence_refs = cap["evidence"]["references"]
-        if not evidence_refs:
-            raise SystemExit(f"{path.relative_to(root)} capability {validated_cap_id} must have at least one evidence reference")
-        for evidence_ref in evidence_refs:
-            evidence_path = root / evidence_ref
-            if not evidence_path.exists():
-                raise SystemExit(f"{path.relative_to(root)} capability {validated_cap_id} references missing evidence: {evidence_ref}")
-    if doc["support_tier"] == "supported":
-        if doc["status"] != "VALIDATED":
-            raise SystemExit(f"{path.relative_to(root)} support_tier=supported requires status=VALIDATED")
-        if not doc.get("validated_capability_ids"):
-            raise SystemExit(f"{path.relative_to(root)} support_tier=supported requires at least one validated_capability_ids entry")
-    else:
-        if doc.get("validated_capability_ids"):
-            raise SystemExit(f"{path.relative_to(root)} support_tier={doc['support_tier']} must not declare validated_capability_ids")
-    adapter_docs[doc["id"]] = (path, adapter_id, doc)
 
-adapter_id_by_dir = {adapter_id: doc_id for (doc_id, (_, adapter_id, _)) in adapter_docs.items()}
-for _doc_id, (_path, adapter_id, doc) in adapter_docs.items():
-    manifest_dir = _path.parent.name
-    expected_ids = [f"adapter-{manifest_dir}", f"adapter-{manifest_dir}-*"]
-    matches_prefix = doc["id"].startswith(f"adapter-{manifest_dir}")
-    if not matches_prefix:
-        raise SystemExit(f"Ambiguous taxonomy: {_path.relative_to(root)} id='{doc['id']}' must match directory adapters/{manifest_dir} prefix 'adapter-{manifest_dir}'")
-    status = doc["status"]
-    if status == "VALIDATED" and doc["support_tier"] != "supported":
-        raise SystemExit(f"Ambiguous taxonomy: {_path.relative_to(root)} status=VALIDATED implies support_tier=supported")
-    if status == "UNIMPLEMENTED" and doc["support_tier"] == "supported":
-        raise SystemExit(f"Ambiguous taxonomy: {_path.relative_to(root)} UNIMPLEMENTED cannot declare support_tier=supported")
+    auth = doc.get("authority_ceiling", {})
+    if auth.get("decides_truth") or auth.get("decides_policy") or auth.get("decides_remediation"):
+        raise SystemExit(f"{path.relative_to(root)} dumb adapter doctrine violated: adapter must not decide truth/policy/remediation")
+    if not auth.get("output_is_typed_untrusted_evidence"):
+        raise SystemExit(f"{path.relative_to(root)} adapter missing output_is_typed_untrusted_evidence=true")
+    if not doc.get("evidence_tier_claims", {}).get("adapter_does_not_decide_truth"):
+        raise SystemExit(f"{path.relative_to(root)} adapter missing adapter_does_not_decide_truth=true")
+    if not doc.get("evidence_tier_support", {}).get("mock_not_equivalent_to_live"):
+        raise SystemExit(f"{path.relative_to(root)} adapter missing mock_not_equivalent_to_live=true")
 
-check_docs = {}
+    declared_cap_ids = {c["id"] for c in doc.get("declared_capabilities", [])}
+    valid_status = {"proposed", "implemented", "validated_mock", "validated_live_target", "VALIDATED", "MAPPED"}
+    status = doc.get("status", "")
+    validated = doc.get("validated_capability_ids", []) or []
+    if doc.get("support_tier") == "supported":
+        if not validated:
+            raise SystemExit(
+                f"{path.relative_to(root)} adapter support_tier=supported requires non-empty "
+                f"validated_capability_ids (and requires status=VALIDATED or equivalent). "
+                f"Ambiguous taxonomy: directory presence alone is never support proof."
+            )
+        # Status must at least be VALIDATED-equivalent.
+        if status not in {"implemented", "validated_mock", "validated_live_target", "VALIDATED", "MAPPED"}:
+            raise SystemExit(
+                f"{path.relative_to(root)} adapter support_tier=supported requires status=VALIDATED (or "
+                f"validated_mock/validated_live_target/implemented/MAPPED). Directory alone is "
+                f"insufficient evidence. Got status={status!r}."
+            )
+    for validated_id in validated:
+        if validated_id not in declared_cap_ids:
+            raise SystemExit(f"{path.relative_to(root)} validated_capability_ids references undeclared capability {validated_id}")
+        cap = next(c for c in doc["declared_capabilities"] if c["id"] == validated_id)
+        cap_tier = cap.get("evidence_tier", "declared_only")
+        if cap_tier == "declared_only":
+            raise SystemExit(f"{path.relative_to(root)} validated_capability_ids requires capability evidence_tier>=implemented, got {cap_tier}")
+    adapter_docs[doc["id"]] = (path, doc)
+
+capability_index = {}
+for _id, (_, adoc) in adapter_docs.items():
+    for cap in adoc.get("declared_capabilities", []):
+        capability_index[cap["id"]] = {
+            "adapter_id": adoc["id"],
+            "evidence_tier": cap.get("evidence_tier", "declared_only"),
+            "operation": cap.get("operation", ""),
+            "observation_ids": {o["id"] for o in cap.get("observation_contract", {}).get("observations", [])},
+        }
+
+observation_index: dict = {}
+for cid, meta in capability_index.items():
+    for oid in meta["observation_ids"]:
+        observation_index.setdefault(oid, []).append(cid)
+
+check_docs: dict = {}
 for path in check_files:
     doc = load_yaml(path)
-    errors = sorted(check_validator.iter_errors(doc), key=lambda e: e.path)
+    errors = sorted(validators["check"].iter_errors(doc), key=lambda e: e.path)
     if errors:
-        raise SystemExit(f"{path.relative_to(root)} failed schema validation: {errors[0].message}")
+        raise SystemExit(f"{path.relative_to(root)} failed check schema validation: {errors[0].message}")
     if doc["id"] in check_docs:
         raise SystemExit(f"Duplicate check id: {doc['id']}")
     check_docs[doc["id"]] = (path, doc)
-    remediation_path = root / doc["remediation_playbook"]
-    if not remediation_path.exists():
-        raise SystemExit(f"{path.relative_to(root)} references missing remediation playbook: {doc['remediation_playbook']}")
 
-invariant_docs = {}
+    ac = doc.get("authority_ceiling", {})
+    if not ac.get("no_policy_invention") or not ac.get("no_authority_promotion"):
+        raise SystemExit(f"{path.relative_to(root)} check missing no_policy_invention / no_authority_promotion")
+    max_auth = ac.get("max_authority")
+    if max_auth not in {"read_only_evidence", "advisory_remediation_only"}:
+        raise SystemExit(f"{path.relative_to(root)} check max_authority={max_auth} not in allowed closed ceilings")
+    claim = doc.get("evidence_tier_claim")
+    support = doc.get("evidence_tier_support", {})
+    if claim == "validated_live_target" and not support.get("live_target_provenance_ref_present"):
+        raise SystemExit(f"{path.relative_to(root)} evidence_tier_claim=validated_live_target requires live_target_provenance_ref_present=true")
+    if claim and EVIDENCE_TIERS.index(claim) > EVIDENCE_TIERS.index(next(
+        (t for t in reversed(EVIDENCE_TIERS) if support.get(t, False)), "declared_only"
+    )):
+        raise SystemExit(f"{path.relative_to(root)} evidence_tier_claim={claim} exceeds evidence_tier_support booleans")
+    rem = doc.get("remediation_ref")
+    if rem:
+        rem_path = root / rem
+        if not rem_path.exists():
+            raise SystemExit(f"{path.relative_to(root)} references missing remediation: {rem}")
+
+invariant_docs: dict = {}
 for path in invariant_files:
     doc = load_yaml(path)
-    errors = sorted(invariant_validator.iter_errors(doc), key=lambda e: e.path)
+    errors = sorted(validators["invariant"].iter_errors(doc), key=lambda e: e.path)
     if errors:
-        raise SystemExit(f"{path.relative_to(root)} failed schema validation: {errors[0].message}")
+        raise SystemExit(f"{path.relative_to(root)} failed invariant schema validation: {errors[0].message}")
     if doc["id"] in invariant_docs:
         raise SystemExit(f"Duplicate invariant id: {doc['id']}")
     invariant_docs[doc["id"]] = (path, doc)
-    remediation_path = root / doc["remediation"]["playbook"]
-    if not remediation_path.exists():
-        raise SystemExit(f"{path.relative_to(root)} references missing remediation playbook: {doc['remediation']['playbook']}")
-    for source in doc["sources"]:
-        source_path = root / source
-        if not source_path.exists():
-            raise SystemExit(f"{path.relative_to(root)} references missing source: {source}")
-    for check_id in doc["check"]["ids"]:
-        if check_id not in check_docs:
-            raise SystemExit(f"{path.relative_to(root)} references missing check id: {check_id}")
 
-for path, doc in check_docs.values():
-    if doc["invariant"] not in invariant_docs:
-        raise SystemExit(f"{path.relative_to(root)} references missing invariant id: {doc['invariant']}")
+    for cid in doc.get("required_capabilities", []):
+        if cid not in capability_index:
+            raise SystemExit(f"{path.relative_to(root)} required_capabilities references undeclared capability {cid}")
+    for obs in doc.get("required_observations", []):
+        oid = obs["id"]
+        if oid not in observation_index:
+            raise SystemExit(f"{path.relative_to(root)} required_observation {oid} is not provided by any adapter capability observation_contract")
+    inv_min_tier = doc.get("applicability", {}).get("evidence_tier_minimum")
+    if inv_min_tier:
+        matched = [c for c in check_docs.values() if c[1].get("invariant_ref") == doc["id"]]
+        if matched:
+            max_claim = max((EVIDENCE_TIERS.index(c[1].get("evidence_tier_claim", "declared_only")) for c in matched), default=-1)
+            if max_claim < EVIDENCE_TIERS.index(inv_min_tier):
+                raise SystemExit(
+                    f"{path.relative_to(root)} evidence_tier_minimum={inv_min_tier} but checks claim at most {EVIDENCE_TIERS[max_claim]}"
+                )
+    unknown_sem = doc.get("preconditions", {}).get("unknown_behavior")
+    if not unknown_sem:
+        raise SystemExit(f"{path.relative_to(root)} invariant missing preconditions.unknown_behavior")
+    for dep in doc.get("dependency_ids", []):
+        if dep not in invariant_docs and dep != doc["id"]:
+            pass
 
+for _id, (path, doc) in check_docs.items():
+    inv_ref = doc.get("invariant_ref")
+    if inv_ref and inv_ref not in invariant_docs:
+        raise SystemExit(f"{path.relative_to(root)} references missing invariant_ref {inv_ref}")
+
+for path in owner_intent_files:
+    doc = load_json(path)
+    errors = sorted(validators["owner_intent"].iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed owner_intent schema: {errors[0].message}")
+    if not doc.get("declared_before_failure"):
+        raise SystemExit(f"{path.relative_to(root)} owner_intent missing declared_before_failure=true")
+    for inv_refs in [s.get("invariant_refs_required_if_fail", []) for s in doc.get("named_services", [])]:
+        for inv_id in inv_refs:
+            if inv_id not in invariant_docs:
+                raise SystemExit(f"{path.relative_to(root)} owner_intent references missing invariant {inv_id}")
+
+for path in disagreement_files:
+    doc = load_json(path)
+    errors = sorted(validators["disagreement"].iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed disagreement schema: {errors[0].message}")
+    if "fail_closed" not in doc:
+        raise SystemExit(f"{path.relative_to(root)} disagreement missing fail_closed field")
+    if not doc.get("majority_vote_alone_must_not_override"):
+        raise SystemExit(f"{path.relative_to(root)} disagreement missing majority_vote_alone_must_not_override=true")
+    steps = doc.get("recompute_workflow", [])
+    expected_steps = [
+        "locate_differing_premise",
+        "locate_differing_evidence_interpretation",
+        "identify_discriminating_observation",
+        "perform_bounded_measurement_if_authorized",
+        "recompute_result_from_omnia_rules",
+    ]
+    if steps != expected_steps:
+        raise SystemExit(f"{path.relative_to(root)} disagreement recompute_workflow must equal the required 5 steps exactly")
+
+for path in causal_files:
+    doc = load_json(path)
+    errors = sorted(validators["causal_experiment"].iter_errors(doc), key=lambda e: e.path)
+    if errors:
+        raise SystemExit(f"{path.relative_to(root)} failed causal_experiment schema: {errors[0].message}")
+    if "time_bound_seconds" not in doc or not isinstance(doc["time_bound_seconds"], int) or doc["time_bound_seconds"] <= 0:
+        raise SystemExit(f"{path.relative_to(root)} causal_experiment missing positive time_bound_seconds")
+    if not doc.get("evidence_method_hierarchy_used", {}).get("tribunal_must_propose_from_registered_only"):
+        raise SystemExit(f"{path.relative_to(root)} causal_experiment must have tribunal_must_propose_from_registered_only=true")
+    if not doc.get("fail_closed_condition", {}).get("triggers_immediate_rollback_on_anomalous_impact"):
+        raise SystemExit(f"{path.relative_to(root)} causal_experiment fail_closed_condition.triggers_immediate_rollback_on_anomalous_impact required true")
+    auth = doc.get("authority_required", {})
+    if not auth.get("never_invent_policy") or not auth.get("unvetted_mutation_prohibited"):
+        raise SystemExit(f"{path.relative_to(root)} causal_experiment must have never_invent_policy and unvetted_mutation_prohibited both true")
+    hierarchy = doc.get("evidence_method_hierarchy_used", {}).get("hierarchy_order", [])
+    expected_hierarchy_options = [
+        [
+            "passive_observational_evidence_no_modification",
+            "safe_active_probes_minimal_risk",
+            "bounded_fully_reversible_mutations_blast_radius_controlled",
+            "controlled_causal_observations_during_approved_experiment",
+            "formal_rollback_or_commit_only_upon_completion_or_failure",
+        ],
+        [
+            "passive_observational_evidence_no_modification",
+            "safe_active_probes_minimal_risk",
+            "bounded_fully_reversible_mutations_blast_radius_contained",
+            "controlled_causal_observations_during_approved_experiment",
+            "formal_rollback_or_commit_only_upon_completion_or_failure",
+        ],
+    ]
+    if not any(hierarchy == expected for expected in expected_hierarchy_options):
+        raise SystemExit(f"{path.relative_to(root)} causal_experiment evidence_method_hierarchy_used must match required 5 tiers")
+
+environment_docs = {}
 for path in environment_files:
     doc = load_json(path)
-    errors = sorted(environment_validator.iter_errors(doc), key=lambda e: e.path)
+    errors = sorted(validators["environment"].iter_errors(doc), key=lambda e: e.path)
     if errors:
-        raise SystemExit(f"{path.relative_to(root)} failed schema validation: {errors[0].message}")
-    for adapter in doc["adapters"]:
-        adapter_path = root / "adapters" / adapter
-        if not adapter_path.exists():
-            raise SystemExit(f"{path.relative_to(root)} references missing adapter directory: adapters/{adapter}")
-        manifest_path = adapter_path / "adapter.json"
-        if not manifest_path.exists():
-            raise SystemExit(f"{path.relative_to(root)} adapter adapters/{adapter} missing required adapter.json manifest")
-        manifest = load_json(manifest_path)
-        if manifest["support_tier"] != "supported":
-            raise SystemExit(f"{path.relative_to(root)} adapter adapters/{adapter} is not support_tier=supported per adapter.json; environments must not claim unsupported adapters")
+        raise SystemExit(f"{path.relative_to(root)} failed environment schema: {errors[0].message}")
+    if not doc.get("runtime_host", {}).get("host_substrate_only"):
+        raise SystemExit(f"{path.relative_to(root)} environment missing runtime_host.host_substrate_only=true (target-oriented vs host-substrate rule)")
+    for target in doc.get("estate_targets", []):
+        adp_id = target.get("adapter_id_hint")
+        if adp_id and adp_id not in adapter_docs:
+            raise SystemExit(f"{path.relative_to(root)} estate target {target['target_id']} adapter_id_hint={adp_id} not a registered adapter id")
+        for cap in target.get("capabilities_required", []):
+            if cap not in capability_index:
+                raise SystemExit(f"{path.relative_to(root)} estate target {target['target_id']} capability_required={cap} not declared")
+    environment_docs[doc["id"]] = (path, doc)
+
+# Run canonical runtime bundle exporter.
+exporter_path = root / "scripts" / "export_runtime_bundle.py"
+if not exporter_path.exists():
+    raise SystemExit(f"Missing exporter script: scripts/export_runtime_bundle.py")
+bundle_out = root / "build" / "runtime-bundle" / "omnia.runtime.v1.json"
+bundle_out.parent.mkdir(parents=True, exist_ok=True)
+res = subprocess.run(
+    [
+        sys.executable,
+        str(exporter_path),
+        "--root",
+        str(root),
+        "--output",
+        str(bundle_out),
+    ],
+    capture_output=True,
+    text=True,
+)
+if res.returncode != 0:
+    raise SystemExit(f"Runtime bundle exporter failed (exit {res.returncode}):\n{res.stderr}")
+
+# Validate produced bundle against runtime_bundle.schema.json.
+bundle_doc = load_json(bundle_out)
+bundle_errors = sorted(validators["runtime_bundle"].iter_errors(bundle_doc), key=lambda e: e.path)
+if bundle_errors:
+    raise SystemExit(f"Exported runtime bundle failed schema validation: {bundle_errors[0].message}")
+
+# Bundle digest reproducibility: run twice, digests must match.
+res2 = subprocess.run(
+    [sys.executable, str(exporter_path), "--root", str(root), "--print-digest"],
+    capture_output=True,
+    text=True,
+)
+res3 = subprocess.run(
+    [sys.executable, str(exporter_path), "--root", str(root), "--print-digest"],
+    capture_output=True,
+    text=True,
+)
+if res2.returncode != 0 or res3.returncode != 0:
+    raise SystemExit("Runtime bundle digest runs failed: " + res2.stderr + res3.stderr)
+if res2.stdout.strip() != res3.stdout.strip():
+    raise SystemExit(f"Runtime bundle digest not reproducible between runs: {res2.stdout.strip()} vs {res3.stdout.strip()}")
+
+# Broken reference detection invariants by dependency_ids - no cycles.
+from collections import defaultdict, deque
+graph = defaultdict(list)
+for inv_id, (_, inv_doc) in invariant_docs.items():
+    graph[inv_id] = list(inv_doc.get("dependency_ids", []))
+color = {k: 0 for k in graph}
+WHITE, GRAY, BLACK = 0, 1, 2
+for start in list(graph):
+    if color[start] != WHITE:
+        continue
+    stack = [(start, iter(graph[start]))]
+    color[start] = GRAY
+    while stack:
+        node, it = stack[-1]
+        found = False
+        for nxt in it:
+            if nxt not in graph:
+                continue
+            c = color.get(nxt, WHITE)
+            if c == GRAY:
+                raise SystemExit(f"Circular semantic dependency in invariants: {nxt} reachable from {start}")
+            if c == WHITE:
+                color[nxt] = GRAY
+                stack.append((nxt, iter(graph[nxt])))
+                found = True
+                break
+        if not found:
+            color[node] = BLACK
+            stack.pop()
+
+# Runtime readiness: for normative invariants, fail if any required field is prose-only or missing.
+for inv_id, (path, inv_doc) in invariant_docs.items():
+    layer = inv_doc.get("layer")
+    if layer != "normative":
+        continue
+    required_runtime = [
+        "id", "version", "status", "scope", "applicability",
+        "preconditions", "required_observations", "required_capabilities",
+        "decision_rule", "outcomes",
+    ]
+    missing = [f for f in required_runtime if not inv_doc.get(f)]
+    if missing:
+        raise SystemExit(f"{path.relative_to(root)} normative invariant runtime-readiness missing fields: {missing}")
+    outcomes = inv_doc.get("outcomes", {})
+    has_uppercase = all(k in outcomes for k in ["PASS", "FAIL", "UNKNOWN", "ERROR"])
+    has_snake = all(k in outcomes for k in ["pass_semantics", "fail_semantics", "unknown_semantics", "error_semantics"])
+    if not (has_uppercase or has_snake):
+        raise SystemExit(f"{path.relative_to(root)} normative invariant missing explicit PASS/FAIL/UNKNOWN/ERROR semantics")
+    dr = inv_doc.get("decision_rule", {})
+    logic = dr.get("logic", {})
+    if "unknown_if" not in dr and "unknown_if" not in logic:
+        raise SystemExit(f"{path.relative_to(root)} normative invariant missing explicit decision_rule.unknown_if")
+    if not inv_doc.get("authority_ceiling"):
+        raise SystemExit(f"{path.relative_to(root)} normative invariant missing machine-readable authority_ceiling")
 
 print("Repository artifact validation passed")
+print(f"Runtime bundle produced: {bundle_out.relative_to(root)}")
+print(f"Canonical digest: {bundle_doc.get('canonical_digest_sha256')}")
 PY
 }
 

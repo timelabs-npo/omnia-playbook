@@ -1,0 +1,70 @@
+{
+  "schema_version": "omnia.tribunal_claim.v1",
+  "claim_id": "tpc-claim-dns-000001",
+  "created_at_utc": "2026-08-13T00:00:00Z",
+  "participant": {
+    "participant_id": "tribunal-participant-model-a",
+    "model_identity": "example-model-family-v1",
+    "provenance_identity": "example-runner-hash-sha256:abcd1234",
+    "vendor_identity": "example-vendor-neutral",
+    "architecture_identity": "decoder-only-transformer-v1",
+    "alignment_assumptions": [
+      "follows-omnia-deterministic-semantics",
+      "does-not-invent-policy",
+      "does-not-elevate-authority"
+    ],
+    "language_support": ["en", "json-schema-2020-12"]
+  },
+  "decision_class_ref": "dns_explicit_resolvers",
+  "claim": {
+    "type": "deterministic_omnia_rule",
+    "result": "PASS",
+    "confidence_bounded": true,
+    "justification_refs": [
+      "just-ref-001-observations-materialized",
+      "just-ref-002-decision-rule-matches"
+    ]
+  },
+  "evidence_refs": [
+    {
+      "ref_id": "ev-obs-dns-resolvers-001",
+      "evidence_tier": "validated_mock",
+      "evidence_type": "observation"
+    },
+    {
+      "ref_id": "ev-ops-result-cat-resolvconf",
+      "evidence_tier": "validated_mock",
+      "evidence_type": "operation_result"
+    },
+    {
+      "ref_id": "ev-signed-snap-before-001",
+      "evidence_tier": "validated_live_target",
+      "evidence_type": "signed_snapshot"
+    }
+  ],
+  "assumptions": [
+    "Observation obs-dns-resolvers is correctly mapped to nameserver lines output.",
+    "No contradictory observations were received for the decision window."
+  ],
+  "unresolved_questions": [
+    {
+      "id": "uq-001",
+      "question": "Are additional resolvers configured via DHCP-sourced options not yet observed?",
+      "resolves_if_observation_ids_provided": ["obs-dns-dhcp-options-present"]
+    }
+  ],
+  "proposed_result": {
+    "result": "PASS",
+    "evidence_ref_ids": ["ev-obs-dns-resolvers-001", "ev-ops-result-cat-resolvconf"],
+    "confidence_numeric": 0.92,
+    "confidence_explanation": "All declared resolver lines are present and match expected. Small residual uncertainty for unobserved DHCP side-channel configuration."
+  },
+  "omnia_normative_bundle_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "deterministic_conformance": {
+    "claims_to_follow_omnia_deterministic_rules": true,
+    "does_not_vendor_lock": true,
+    "result_would_be_same_on_all_runtimes_for_deterministic": true
+  },
+  "signature_ref": "jws-participant-claim-dns-000001",
+  "explanatory_notes": "Minimal valid tribunal participant claim fixture with multi-model diversity support and no specific vendor lock."
+}

@@ -1,13 +1,41 @@
 {
   "id": "adapter-ambiguous-placeholder",
-  "name": "Broken Adapter: no ontology, no capabilities, inconsistent supported tier",
-  "description": "Invalid adapter fixture designed to fail schema validation + taxonomy rules. Placeholder adapters with missing ontology or missing capability mappings must fail validation. Directory existence alone must not grant supported status.",
-  "primary_platforms": ["broken-phantom-platform"],
-  "primary_vendors": ["broken-phantom-vendor"],
+  "name": "Broken Adapter: null ontology, empty capabilities, inconsistent tier, bad date",
+  "version": "0.0.1",
+  "layer": "operational",
   "ontology": null,
   "support_tier": "supported",
   "status": "VALIDATED",
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-placeholder",
+      "action": "forbidden_placeholder_action_long_enough",
+      "reason": "Placeholder adapter has no ontology or real capabilities so every action is effectively unauthorized; schema must reject."
+    }
+  ],
+  "description": "Invalid adapter fixture designed to fail schema validation: ontology is null (must be object with type/platform_vendor/platform_name/vendor_name), declared_capabilities is empty array (minItems 1), validated_capability_ids references does-not-exist (integrity), last_verified not-a-date (format date). Directory existence alone must NOT grant supported status - this placeholder asserts supported while having zero declared capabilities.",
+  "primary_platforms": ["broken-phantom-platform"],
+  "primary_vendors": ["broken-phantom-vendor"],
   "declared_capabilities": [],
-  "validated_capability_ids": ["does-not-exist"],
+  "validated_capability_ids": ["does-not-exist-capability-id-with-min-len-passed"],
   "last_verified": "not-a-date"
 }

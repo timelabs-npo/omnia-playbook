@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/network_model.schema.json",
+  "title": "Omnia v1 Network Flow, Intent and Intervention Topology Model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "layer",
+    "operator_intents",
+    "flows",
+    "dependency_graph",
+    "paths",
+    "policy_boundaries",
+    "observation_points",
+    "intervention_points",
+    "evidence_snapshots",
+    "causal_experiment_registry_refs"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.network.v1" },
+    "id": { "type": "string", "minLength": 3 },
+    "version": { "type": "string" },
+    "layer": { "type": "string", "enum": ["normative", "operational", "explanatory"] },
+    "operator_intents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "desired_behavior", "business_requirements", "scope_refs"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "desired_behavior": { "type": "string" },
+          "business_requirements": { "type": "array", "items": { "type": "string" } },
+          "scope_refs": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["policy_boundary_ids", "flow_ids"],
+            "properties": {
+              "policy_boundary_ids": { "type": "array", "items": { "type": "string" } },
+              "flow_ids": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "src", "dst", "protocol", "properties", "path_refs", "depends_on_flow_ids", "policy_boundary_ids"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "src": { "type": "string" },
+          "dst": { "type": "string" },
+          "protocol": { "type": "string" },
+          "properties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["bandwidth_class", "latency_budget_ms", "reliability_slo_nines"],
+            "properties": {
+              "bandwidth_class": { "type": "string" },
+              "latency_budget_ms": { "type": "integer" },
+              "reliability_slo_nines": { "type": "number" }
+            }
+          },
+          "path_refs": { "type": "array", "items": { "type": "string" } },
+          "depends_on_flow_ids": { "type": "array", "items": { "type": "string" } },
+          "policy_boundary_ids": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "dependency_graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "node_type", "refs"],
+            "properties": {
+              "id": { "type": "string" },
+              "node_type": { "type": "string", "enum": ["flow", "component", "observation_point", "intervention_point", "policy_boundary"] },
+              "refs": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to", "relation"],
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "relation": { "type": "string", "enum": ["depends_on", "routes_through", "observes", "can_intervene_on", "enforces"] }
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "hops", "logical_route_id"],
+        "properties": {
+          "id": { "type": "string" },
+          "hops": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["node", "interface_ref", "hop_type"],
+              "properties": {
+                "node": { "type": "string" },
+                "interface_ref": { "type": "string" },
+                "hop_type": { "type": "string", "enum": ["physical", "logical_tunnel", "policy_gate", "service_endpoint"] }
+              }
+            }
+          },
+          "logical_route_id": { "type": "string" }
+        }
+      }
+    },
+    "policy_boundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "scope", "enforcement_refs", "intervention_allowed_classes"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "scope": { "type": "string" },
+          "enforcement_refs": { "type": "array", "items": { "type": "string" } },
+          "intervention_allowed_classes": { "type": "array", "items": { "type": "string", "enum": ["passive_observe", "safe_active_probe", "bounded_reversible_mutation"] } }
+        }
+      }
+    },
+    "observation_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "location_ref", "validated_metrics", "evidence_tier", "provenance_refs"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "location_ref": { "type": "string" },
+          "validated_metrics": { "type": "array", "items": { "type": "string" } },
+          "evidence_tier": { "type": "string", "enum": ["declared_only", "implemented", "validated_mock", "validated_live_target"] },
+          "provenance_refs": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "intervention_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "location_ref", "approved_mutation_classes", "max_blast_radius_flows", "max_blast_radius_users", "requires_approval_ref", "rollback_contract_ref", "evidence_tier"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "location_ref": { "type": "string" },
+          "approved_mutation_classes": { "type": "array", "items": { "type": "string", "enum": ["safe_active_probe", "bounded_reversible_mutation"] } },
+          "max_blast_radius_flows": { "type": "integer", "minimum": 0 },
+          "max_blast_radius_users": { "type": "integer", "minimum": 0 },
+          "requires_approval_ref": { "type": "string" },
+          "rollback_contract_ref": { "type": "string" },
+          "evidence_tier": { "type": "string", "enum": ["declared_only", "implemented", "validated_mock", "validated_live_target"] }
+        }
+      }
+    },
+    "evidence_snapshots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "snapshot_type", "timestamp_utc", "referenced_flow_ids", "referenced_observation_point_ids", "state_hash_sha256", "receipt_signed_jws_ref", "before_or_after"],
+        "properties": {
+          "id": { "type": "string" },
+          "snapshot_type": { "type": "string", "enum": ["flow_state", "configuration_state", "policy_state", "telemetry"] },
+          "timestamp_utc": { "type": "string", "format": "date-time" },
+          "referenced_flow_ids": { "type": "array", "items": { "type": "string" } },
+          "referenced_observation_point_ids": { "type": "array", "items": { "type": "string" } },
+          "state_hash_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "receipt_signed_jws_ref": { "type": "string" },
+          "before_or_after": { "type": "string", "enum": ["before_mutation", "after_mutation", "baseline"] }
+        }
+      }
+    },
+    "causal_experiment_registry_refs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 5 }
+    }
+  }
+}

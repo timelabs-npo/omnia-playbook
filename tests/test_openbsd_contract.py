@@ -1,3 +1,4 @@
+import json
 import platform
 import subprocess
 import tempfile
@@ -8,6 +9,21 @@ import os
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "checks" / "openbsd" / "inspect_openbsd_v0.sh"
+
+
+def load_yaml(path: Path):
+    result = subprocess.run(
+        [
+            "ruby",
+            "-e",
+            'require "yaml"; require "json"; puts JSON.generate(YAML.safe_load(File.read(ARGV[0]), aliases: false))',
+            str(path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(result.stdout)
 
 
 class TestOpenBsdContract(unittest.TestCase):
@@ -181,9 +197,12 @@ class TestOpenBsdContract(unittest.TestCase):
         self.assertIn("match out on em0", result.stdout)
 
     def test_machine_readable_check_does_not_use_private_mode(self):
-        check_text = (ROOT / "checks" / "openbsd" / "chk-openbsd-v0-collection-boundary.yaml").read_text(encoding="utf-8")
-        self.assertIn("--collect", check_text)
-        self.assertNotIn("--inspect-private", check_text)
+        doc = load_yaml(ROOT / "checks" / "openbsd" / "chk-openbsd-v0-collection-boundary.yaml")
+        command = doc.get("command", "")
+        self.assertIn("--collect", command)
+        self.assertNotIn("--inspect-private", command)
+        # The forbidden_actions prose may describe --inspect-private as a boundary,
+        # but the machine-readable operational command must never reference it.
 
     def test_script_does_not_contain_mutating_commands(self):
         script_text = SCRIPT.read_text(encoding="utf-8")

@@ -1,0 +1,16 @@
+{
+  "schema_version": "omnia.owner_intent.v1",
+  "id": "owner-intent-invalid-001",
+  "version": "1.0.0",
+  "layer": "normative",
+  "owner_id": "",
+  "declared_before_failure": false,
+  "named_services": [],
+  "named_capabilities": [],
+  "separation_of_concerns": {
+    "invariant_not_auto_service": false,
+    "service_not_auto_policy": true,
+    "observation_not_auto_invariant": false
+  },
+  "source_refs": {"normative": [], "operational": [], "explanatory": []}
+}

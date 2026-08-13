@@ -1,44 +1,95 @@
 {
-  "id": "adapter-macos-dns-v0",
-  "name": "macOS DNS v0 DNS Resolver Inspection Adapter",
+  "id": "adapter-macos-vendor",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "macOS Vendor DNS and bounded-read-only evidence adapter",
   "ontology": {
     "type": "operating_system",
     "platform_vendor": "operating_system_vendor",
     "platform_name": "macOS",
-    "vendor_name": "Apple Inc."
+    "vendor_name": "Apple Inc.",
+    "interface_type": "base_system_command",
+    "adapter_is_evidence_provider_only": true
   },
   "support_tier": "supported",
-  "status": "VALIDATED",
-  "description": "Supported adapter mapping for macOS read-only DNS resolver inspection via scutil --dns. Placeholder-only OS-wide adapter mappings are UNIMPLEMENTED; this manifest intentionally limited to the validated DNS v0 invariant mapping.",
+  "status": "implemented",
+  "description": "Supported macOS adapter manifest limited to DNS-explicit-resolver observation and bounded read-only evidence. Provides typed untrusted observations implementing registered capabilities; never decides truth, policy, or remediation. OS-wide mappings are UNIMPLEMENTED intentionally.",
   "primary_platforms": ["macos"],
   "primary_vendors": ["apple-inc"],
+  "evidence_tier_claims": {
+    "declared_only": false,
+    "implemented": true,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "implemented",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-write-resolver-conf",
+      "action": "Write /etc/resolv.conf, networksetup -setdnsservers, or scutil DNS keys on target",
+      "reason": "Adapter path is read-only observation. Resolver writes are operator-owned remediation only."
+    },
+    {
+      "id": "fa-adapter-sudo-or-enter-admin",
+      "action": "sudo / admin escalation from adapter invocation",
+      "reason": "No authority promotion beyond bounded read-only."
+    }
+  ],
   "declared_capabilities": [
     {
-      "id": "cap-macos-dns-resolver-inspect-v0",
-      "name": "macOS DNS resolver inspection v0",
-      "operation": "dns.resolver.inspect.v0",
+      "id": "cap-dns-explicit-resolver-observe-v0",
+      "version": "1.0.0",
+      "name": "DNS explicit resolver observe for macOS",
+      "operation": "op-dns-observe-macos",
       "mode": "read_only",
-      "interface_type": "base_system_command",
       "support_tier": "supported",
-      "status": "VALIDATED",
-      "description": "Read-only observation of explicit and observable DNS resolver configuration on macOS via scutil --dns for the DNS explicit resolver invariant.",
+      "status": "implemented",
+      "evidence_tier": "implemented",
+      "description": "Read-only observation of explicit DNS resolver configuration on macOS via scutil --dns for the DNS-explicit-resolver invariant.",
       "sources": [
         "adapters/macos/README.md",
         "foundation/dns.md",
         "checks/dns/chk-dns-macos-observe.yaml"
       ],
-      "evidence": {
-        "type": "check_reference",
-        "references": [
-          "checks/dns/chk-dns-macos-observe.yaml",
-          "tests/test_repository_artifacts.py"
-        ]
+      "provenance_refs": [
+        "checks/dns/chk-dns-macos-observe.yaml",
+        "tests/test_repository_artifacts.py"
+      ],
+      "observation_contract": {
+        "observations": [
+          {"id": "obs-dns-nameserver-count", "type": "integer", "optional": false},
+          {"id": "obs-dns-resolver-source", "type": "enum_scutil", "optional": false},
+          {"id": "obs-dns-reachability-bool", "type": "boolean", "optional": true}
+        ],
+        "output_schema": {
+          "format": "line_based_kv",
+          "encoding": "utf-8",
+          "top_level_keys": ["nameserver_count", "resolver_source", "reachability"]
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
       }
     }
   ],
-  "validated_capability_ids": [
-    "cap-macos-dns-resolver-inspect-v0"
-  ],
+  "validated_capability_ids": ["cap-dns-explicit-resolver-observe-v0"],
   "last_verified": "2026-08-13",
-  "notes": "Full OS-wide macOS adapter beyond DNS v0 remains UNIMPLEMENTED; only the DNS inspection capability above is supported. Directory presence alone is not support status."
+  "notes": "Full OS-wide macOS adapter beyond DNS v0 remains UNIMPLEMENTED; only the DNS inspection capability above is SUPPORTED. Directory presence alone is intentionally NOT sufficient for support status."
 }

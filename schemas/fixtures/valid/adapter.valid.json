@@ -1,6 +1,8 @@
 {
-  "id": "adapter.valid",
+  "id": "adapter-example-001",
   "name": "Example Valid Adapter",
+  "version": "1.0.0",
+  "layer": "operational",
   "ontology": {
     "type": "operating_system",
     "platform_vendor": "operating_system_vendor",
@@ -9,26 +11,75 @@
   },
   "support_tier": "supported",
   "status": "VALIDATED",
-  "description": "Schema fixture example for a valid adapter manifest with declared ontology and at least one validated capability mapping.",
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": true,
+    "validated_mock": true,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "validated_mock",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-001",
+      "action": "write_system_configuration",
+      "reason": "Adapter must be read-only evidence producer without mutation authority."
+    }
+  ],
+  "description": "Minimal valid adapter fixture with ontology, capability mapping and evidence tiers declared.",
   "primary_platforms": ["example-os"],
   "primary_vendors": ["example-vendor"],
   "declared_capabilities": [
     {
-      "id": "cap-example-valid",
-      "name": "Example validated capability",
-      "operation": "example.inspect.v0",
+      "id": "cap-example-dns-v0",
+      "name": "Example DNS inspect capability",
+      "operation": "example.inspect.dns.v0",
       "mode": "read_only",
       "interface_type": "base_system_command",
       "support_tier": "supported",
       "status": "VALIDATED",
-      "description": "Example validated adapter capability for fixture validation.",
+      "evidence_tier": "validated_mock",
+      "observation_contract": {
+        "observations": [
+          {
+            "id": "obs-dns-resolvers",
+            "type": "array",
+            "optional": false
+          }
+        ],
+        "output_schema": {
+          "format": "line_based_kv"
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "ERROR"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      },
+      "description": "Read DNS resolver configuration from standard system locations for observation.",
       "sources": ["schemas/adapter.schema.json"],
       "evidence": {
         "type": "schema_fixture",
         "references": ["schemas/fixtures/valid/adapter.valid.json"]
-      }
+      },
+      "evidence_notes": "Fixture-only capability mapping for schema validation purposes."
     }
   ],
-  "validated_capability_ids": ["cap-example-valid"],
-  "last_verified": "2026-08-13"
+  "validated_capability_ids": ["cap-example-dns-v0"],
+  "last_verified": "2026-08-13",
+  "notes": "Minimal valid adapter fixture."
 }

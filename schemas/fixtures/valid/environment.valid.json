@@ -1,7 +1,24 @@
 {
-  "id": "example",
+  "id": "env-example",
+  "version": "1.0.0",
+  "layer": "operational",
   "name": "Example Environment",
-  "description": "Reference environment for local validation and development.",
-  "platforms": ["macos", "windows", "linux", "openwrt"],
-  "adapters": ["apple", "google-cloud", "azure", "openwrt", "macos", "windows"]
+  "runtime_host": {
+    "platform": "linux",
+    "vendor": "example-vendor",
+    "adapter_id_hint": "adapter-linux-example",
+    "host_substrate_only": true
+  },
+  "estate_targets": [
+    {
+      "target_id": "target-router-01",
+      "platform": "openwrt",
+      "vendor": "openwrt-project",
+      "adapter_id_hint": "adapter-openwrt-example",
+      "capabilities_required": ["cap-dns-inspect-v0"],
+      "evidence_tier_minimum": "validated_mock"
+    }
+  ],
+  "description": "Minimal valid environment fixture with runtime host and estate target declarations.",
+  "adapters_legacy_list": ["adapter-openwrt-example"]
 }

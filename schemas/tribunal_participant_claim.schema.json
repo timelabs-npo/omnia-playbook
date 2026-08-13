@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/tribunal_participant_claim.schema.json",
+  "title": "Omnia v1 Independent Tribunal Participant Claim (multi-model diversity support; no specific vendor lock)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "claim_id",
+    "created_at_utc",
+    "participant",
+    "decision_class_ref",
+    "claim",
+    "evidence_refs",
+    "assumptions",
+    "unresolved_questions",
+    "proposed_result",
+    "omnia_normative_bundle_digest",
+    "deterministic_conformance",
+    "signature_ref"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.tribunal_claim.v1" },
+    "claim_id": { "type": "string", "minLength": 6 },
+    "created_at_utc": { "type": "string", "format": "date-time" },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_id",
+        "model_identity",
+        "provenance_identity",
+        "vendor_identity",
+        "architecture_identity",
+        "alignment_assumptions",
+        "language_support"
+      ],
+      "properties": {
+        "participant_id": { "type": "string", "minLength": 3 },
+        "model_identity": { "type": "string", "minLength": 2 },
+        "provenance_identity": { "type": "string", "minLength": 2 },
+        "vendor_identity": { "type": "string", "minLength": 2 },
+        "architecture_identity": { "type": "string", "minLength": 2 },
+        "alignment_assumptions": { "type": "array", "items": { "type": "string" } },
+        "language_support": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "decision_class_ref": { "type": "string" },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "result", "confidence_bounded", "justification_refs"],
+      "properties": {
+        "type": { "type": "string", "enum": ["deterministic_omnia_rule", "underdetermined_reasoning", "evidence_missing", "contradictory_evidence"] },
+        "result": { "type": "string", "enum": ["PASS", "FAIL", "UNKNOWN", "ERROR", "INAPPLICABLE"] },
+        "confidence_bounded": { "type": "boolean" },
+        "justification_refs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref_id", "evidence_tier", "evidence_type"],
+        "properties": {
+          "ref_id": { "type": "string" },
+          "evidence_tier": { "type": "string", "enum": ["declared_only", "implemented", "validated_mock", "validated_live_target"] },
+          "evidence_type": { "type": "string", "enum": ["observation", "operation_result", "provenance_receipt", "signed_snapshot", "policy_ref"] }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "unresolved_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "question", "resolves_if_observation_ids_provided"],
+        "properties": {
+          "id": { "type": "string" },
+          "question": { "type": "string" },
+          "resolves_if_observation_ids_provided": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "proposed_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "evidence_ref_ids", "confidence_numeric", "confidence_explanation"],
+      "properties": {
+        "result": { "type": "string", "enum": ["PASS", "FAIL", "UNKNOWN", "ERROR", "INAPPLICABLE"] },
+        "evidence_ref_ids": { "type": "array", "items": { "type": "string" } },
+        "confidence_numeric": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence_explanation": { "type": "string" }
+      }
+    },
+    "omnia_normative_bundle_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "deterministic_conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims_to_follow_omnia_deterministic_rules", "does_not_vendor_lock", "result_would_be_same_on_all_runtimes_for_deterministic"],
+      "properties": {
+        "claims_to_follow_omnia_deterministic_rules": { "type": "boolean", "const": true },
+        "does_not_vendor_lock": { "type": "boolean", "const": true },
+        "result_would_be_same_on_all_runtimes_for_deterministic": { "type": "boolean", "const": true }
+      }
+    },
+    "signature_ref": { "type": "string" },
+    "explanatory_notes": { "type": "string" }
+  }
+}

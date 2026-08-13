@@ -1,14 +1,111 @@
 {
   "id": "chk-openbsd-v0-collection-boundary",
-  "invariant": "inv-openbsd-sealed-brick-bounded-control",
+  "version": "1.0.0",
+  "status": "validated_mock",
+  "layer": "operational",
+  "invariant_ref": "inv-openbsd-sealed-brick-bounded-control",
+  "target_platform": "openbsd",
+  "target_vendor": "openbsd-project",
+  "runtime_host_independent": true,
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "no_policy_invention": true,
+    "no_authority_promotion": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-pf-load-live",
+      "action": "pfctl -f <candidate> on a live routing appliance",
+      "reason": "Operational check is read-only observation only; never mutate live target state."
+    },
+    {
+      "id": "fa-rcctl-change",
+      "action": "rcctl set/enable/start/stop on live service state",
+      "reason": "Live service mutation outside read-only authority ceiling."
+    }
+  ],
+  "capability_ref": {
+    "capability_id": "cap-openbsd-bounded-collect-v0",
+    "operation_id": "op-openbsd-inspect-collect-public-v0",
+    "adapter_ref_hint": "adapter-openbsd-sealed-brick"
+  },
+  "observation_contract": {
+    "observations_emitted": [
+      {
+        "id": "em-ob-v0-contract-version",
+        "observation_ref": "obs-ob-v0-collect-contract-version",
+        "optional": false
+      },
+      {
+        "id": "em-ob-v0-output-mode",
+        "observation_ref": "obs-ob-v0-collect-output-mode",
+        "optional": false
+      },
+      {
+        "id": "em-ob-v0-result",
+        "observation_ref": "obs-ob-v0-collect-result",
+        "optional": false
+      }
+    ],
+    "output_schema": {
+      "format": "line_based_kv",
+      "encoding": "utf-8_only",
+      "top_level_keys": ["contract_version", "output_mode", "result"]
+    }
+  },
+  "evidence_tier_claim": "validated_mock",
+  "evidence_tier_support": {
+    "declared_only": false,
+    "implemented": true,
+    "validated_mock": true,
+    "validated_live_target": false
+  },
   "command": "./checks/openbsd/inspect_openbsd_v0.sh --collect",
-  "platform": "openbsd",
   "requires": ["awk", "uname", "ifconfig", "route", "pfctl", "rcctl", "sysctl", "cat", "grep"],
   "timeout": 20,
-  "expected_exit_code": 0,
-  "expected_output": {
-    "contains": ["contract_version=v0", "output_mode=public_minimized", "result=PASS"]
+  "exit_code_semantics": {
+    "expected": 0,
+    "observed_behavior": {
+      "on_nonzero": "ERROR",
+      "on_zero_with_empty_output": "UNKNOWN"
+    }
   },
-  "failure_message": "OpenBSD bounded v0 collection failed or returned a non-pass result.",
-  "remediation_playbook": "playbooks/openbsd-sealed-brick/README.md"
+  "observation_semantics": {
+    "fail_if_missing_required": true,
+    "pass_if_all_present_and_match": true,
+    "expected_values": [
+      {
+        "key": "contract_version",
+        "value_type": "string_exact",
+        "match_rule": {"expected": "v0"}
+      },
+      {
+        "key": "output_mode",
+        "value_type": "string_exact",
+        "match_rule": {"expected": "public_minimized"}
+      },
+      {
+        "key": "result",
+        "value_type": "string_exact",
+        "match_rule": {"expected": "PASS"}
+      }
+    ]
+  },
+  "unknown_semantics": {
+    "when_required_observation_missing": "UNKNOWN",
+    "when_command_missing": "UNKNOWN"
+  },
+  "error_semantics": {
+    "on_timed_out": "ERROR",
+    "on_contradictory_stdout": "ERROR",
+    "on_unauthorized_subprocess": "ERROR"
+  },
+  "remediation_ref": "playbooks/openbsd-sealed-brick/README.md",
+  "failure_message": "OpenBSD bounded v0 collection failed or returned a non-PASS result. Remediation is advisory playbook reference only.",
+  "provenance_refs": {
+    "unit_test_refs": ["tests/test_openbsd_contract.py"],
+    "fixture_refs": ["schemas/fixtures/valid/check.openbsd-sealed-brick.valid.json"],
+    "live_target_refs": []
+  },
+  "last_verified": "2026-08-13"
 }

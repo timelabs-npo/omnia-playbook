@@ -1,34 +1,252 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/check.schema.json",
-  "title": "Check",
+  "title": "Check (Operational Observation Operation)",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "id",
-    "invariant",
+    "version",
+    "status",
+    "layer",
+    "invariant_ref",
+    "target_platform",
+    "runtime_host_independent",
+    "authority_ceiling",
+    "forbidden_actions",
+    "capability_ref",
+    "observation_contract",
+    "evidence_tier_claim",
+    "evidence_tier_support",
     "command",
-    "platform",
     "requires",
     "timeout",
-    "expected_exit_code",
-    "expected_output",
-    "failure_message",
-    "remediation_playbook"
+    "exit_code_semantics",
+    "observation_semantics",
+    "unknown_semantics",
+    "error_semantics",
+    "remediation_ref"
   ],
   "properties": {
     "id": { "type": "string", "minLength": 3 },
-    "invariant": { "type": "string", "minLength": 3 },
+    "version": { "type": "string", "minLength": 1, "pattern": "^[^\\s]+$" },
+    "status": { "type": "string", "enum": ["declared_only", "proposed", "implemented", "validated_mock", "validated_live_target", "deprecated"] },
+    "layer": { "type": "string", "enum": ["normative", "operational", "explanatory"], "const": "operational" },
+    "invariant_ref": { "type": "string", "minLength": 3 },
+    "target_platform": { "type": "string", "minLength": 2 },
+    "target_vendor": { "type": "string", "minLength": 2 },
+    "runtime_host_independent": { "type": "boolean" },
+    "authority_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_authority", "no_policy_invention", "no_authority_promotion"],
+      "properties": {
+        "max_authority": {
+          "type": "string",
+          "enum": ["read_only_evidence", "advisory_remediation_only", "repair_unattended"]
+        },
+        "no_policy_invention": { "type": "boolean", "const": true },
+        "no_authority_promotion": { "type": "boolean", "const": true },
+        "forbids_policy_domains": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "action", "reason"],
+        "properties": {
+          "id": { "type": "string", "minLength": 3 },
+          "action": { "type": "string", "minLength": 5 },
+          "reason": { "type": "string", "minLength": 8 }
+        }
+      }
+    },
+    "capability_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "operation_id", "adapter_ref_hint"],
+      "properties": {
+        "capability_id": { "type": "string", "minLength": 3 },
+        "operation_id": { "type": "string", "minLength": 3 },
+        "adapter_ref_hint": { "type": "string", "minLength": 3 }
+      }
+    },
+    "observation_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observations_emitted", "output_schema"],
+      "properties": {
+        "observations_emitted": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "observation_ref", "optional"],
+            "properties": {
+              "id": { "type": "string", "minLength": 3 },
+              "observation_ref": { "type": "string", "minLength": 3 },
+              "optional": { "type": "boolean" }
+            }
+          }
+        },
+        "output_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["format", "encoding", "top_level_keys"],
+          "properties": {
+            "format": { "type": "string", "enum": ["line_based_kv", "json_lines", "json_object", "stdout_lines_presence", "none_documentation_only"] },
+            "encoding": { "type": "string" },
+            "top_level_keys": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 2 }
+            }
+          }
+        }
+      }
+    },
+    "evidence_tier_claim": {
+      "type": "string",
+      "enum": ["declared_only", "implemented", "validated_mock", "validated_live_target"]
+    },
+    "evidence_tier_support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declared_only", "implemented", "validated_mock", "validated_live_target"],
+      "properties": {
+        "declared_only": { "type": "boolean" },
+        "implemented": { "type": "boolean" },
+        "validated_mock": { "type": "boolean" },
+        "validated_live_target": { "type": "boolean" },
+        "fixture_tests_only": { "type": "boolean" },
+        "live_target_provenance_ref_present": { "type": "boolean" }
+      }
+    },
     "command": { "type": "string", "minLength": 1 },
-    "platform": { "type": "string", "minLength": 2 },
     "requires": {
       "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
       "items": { "type": "string", "minLength": 1 }
     },
     "timeout": { "type": "integer", "minimum": 1 },
-    "expected_exit_code": { "type": "integer", "minimum": 0 },
-    "expected_output": { "type": "object" },
+    "exit_code_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected", "observed_behavior"],
+      "properties": {
+        "expected": { "type": "integer", "minimum": 0 },
+        "observed_behavior": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["on_nonzero", "on_zero_with_empty_output"],
+          "properties": {
+            "on_nonzero": {
+              "type": "string",
+              "enum": ["ERROR", "FAIL", "UNKNOWN", "FAIL_OR_ERROR", "ADVISORY_REMEDIATION_ONLY"]
+            },
+            "on_zero_with_empty_output": {
+              "type": "string",
+              "enum": ["UNKNOWN", "FAIL", "PASS_IF_EXPECTED", "ERROR", "FAIL_OR_ERROR", "ADVISORY_REMEDIATION_ONLY"]
+            }
+          }
+        }
+      }
+    },
+    "observation_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fail_if_missing_required", "pass_if_all_present_and_match"],
+      "properties": {
+        "fail_if_missing_required": { "type": "boolean" },
+        "pass_if_all_present_and_match": { "type": "boolean" },
+        "expected_values": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["key", "value_type"],
+            "properties": {
+              "key": { "type": "string", "minLength": 2 },
+              "value_type": { "type": "string", "minLength": 3 },
+              "match_rule": { "type": ["string", "object"] },
+              "expected": {},
+              "expected_values": {}
+            }
+          }
+        }
+      }
+    },
+    "unknown_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["when_required_observation_missing", "when_command_missing"],
+      "properties": {
+        "when_required_observation_missing": {
+          "type": "string",
+          "enum": ["UNKNOWN", "FAIL", "ERROR"]
+        },
+        "when_command_missing": {
+          "type": "string",
+          "enum": ["UNKNOWN", "FAIL", "ERROR"]
+        }
+      }
+    },
+    "error_semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on_timed_out", "on_contradictory_stdout", "on_unauthorized_subprocess"],
+      "properties": {
+        "on_timed_out": {
+          "type": "string",
+          "enum": ["ERROR", "UNKNOWN", "FAIL"]
+        },
+        "on_contradictory_stdout": {
+          "type": "string",
+          "enum": ["ERROR", "UNKNOWN", "FAIL"]
+        },
+        "on_unauthorized_subprocess": {
+          "type": "string",
+          "enum": ["ERROR", "FAIL"]
+        }
+      }
+    },
+    "remediation_ref": { "type": "string", "minLength": 3 },
     "failure_message": { "type": "string", "minLength": 3 },
-    "remediation_playbook": { "type": "string", "minLength": 3 }
+    "provenance_refs": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "unit_test_refs": {
+          "type": "array",
+          "minItems": 0,
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "fixture_refs": {
+          "type": "array",
+          "minItems": 0,
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "live_target_refs": {
+          "type": "array",
+          "minItems": 0,
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "never_claim_live_from_fixture": { "type": "boolean" }
+      }
+    },
+    "last_verified": { "type": "string", "format": "date" }
   }
 }

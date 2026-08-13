@@ -1,0 +1,50 @@
+{
+  "schema_version": "omnia.disagreement.v1",
+  "id": "disagree-openbsd-sealed-brick-bounded-control",
+  "version": "1.0.0",
+  "layer": "normative",
+  "decision_class": "openbsd_sealed_brick_bounded_control",
+  "disagreement_policy": {
+    "disagreement_allowed": true,
+    "must_publish_conflicting_premises": true,
+    "must_publish_evidence_interpretation": true
+  },
+  "resolution_evidence": {
+    "locate_differing_premise_refs": [
+      "invariant:inv-openbsd-sealed-brick-bounded-control#preconditions",
+      "invariant:inv-openbsd-sealed-brick-bounded-control#decision_rule",
+      "check:chk-openbsd-v0-collection-boundary#observation_contract"
+    ],
+    "locate_differing_evidence_interpretation_refs": [
+      "invariant:inv-openbsd-sealed-brick-bounded-control#outcomes",
+      "check:chk-openbsd-v0-collection-boundary#observation_semantics"
+    ],
+    "identify_discriminating_observation_ids": [
+      "obs-ob-v0-collect-contract-version",
+      "obs-ob-v0-collect-output-mode",
+      "obs-ob-v0-collect-result"
+    ],
+    "perform_bounded_measurement_if_authorized": [
+      "causal-experiment:causal-dns-openbsd-001:bounded-measurement-dns"
+    ]
+  },
+  "fail_closed": true,
+  "action_under_unresolved": "LAST_KNOWN_GOOD_RESTORE_ONLY",
+  "convergence_criteria": {
+    "sufficient_convergence_type": "deterministic_omnia_unanimous",
+    "required_evidence_tier": "validated_mock",
+    "participant_claims_must_share_evidence_refs": true,
+    "must_recompute_after_measurement": true
+  },
+  "majority_vote_alone_must_not_override": true,
+  "recompute_workflow": [
+    "locate_differing_premise",
+    "locate_differing_evidence_interpretation",
+    "identify_discriminating_observation",
+    "perform_bounded_measurement_if_authorized",
+    "recompute_result_from_omnia_rules"
+  ],
+  "owner_intent_refs": ["owner-intent-bluenikee-001"],
+  "invariant_refs": ["inv-openbsd-sealed-brick-bounded-control"],
+  "explanatory_notes": "Disagreement resolution for the sealed-brick bounded-control decision class must always fail closed and never rely on participant-majority counts alone."
+}

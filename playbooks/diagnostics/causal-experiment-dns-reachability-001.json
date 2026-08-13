@@ -1,0 +1,147 @@
+{
+  "id": "causal-dns-reachability-001",
+  "version": "1.0.0",
+  "status": "proposed",
+  "layer": "operational",
+  "title": "Bounded causal DNS reachability probe for explicit-resolver disagreements",
+  "scope": {
+    "target_platforms": ["macos", "openwrt", "openbsd"],
+    "target_classes": ["developer_workstation", "edge_appliance"],
+    "policy_boundary_ids": ["pb-admin-lan-only"]
+  },
+  "competing_hypotheses": [
+    {
+      "id": "hyp-a-resolver-unreachable",
+      "statement": "Declared nameservers are unreachable from target; DNS failure is network-layer reachability, not resolver-value omission.",
+      "predicts_observations_confirming": ["obs-dns-reachability-bool=false", "obs-dns-nameserver-count>=1"]
+    },
+    {
+      "id": "hyp-b-resolver-omitted",
+      "statement": "Target declares zero nameservers; resolver configuration is omitted entirely, not merely unreachable.",
+      "predicts_observations_confirming": ["obs-dns-nameserver-count=0", "obs-dns-reachability-bool=UNKNOWN"]
+    },
+    {
+      "id": "hyp-c-resolver-source-path-mismatch",
+      "statement": "Resolver source returns an alternative path from expected (e.g., resolv.conf instead of scutil), causing an apparent contradiction between count and source.",
+      "predicts_observations_confirming": ["obs-dns-resolver-source=alternate", "obs-dns-nameserver-count>=1"]
+    }
+  ],
+  "target_flows": [
+    {
+      "flow_id": "flow-dns-admin-lan-udp-53",
+      "expected_properties": {"protocol": "udp", "dport": 53, "bandwidth_class": "low"},
+      "intervention_point_ref": "ip-dns-lan-safe-probe"
+    }
+  ],
+  "baseline_metrics": {
+    "pre_experiment_observation_point_ids": ["op-dns-observe-macos", "op-dns-observe-openwrt"],
+    "pre_experiment_snapshot_ref": "snap-baseline-dns-001",
+    "required_metric_ids": ["metric-dns-count", "metric-dns-source", "metric-dns-reachability"],
+    "baseline_window_seconds": 60
+  },
+  "authority_required": {
+    "least_privilege_level": "safe_active_probe",
+    "mutation_ceiling": "no-resolver-value-write",
+    "never_invent_policy": true,
+    "approval_ref": "approval-causal-dns-probe-safe-001",
+    "unvetted_mutation_prohibited": true
+  },
+  "mutation_spec": {
+    "temporary_mutation_id": "mut-safe-probe-dns-lan-001",
+    "mutation_class": "safe_active_probe",
+    "applies_to_intervention_point_ids": ["ip-dns-lan-safe-probe"],
+    "applies_to_flow_ids": ["flow-dns-admin-lan-udp-53"],
+    "rollback_idempotent_command": "omnia-causal rollback mut-safe-probe-dns-lan-001",
+    "mutation_command": "omnia-causal probe mut-safe-probe-dns-lan-001 --timeout 30"
+  },
+  "blast_radius": {
+    "max_flows_impacted": 1,
+    "max_nodes_impacted": 1,
+    "max_users_impacted": 0,
+    "policy_boundary_envelope": ["pb-admin-lan-only"]
+  },
+  "time_bound_seconds": 60,
+  "rollback_procedure_ref": {
+    "id": "rollback-dns-probe-001",
+    "standardized_rollback_ref": "playbooks/recovery/dns-explicit-resolvers.md",
+    "proven_tested_ref": "tests/test_causal_conformance.py::test_scenario_f_resolved_by_one_bounded_observation",
+    "all_failure_paths_covered": true
+  },
+  "hypothesis_validators": [
+    {
+      "hypothesis_id": "hyp-a-resolver-unreachable",
+      "expected_observation_refs": ["obs-dns-nameserver-count", "obs-dns-reachability-bool"],
+      "deterministic_validator_rule_id": "dr-dns-explicit-resolvers-v1"
+    },
+    {
+      "hypothesis_id": "hyp-b-resolver-omitted",
+      "expected_observation_refs": ["obs-dns-nameserver-count"],
+      "deterministic_validator_rule_id": "dr-dns-explicit-resolvers-v1"
+    },
+    {
+      "hypothesis_id": "hyp-c-resolver-source-path-mismatch",
+      "expected_observation_refs": ["obs-dns-nameserver-count", "obs-dns-resolver-source"],
+      "deterministic_validator_rule_id": "dr-dns-explicit-resolvers-v1"
+    }
+  ],
+  "commit_condition": {
+    "id": "commit-dns-probe-001",
+    "predefined_success_criteria_ids": ["crit-hyp-resolved", "crit-omnia-deterministic-unanimous"],
+    "triggers_permanent_application_only_if": "all_success_criteria_met_and_hypothesis_resolved",
+    "default_without_commit_is_rollback": true
+  },
+  "fail_closed_condition": {
+    "id": "failclosed-dns-probe-001",
+    "triggers_immediate_rollback_on_anomalous_impact": true,
+    "anomaly_metric_ids": ["metric-dns-packet-loss-anomaly", "metric-dns-latency-exceeds-slo"],
+    "service_restoration_required": true
+  },
+  "evidence_receipt_contract": {
+    "id": "receipt-dns-probe-001",
+    "records_all_actions": true,
+    "records_all_observations": true,
+    "records_outcomes": true,
+    "cryptographic_verification": {
+      "algorithm": "JWS",
+      "requires_signed_receipt": true
+    },
+    "audit_ref": "reports/trae-openbsd-sealed-brick.md#causal-experiment-audit",
+    "post_experiment_analysis_refs": [
+      "reports/trae-openbsd-sealed-brick.md",
+      "schemas/fixtures/valid/causal.dns-reachability.valid.json"
+    ]
+  },
+  "evidence_method_hierarchy_used": {
+    "hierarchy_order": [
+      "passive_observational_evidence_no_modification",
+      "safe_active_probes_minimal_risk",
+      "bounded_fully_reversible_mutations_blast_radius_contained",
+      "controlled_causal_observations_during_approved_experiment",
+      "formal_rollback_or_commit_only_upon_completion_or_failure"
+    ],
+    "tribunal_must_propose_from_registered_only": true,
+    "must_attempt_passive_first": true
+  },
+  "network_model_refs_required": {
+    "operator_intent_ref_ids": ["owner-intent-bluenikee-001#svc-public-internet-access"],
+    "flow_ref_ids": ["flow-dns-admin-lan-udp-53"],
+    "dependency_graph_ref": "depgraph-lan-dns-001",
+    "path_ref_ids": ["path-admin-lan-target-to-resolver"],
+    "policy_boundary_ref_ids": ["pb-admin-lan-only"],
+    "observation_point_ref_ids": ["op-dns-observe-macos", "op-dns-observe-openwrt"],
+    "intervention_point_ref_ids": ["ip-dns-lan-safe-probe"],
+    "before_evidence_snapshot_ref_id": "snap-before-dns-001",
+    "after_evidence_snapshot_ref_id": "snap-after-dns-001"
+  },
+  "dependency_ids": ["inv-dns-explicit-observable-resolvers"],
+  "remediation_refs": {
+    "playbook": "playbooks/recovery/dns-explicit-resolvers.md",
+    "references": ["reports/trae-openbsd-sealed-brick.md"]
+  },
+  "source_refs": {
+    "normative": ["foundation/dns.md"],
+    "operational": ["checks/dns/chk-dns-macos-observe.yaml"],
+    "explanatory": ["references/openbsd/README.md"]
+  },
+  "explanatory_notes": "Proposed experiment to discriminate between competing DNS hypotheses. Safe active probe only; bounded by blast radius, time-bound, and strict fail-closed condition. Tribunal must select ONLY pre-registered experiments, never invent unvetted mutations."
+}

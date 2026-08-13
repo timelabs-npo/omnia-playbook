@@ -1,44 +1,95 @@
 {
-  "id": "adapter-windows-dns-v0",
-  "name": "Windows DNS v0 Resolver Inspection Adapter",
+  "id": "adapter-windows-vendor",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "Windows Vendor DNS read-only evidence adapter",
   "ontology": {
     "type": "operating_system",
     "platform_vendor": "operating_system_vendor",
     "platform_name": "Windows",
-    "vendor_name": "Microsoft Corporation"
+    "vendor_name": "Microsoft Corporation",
+    "interface_type": "cli_wrapper",
+    "adapter_is_evidence_provider_only": true
   },
-  "support_tier": "supported",
-  "status": "VALIDATED",
-  "description": "Supported adapter mapping for Windows read-only DNS resolver inspection via PowerShell Get-DnsClientServerAddress. The Windows adapter directory beyond DNS v0 remains UNIMPLEMENTED by policy.",
+  "support_tier": "advisory",
+  "status": "declared_only",
+  "description": "Declared/advisory Windows adapter limited to DNS-explicit-resolver observation via netsh. Adapters are dumb evidence providers only; never decide truth, policy, or remediation. OS-wide mappings are UNIMPLEMENTED intentionally.",
   "primary_platforms": ["windows"],
-  "primary_vendors": ["microsoft-corporation"],
+  "primary_vendors": ["microsoft-corp"],
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-netsh-set-dns",
+      "action": "netsh interface ipv4|ipv6 set dns or Set-DnsClientServerAddress -ResetServerAddresses -ServerAddresses",
+      "reason": "Windows adapter path is read-only evidence; resolver mutations are operator-owned remediation only."
+    },
+    {
+      "id": "fa-adapter-admin-escalation",
+      "action": "RunAs / admin escalation or UAC bypass from adapter invocation",
+      "reason": "Authority ceiling is read_only_evidence only."
+    }
+  ],
   "declared_capabilities": [
     {
-      "id": "cap-windows-dns-resolver-inspect-v0",
-      "name": "Windows DNS resolver inspection v0",
-      "operation": "dns.resolver.inspect.v0",
+      "id": "cap-dns-explicit-resolver-observe-v0",
+      "version": "1.0.0",
+      "name": "DNS explicit resolver observe for Windows",
+      "operation": "op-dns-observe-windows",
       "mode": "read_only",
-      "interface_type": "cli_wrapper",
-      "support_tier": "supported",
-      "status": "VALIDATED",
-      "description": "Read-only Windows DNS resolver observation for the DNS explicit resolver invariant using Get-DnsClientServerAddress | Format-List.",
+      "support_tier": "advisory",
+      "status": "declared_only",
+      "evidence_tier": "declared_only",
+      "description": "Read-only Windows DNS resolver observation for the DNS-explicit-resolver invariant via netsh interface ipv4 show dns.",
       "sources": [
         "adapters/windows/README.md",
         "foundation/dns.md",
         "checks/dns/chk-dns-windows-observe.yaml"
       ],
-      "evidence": {
-        "type": "check_reference",
-        "references": [
-          "checks/dns/chk-dns-windows-observe.yaml",
-          "tests/test_repository_artifacts.py"
-        ]
+      "provenance_refs": [
+        "checks/dns/chk-dns-windows-observe.yaml",
+        "tests/test_repository_artifacts.py"
+      ],
+      "observation_contract": {
+        "observations": [
+          {"id": "obs-dns-nameserver-count", "type": "integer", "optional": false},
+          {"id": "obs-dns-resolver-source", "type": "enum_netsh", "optional": false},
+          {"id": "obs-dns-reachability-bool", "type": "boolean", "optional": true}
+        ],
+        "output_schema": {
+          "format": "line_based_kv",
+          "encoding": "utf-8",
+          "top_level_keys": ["nameserver_count", "resolver_source", "reachability"]
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
       }
     }
   ],
-  "validated_capability_ids": [
-    "cap-windows-dns-resolver-inspect-v0"
-  ],
+  "validated_capability_ids": [],
   "last_verified": "2026-08-13",
-  "notes": "The adapter directory alone does not equal supported status. Only the DNS v0 capability is supported; rest is UNIMPLEMENTED."
+  "notes": "Windows adapter is DECLARED_ONLY; not implemented/validated. Directory presence alone does not equal supported status."
 }

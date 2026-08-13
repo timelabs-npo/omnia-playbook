@@ -1,39 +1,82 @@
 {
-  "id": "adapter-google-cloud-reference",
-  "name": "Google Cloud Vendor Reference Adapter",
+  "id": "adapter-google-cloud-vendor",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "Google Cloud Platform placeholder reference adapter (UNIMPLEMENTED)",
   "ontology": {
     "type": "cloud_vendor",
     "platform_vendor": "cloud_vendor",
     "platform_name": "Google Cloud Platform",
-    "vendor_name": "Google LLC"
+    "vendor_name": "Google LLC",
+    "interface_type": "base_system_file",
+    "adapter_is_evidence_provider_only": true
   },
   "support_tier": "unsupported",
-  "status": "UNIMPLEMENTED",
-  "description": "Placeholder-only Google Cloud vendor reference adapter. Directory presence alone does NOT grant supported status; this manifest declares the adapter UNIMPLEMENTED with no validated capability mappings. Ambiguous taxonomy must fail validation, so ontology is explicitly declared.",
-  "primary_platforms": ["google-cloud"],
+  "status": "declared_only",
+  "description": "Placeholder-only Google Cloud reference adapter. UNIMPLEMENTED operational mappings. Explicitly declared to avoid support elevation via directory-name folklore.",
+  "primary_platforms": ["google-cloud", "google-workspace"],
   "primary_vendors": ["google-llc"],
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-gcp-mutation",
+      "action": "gcloud create|update|delete|set-iam-policy or any project/org mutation",
+      "reason": "Adapter is documentation/UNIMPLEMENTED only; no mutation authority granted."
+    }
+  ],
   "declared_capabilities": [
     {
       "id": "cap-google-cloud-reference-notes-only",
-      "name": "Google Cloud reference note storage",
-      "operation": "references.storage.notes",
+      "version": "1.0.0",
+      "name": "Google Cloud reference storage (documentation only)",
+      "operation": "op-google-cloud-reference-storage-notes",
       "mode": "documentation_only",
-      "interface_type": "base_system_file",
       "support_tier": "unsupported",
-      "status": "UNIMPLEMENTED",
+      "status": "declared_only",
+      "evidence_tier": "declared_only",
       "description": "Stores documentation notes for Google Cloud references. No diagnostic commands, no operational mapping, no mutation authority.",
       "sources": [
         "adapters/google-cloud/README.md",
         "references/google/README.md"
       ],
-      "evidence": {
-        "type": "unit_test",
-        "references": [
-          "tests/test_validation_contract.py",
-          "tests/test_repository_artifacts.py"
-        ]
+      "provenance_refs": [
+        "tests/test_validation_contract.py",
+        "tests/test_repository_artifacts.py"
+      ],
+      "observation_contract": {
+        "observations": [],
+        "output_schema": {
+          "format": "none_documentation_only",
+          "encoding": "utf-8",
+          "top_level_keys": []
+        }
       },
-      "evidence_notes": "UNIMPLEMENTED adapter; evidence is repo structure and documentation only."
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      }
     }
   ],
   "validated_capability_ids": [],

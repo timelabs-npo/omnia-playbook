@@ -1,7 +1,37 @@
 {
   "id": "bluenikee",
-  "name": "Bluenikee Environment",
-  "description": "Organization-specific profile with no secrets or topology details. Adapter support is determined by adapter manifest ontology and validated capability mappings, not directory presence alone.",
-  "platforms": ["macos", "windows"],
-  "adapters": ["macos", "windows"]
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "Bluenikee Multi-platform Estate",
+  "description": "Organization-specific example estate profile. Runtime host substrate is explicitly declared separate from evaluated targets. No secrets or topology details.",
+  "runtime_host": {
+    "platform": "openbsd",
+    "vendor": "openbsd-project",
+    "adapter_id_hint": "adapter-openbsd-sealed-brick",
+    "host_substrate_only": true
+  },
+  "estate_targets": [
+    {
+      "target_id": "workstation-macos-bluenikee-1",
+      "platform": "macos",
+      "vendor": "apple-inc",
+      "adapter_id_hint": "adapter-macos-vendor",
+      "capabilities_required": ["cap-dns-explicit-resolver-observe-v0"],
+      "evidence_tier_minimum": "implemented"
+    },
+    {
+      "target_id": "workstation-windows-bluenikee-1",
+      "platform": "windows",
+      "vendor": "microsoft-corp",
+      "adapter_id_hint": "adapter-windows-vendor",
+      "capabilities_required": ["cap-dns-explicit-resolver-observe-v0"],
+      "evidence_tier_minimum": "declared_only"
+    }
+  ],
+  "adapters_legacy_list": ["macos", "windows"],
+  "owner_intent_refs": ["owner-intent-bluenikee-001"],
+  "disagreement_resolution_refs": [
+    "disagree-dns-explicit-resolvers",
+    "disagree-network-policy"
+  ]
 }

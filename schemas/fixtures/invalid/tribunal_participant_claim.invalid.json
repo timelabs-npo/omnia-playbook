@@ -1,0 +1,32 @@
+{
+  "schema_version": "omnia.tribunal_claim.v1",
+  "claim_id": "claim-invalid-001",
+  "created_at_utc": "not-a-date",
+  "participant": {
+    "participant_id": "x",
+    "model_identity": "",
+    "provenance_identity": "",
+    "vendor_identity": "hardcoded-gpt-only-vendor-lock-violation",
+    "architecture_identity": "",
+    "alignment_assumptions": [],
+    "language_support": []
+  },
+  "decision_class_ref": "",
+  "claim": {"type": "deterministic_omnia_rule", "result": "UNKNOWN_RESULT_ENUM"},
+  "evidence_refs": [],
+  "assumptions": [],
+  "unresolved_questions": [],
+  "proposed_result": {
+    "result": "NOT_A_VALID_ENUM",
+    "evidence_ref_ids": [],
+    "confidence_numeric": 2.0,
+    "explanation": ""
+  },
+  "omnia_normative_bundle_digest": "too-short-not-64-char-sha256",
+  "deterministic_conformance": {
+    "claims_to_follow_omnia_deterministic_rules": false,
+    "does_not_vendor_lock": false,
+    "result_would_be_same_on_all_runtimes_for_deterministic": false
+  },
+  "signature_ref": ""
+}
