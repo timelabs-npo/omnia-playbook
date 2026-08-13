@@ -3,6 +3,8 @@ reports/*.md
 !reports/trae-openbsd-sealed-brick.md
 !reports/SEMANTIC_NEIGHBOURS_MATRIX.md
 !reports/REUSE_DECISION_REGISTER.md
+!reports/RECONCILIATION_MAIN_TRAE_CODEX_COPILOT.md
+!reports/BLUESHOES_REPRESENTATION_V0_HANDOFF.md
 !reports/.gitkeep
 reports/blueshoes/receipts/
 __pycache__/
@@ -10,4 +12,6 @@ __pycache__/
 .venv/
 venv/
 build/
+.pytest_cache/
+.DS_Store
 
