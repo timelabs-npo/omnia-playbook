@@ -3,7 +3,7 @@
 Canonical machine-readable matrix: `TIMELABS_SEMANTIC_NEIGHBOURS_MATRIX.csv`.
 
 ## Coverage summary
-- Records: 27
+- Records: 30
 - Families: evidence/governance, policy engines, transparency/provenance, network architecture, transport/multipath, packet-processing mechanisms, simulation/world models, multi-agent reasoning.
 - Languages/traditions represented: English + Chinese technical terminology fields in every record.
 
