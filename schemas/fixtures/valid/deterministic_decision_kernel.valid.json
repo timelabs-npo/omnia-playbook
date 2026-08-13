@@ -1,0 +1,59 @@
+{
+  "schema_version": "omnia.decision_kernel.v1",
+  "decision_id": "dk-openbsd-sealed-brick-v1",
+  "decision_class_ref": "openbsd_sealed_brick_bounded_control",
+  "version": "1.0.0",
+  "layer": "normative",
+  "contract_kind": "boundary_only",
+  "description": "Boundary contract for OpenBSD sealed-brick pass/fail/unknown decisions. No engine implementation referenced; Rheknel is CANDIDATE_UNVALIDATED.",
+  "input_signature": {
+    "typed_evidence_refs": ["obs-pf-rules-loaded", "obs-carp-master", "obs-wg-peers-configured"],
+    "owner_intent_ref": "oi-bluenikee-001",
+    "policy_invariant_refs": ["inv-openbsd-sealed-brick-v1"],
+    "authority_ceiling_refs": ["ac-read-only-evidence"],
+    "dependency_refs_required": ["dep-unbound-running", "dep-bgpd-converged"],
+    "extra_evidence_policy": { "unknown_evidence_becomes": "ERROR" }
+  },
+  "fail_closed_default": {
+    "unknown_policy_becomes": "UNKNOWN",
+    "malformed_evidence_becomes": "ERROR",
+    "missing_evaluator_becomes": "ERROR",
+    "natural_language_payload_cannot_grant": true,
+    "llm_output_cannot_override_denial": true,
+    "escapes_fail_closed_to_pass": false
+  },
+  "output_enum": {
+    "allowed": ["PASS", "FAIL", "UNKNOWN", "ERROR", "ESCALATE"],
+    "pass_definition": "All invariants satisfied and required evidence meets minimum tier.",
+    "fail_definition": "At least one invariant explicitly violated with supporting evidence tier.",
+    "unknown_definition": "Required evidence missing, not meeting tier, or contradictory without resolution.",
+    "error_definition": "Evidence malformed, evaluator missing, or authority ceiling breached.",
+    "escalate_definition": "Unresolved disagreement or out-of-scope state requiring human escalation.",
+    "pass_cannot_be_forced_by_default": true
+  },
+  "receipt_version": {
+    "version": "receipt.v1",
+    "pins_policy_version": true,
+    "pins_evidence_versions": true,
+    "pins_engine_version": true,
+    "pins_owner_intent_version": true,
+    "required_receipt_fields": ["decision_id", "policy_sha256", "evidence_refs", "output", "engine", "timestamp"]
+  },
+  "determinism_properties": {
+    "identical_inputs_produce_identical_outputs": true,
+    "serializable_inputs": true,
+    "serializable_outputs": true,
+    "replayable_without_live_network": true,
+    "no_external_rng_in_eval": true,
+    "no_clock_dependence_in_eval_unless_explicit": true,
+    "test_vector_refs": ["tv-dk-openbsd-sealed-brick-pass", "tv-dk-openbsd-sealed-brick-fail-closed"]
+  },
+  "compatibility": {
+    "rheknel_status": "CANDIDATE_UNVALIDATED",
+    "host_impl_status": "REFERENCE_IMPLEMENTED_MOCK",
+    "future_engines_via_same_contract": true,
+    "notes": "Rheknel not hard-coded. Host deterministic oracle validated in TRIBUNAL-RT-V0 as pass, tiny models as advisory."
+  },
+  "rheknel_must_not_be_hard_coded": true,
+  "notes": "Boundaries per TRIBUNAL-RT-V0: host oracle succeeded, SmolLM2-135M advisory with critical false-PASS + prompt-injection failures. LLM output = advisory only."
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "omnia.decision_kernel.v1",
+  "decision_id": "dk-invalid-v1",
+  "decision_class_ref": "network_policy",
+  "version": "1.0.0",
+  "layer": "normative",
+  "contract_kind": "boundary_only",
+  "input_signature": {
+    "typed_evidence_refs": ["obs-evidence"],
+    "owner_intent_ref": "owner-intent-1",
+    "policy_invariant_refs": ["inv-1"],
+    "authority_ceiling_refs": ["ac-1"],
+    "dependency_refs_required": []
+  },
+  "fail_closed_default": {
+    "unknown_policy_becomes": "PASS",
+    "malformed_evidence_becomes": "ERROR",
+    "missing_evaluator_becomes": "ERROR",
+    "natural_language_payload_cannot_grant": true,
+    "llm_output_cannot_override_denial": true,
+    "escapes_fail_closed_to_pass": true
+  },
+  "output_enum": {
+    "allowed": ["PASS", "FAIL", "UNKNOWN", "ERROR", "ESCALATE"],
+    "pass_definition": "Passed.",
+    "fail_definition": "Failed.",
+    "unknown_definition": "Unknown.",
+    "error_definition": "Error.",
+    "escalate_definition": "Escalate.",
+    "pass_cannot_be_forced_by_default": true
+  },
+  "receipt_version": {
+    "version": "receipt.v1",
+    "pins_policy_version": true,
+    "pins_evidence_versions": true,
+    "pins_engine_version": true,
+    "pins_owner_intent_version": true,
+    "required_receipt_fields": ["decision_id"]
+  },
+  "determinism_properties": {
+    "identical_inputs_produce_identical_outputs": true,
+    "serializable_inputs": true,
+    "serializable_outputs": true,
+    "replayable_without_live_network": true,
+    "no_external_rng_in_eval": true,
+    "no_clock_dependence_in_eval_unless_explicit": true
+  },
+  "compatibility": {
+    "rheknel_status": "CANDIDATE_UNVALIDATED",
+    "host_impl_status": "UNIMPLEMENTED",
+    "future_engines_via_same_contract": true
+  },
+  "rheknel_must_not_be_hard_coded": true
+}

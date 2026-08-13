@@ -1,0 +1,156 @@
+id: inv-openbsd-sealed-brick-bounded-control
+version: '1.0.0'
+status: validated_mock
+layer: normative
+title: OpenBSD sealed-brick bounded control surface
+description: OpenBSD sealed-controller appliances must keep a bounded read-only collection surface, deterministic authority ceiling, and explicit UNKNOWN behavior for missing required evidence.
+rationale: A narrow observable surface reduces accidental exposure and keeps rollback and evidence paths inspectable. Required by the Omnia Tribunal product requirement that normative semantics be explicit, not inferred from prose.
+scope:
+  target_class: sealed_router_controller
+  tags: [dns, pf, read-only-only, bounded-collection]
+severity: critical
+runtime_host_independent: true
+applicability:
+  target_platforms: [openbsd]
+  target_vendors: [openbsd-project]
+  evidence_tier_minimum: validated_mock
+  target_id_patterns: [router-*, edge-*, sealed-*]
+preconditions:
+  expressions:
+    - id: pre-collect-v0-observations-available
+      rule:
+        observation_all_of:
+          - obs-ob-v0-collect-contract-version
+          - obs-ob-v0-collect-output-mode
+          - obs-ob-v0-collect-result
+      message: v0 bounded collection observations are required preconditions for this invariant.
+  unknown_behavior:
+    on_missing_observation: UNKNOWN
+    on_precondition_false: SKIP_INAPPLICABLE
+required_observations:
+  - id: obs-ob-v0-collect-contract-version
+    name: public collector contract version emitted
+    schema:
+      type: enum
+      enum: [v0]
+    evidence_tier_required: validated_mock
+    provenance_required:
+      signed: false
+      adapter_operation_ref: op-openbsd-inspect-collect-public-v0
+      must_be_in_evidence_bundle: true
+  - id: obs-ob-v0-collect-output-mode
+    name: collector declares output minimization mode
+    schema:
+      type: enum
+      enum: [public_minimized]
+    evidence_tier_required: validated_mock
+    provenance_required:
+      signed: false
+      adapter_operation_ref: op-openbsd-inspect-collect-public-v0
+      must_be_in_evidence_bundle: true
+  - id: obs-ob-v0-collect-result
+    name: bounded collection gate result
+    schema:
+      type: enum
+      enum: [PASS, FAIL, UNKNOWN, ERROR]
+    evidence_tier_required: validated_mock
+    provenance_required:
+      signed: false
+      adapter_operation_ref: op-openbsd-inspect-collect-public-v0
+      must_be_in_evidence_bundle: true
+required_capabilities: [cap-openbsd-bounded-collect-v0]
+decision_rule:
+  id: dr-openbsd-bounded-control-v1
+  rule_type: omnia_deterministic_v1
+  version: '1.0.0'
+  observations_map:
+    contract_version: obs-ob-v0-collect-contract-version
+    output_mode: obs-ob-v0-collect-output-mode
+    result: obs-ob-v0-collect-result
+  logic:
+    pass_if:
+      - id: pass-bounded-v0-success
+        expression:
+          observation_all_match:
+            contract_version: v0
+            output_mode: public_minimized
+            result: PASS
+    fail_if:
+      - id: fail-collect-result-fail
+        expression:
+          observation_not_equals:
+            result: PASS
+        message: v0 bounded collection gate returned non-PASS.
+      - id: fail-mode-or-contract-mismatch
+        expression:
+          observation_not_equals:
+            contract_version: v0
+            output_mode: public_minimized
+        message: v0 bounded collector did not declare expected contract/output mode.
+    unknown_if:
+      - id: unknown-missing-result
+        expression:
+          missing_observation: obs-ob-v0-collect-result
+        message: Required bounded collection result observation is missing; never guess PASS.
+      - id: unknown-missing-contract-version
+        expression:
+          missing_observation: obs-ob-v0-collect-contract-version
+        message: Required contract-version observation missing.
+      - id: unknown-missing-output-mode
+        expression:
+          missing_observation: obs-ob-v0-collect-output-mode
+        message: Required output-mode observation missing.
+    error_if:
+      - id: error-contradictory-result-vs-mode
+        expression:
+          contradictory_observations:
+            - obs-ob-v0-collect-result
+            - obs-ob-v0-collect-output-mode
+        message: Bounded result and output-mode declarations contradict each other.
+outcomes:
+  pass_semantics: v0 bounded read-only surface was exercised and emitted a PASS verdict under the declared public-minimized contract. Normative policy satisfied.
+  fail_semantics: The bounded collector returned FAIL, or its emitted contract/output mode does not match the v0 policy. Evidence required; do not auto-remediate.
+  unknown_semantics: At least one required observation is missing. Tribunal must not guess PASS; operator either re-requests bounded evidence or explicitly accepts UNKNOWN disposition.
+  error_semantics: Observations contradict each other (e.g. PASS result with non-public mode). Surface as ERROR; escalate to human; never promote to PASS.
+evidence_requirements:
+  classes_allowed: [posture_booleans_counts_only, deterministic_operation_return, schema_fixture, unit_test]
+  min_tier_for_pass: validated_mock
+remediation_refs:
+  playbook: playbooks/openbsd-sealed-brick/README.md
+  references: [reports/trae-openbsd-sealed-brick.md]
+source_refs:
+  normative:
+    - foundation/networking.md
+    - foundation/secrets.md
+  operational:
+    - adapters/openbsd/adapter.json
+    - checks/openbsd/chk-openbsd-v0-collection-boundary.yaml
+  explanatory:
+    - reports/trae-openbsd-sealed-brick.md
+authority_ceiling:
+  max_authority: advisory_remediation_only
+  no_promotion_reasoning: true
+  forbidden_policy_domains:
+    - pf-rule-widening
+    - sysctl-write
+    - rcctl-service-change
+    - route-mutation
+    - interface-bring-up
+forbidden_actions:
+  - id: fa-pf-load-live
+    action: pfctl -f <candidate> on a live routing appliance
+    reason: Omnia invariants never decide live load; operator must apply last-known-good with explicit human gate.
+  - id: fa-rcctl-change
+    action: rcctl set/enable/start/stop on live service state
+    reason: Live service state mutation outside Omnia's authority ceiling; operator only.
+  - id: fa-egress-widen
+    action: Add permit egress rule outside explicit playbook approval envelope
+    reason: Must not widen policy to compensate for FAIL/UNKNOWN without operator decision.
+dependency_ids: []
+check_refs:
+  ids: [chk-openbsd-v0-collection-boundary]
+last_verified: '2026-08-13'
+explanatory_notes: |
+  Human prose rationale: This invariant models the sealed-brick's most basic posture contract.
+  Future Tribunal models must NOT "reason from prose" about whether DNS/pf is "probably safe";
+  they must resolve obs-ob-v0-collect-* through the decision rule above.

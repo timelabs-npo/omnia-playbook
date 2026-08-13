@@ -1,0 +1,16 @@
+{
+  "schema_version": "omnia.network.v1",
+  "id": "netmodel-invalid-001",
+  "version": "1.0.0",
+  "layer": "operational",
+  "operator_intents": [],
+  "flows": [],
+  "dependency_graph": {"nodes": [], "edges": []},
+  "paths": [],
+  "policy_boundaries": [],
+  "observation_points": [],
+  "intervention_points": [],
+  "evidence_snapshots": [],
+  "causal_experiment_registry_refs": ["\"quoted-not-allowed-ref-\""],
+  "extra_field_forbidden": true
+}

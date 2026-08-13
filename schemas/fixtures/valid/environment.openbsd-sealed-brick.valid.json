@@ -1,0 +1,32 @@
+{
+  "id": "openbsd-sealed-brick",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "OpenBSD Sealed Brick Environment",
+  "runtime_host": {
+    "platform": "openbsd",
+    "vendor": "openbsd-project",
+    "adapter_id_hint": "adapter-openbsd-sealed-brick",
+    "host_substrate_only": true
+  },
+  "estate_targets": [
+    {
+      "target_id": "sealed-router-01",
+      "platform": "openbsd",
+      "vendor": "openbsd-project",
+      "adapter_id_hint": "adapter-openbsd-sealed-brick",
+      "capabilities_required": ["cap-openbsd-bounded-collect-v0"],
+      "evidence_tier_minimum": "validated_mock"
+    },
+    {
+      "target_id": "edge-appliance-01",
+      "platform": "openbsd",
+      "vendor": "openbsd-project",
+      "adapter_id_hint": "adapter-openbsd-sealed-brick",
+      "capabilities_required": ["cap-openbsd-bounded-collect-v0", "cap-openbsd-pf-syntax-check-offline"],
+      "evidence_tier_minimum": "validated_mock"
+    }
+  ],
+  "description": "Schema-valid environment fixture for a sealed OpenBSD controller appliance estate with declared runtime host substrate and estate targets. Targets reference declared capabilities and evidence tier minima.",
+  "adapters_legacy_list": ["openbsd"]
+}

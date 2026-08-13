@@ -1,0 +1,41 @@
+{
+  "schema_version": "omnia.owner_intent.v1",
+  "id": "owner-intent-example-001",
+  "version": "1.0.0",
+  "layer": "normative",
+  "owner_id": "owner-example-org",
+  "declared_before_failure": true,
+  "named_services": [
+    {
+      "id": "svc-dns-resolution-001",
+      "name": "Explicit DNS resolution service",
+      "service_class": "networking.dns.resolution",
+      "description": "Provides deterministic explicit DNS resolver configuration for all estate targets.",
+      "required": true,
+      "expectation_refs": ["exp-dns-explicit-resolvers", "exp-dns-no-leak"],
+      "applies_to_target_ids": ["target-router-01", "target-workstation-01"],
+      "invariant_refs_required_if_fail": ["inv-example-001"]
+    }
+  ],
+  "named_capabilities": [
+    {
+      "id": "ncap-dns-inspect-001",
+      "name": "DNS resolver configuration inspection",
+      "capability_class": "observability.dns.config.inspect",
+      "description": "Read-only inspection of declared resolver configuration files on target platform.",
+      "required": true,
+      "supporting_service_ids": ["svc-dns-resolution-001"]
+    }
+  ],
+  "separation_of_concerns": {
+    "invariant_not_auto_service": true,
+    "service_not_auto_policy": true,
+    "observation_not_auto_invariant": true
+  },
+  "source_refs": {
+    "normative": ["foundation/identity.md"],
+    "operational": ["environments/bluenikee/environment.json"],
+    "explanatory": []
+  },
+  "notes": "Minimal valid owner operational intent fixture with named services and capabilities declared pre-failure."
+}

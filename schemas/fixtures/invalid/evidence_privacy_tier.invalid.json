@@ -1,0 +1,54 @@
+{
+  "schema_version": "omnia.evidence_privacy.v1",
+  "tier_set_id": "ep-invalid-promotion",
+  "version": "1.0.0",
+  "layer": "normative",
+  "tiers": {
+    "PUBLIC_EVIDENCE": {
+      "definition": "Promoted tier, claims raw is always publishable: intentionally invalid.",
+      "allowed_leakage_surface": ["raw-addresses"],
+      "machine_consumable_only_minimum": false
+    },
+    "PRIVATE_EVIDENCE": {
+      "definition": "Invalid: allows raw into public.",
+      "handling_required": [],
+      "must_not_be_public_output": false
+    },
+    "LOCAL_ONLY_RAW_OBSERVATION": {
+      "definition": "Invalid: allows leaving host.",
+      "must_not_leave_host": false,
+      "forbidden_publication": []
+    },
+    "DERIVED_BOOLEAN_POSTURE": {
+      "definition": "Invalid: allows reverse engineering raw.",
+      "minimum_evidence_required": [],
+      "must_not_reverse_engineer_raw": false
+    }
+  },
+  "public_exposure_minimum_rule": {
+    "rule_id": "bad-rule",
+    "expose_only_minimum_for_claim": false,
+    "provenance_must_still_be_recorded_in_private": false
+  },
+  "leakage_audits_required": {
+    "values": false,
+    "nested_structures": false,
+    "alternative_keys": false,
+    "serialized_blobs": false,
+    "hostnames": false,
+    "resolver_data": false,
+    "addresses": false,
+    "interface_names": false,
+    "topology": false,
+    "routing_state": false,
+    "timing": false,
+    "identifiers": false
+  },
+  "redaction_contract_version": {
+    "version": "bad",
+    "privacy_not_comprehensive_unless_tested": false,
+    "tier_non_promotion": {
+      "local_raw_may_not_become_public_without_owner_explicit_approval": false
+    }
+  }
+}

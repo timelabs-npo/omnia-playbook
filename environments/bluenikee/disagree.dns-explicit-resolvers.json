@@ -1,0 +1,48 @@
+{
+  "schema_version": "omnia.disagreement.v1",
+  "id": "disagree-dns-explicit-resolvers",
+  "version": "1.0.0",
+  "layer": "normative",
+  "decision_class": "dns_explicit_resolvers",
+  "disagreement_policy": {
+    "disagreement_allowed": true,
+    "must_publish_conflicting_premises": true,
+    "must_publish_evidence_interpretation": true
+  },
+  "resolution_evidence": {
+    "locate_differing_premise_refs": [
+      "invariant:inv-dns-explicit-observable-resolvers#preconditions",
+      "invariant:inv-dns-explicit-observable-resolvers#decision_rule"
+    ],
+    "locate_differing_evidence_interpretation_refs": [
+      "invariant:inv-dns-explicit-observable-resolvers#outcomes"
+    ],
+    "identify_discriminating_observation_ids": [
+      "obs-dns-nameserver-count",
+      "obs-dns-resolver-source",
+      "obs-dns-reachability-bool"
+    ],
+    "perform_bounded_measurement_if_authorized": [
+      "causal-experiment:causal-dns-reachability-001:bounded-measurement-dns"
+    ]
+  },
+  "fail_closed": false,
+  "action_under_unresolved": "ADVISORY_REMEDIATION_ONLY",
+  "convergence_criteria": {
+    "sufficient_convergence_type": "all_required_observations_materialized",
+    "required_evidence_tier": "implemented",
+    "participant_claims_must_share_evidence_refs": true,
+    "must_recompute_after_measurement": true
+  },
+  "majority_vote_alone_must_not_override": true,
+  "recompute_workflow": [
+    "locate_differing_premise",
+    "locate_differing_evidence_interpretation",
+    "identify_discriminating_observation",
+    "perform_bounded_measurement_if_authorized",
+    "recompute_result_from_omnia_rules"
+  ],
+  "owner_intent_refs": ["owner-intent-bluenikee-001"],
+  "invariant_refs": ["inv-dns-explicit-observable-resolvers"],
+  "explanatory_notes": "For DNS explicit-resolver disagreements, an unresolved outcome results in advisory remediation; fail-closed is not the default because DNS ambiguity is common during normal operator reconfiguration."
+}

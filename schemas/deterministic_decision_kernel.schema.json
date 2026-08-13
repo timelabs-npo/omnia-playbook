@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/deterministic_decision_kernel.schema.json",
+  "title": "Omnia v1 Deterministic Decision-Kernel Contract (PASS/FAIL/UNKNOWN/ERROR/ESCALATE — fail-closed)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "decision_id",
+    "decision_class_ref",
+    "version",
+    "layer",
+    "contract_kind",
+    "input_signature",
+    "fail_closed_default",
+    "output_enum",
+    "receipt_version",
+    "determinism_properties",
+    "compatibility"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.decision_kernel.v1" },
+    "decision_id": { "type": "string", "minLength": 5 },
+    "decision_class_ref": { "type": "string", "minLength": 5 },
+    "version": { "type": "string", "minLength": 1, "pattern": "^[^\\s]+$" },
+    "layer": { "type": "string", "const": "normative" },
+    "contract_kind": { "type": "string", "enum": ["boundary_only", "reference_host_impl", "candidate_engine"] },
+    "description": { "type": "string", "minLength": 20 },
+    "input_signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["typed_evidence_refs", "owner_intent_ref", "policy_invariant_refs", "authority_ceiling_refs", "dependency_refs_required"],
+      "properties": {
+        "typed_evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 3 } },
+        "owner_intent_ref": { "type": "string", "minLength": 3 },
+        "policy_invariant_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 3 } },
+        "authority_ceiling_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 3 } },
+        "dependency_refs_required": { "type": "array", "items": { "type": "string", "minLength": 3 } },
+        "extra_evidence_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unknown_evidence_becomes"],
+          "properties": {
+            "unknown_evidence_becomes": { "type": "string", "enum": ["ERROR", "UNKNOWN", "FAIL"] }
+          }
+        }
+      }
+    },
+    "fail_closed_default": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unknown_policy_becomes",
+        "malformed_evidence_becomes",
+        "missing_evaluator_becomes",
+        "natural_language_payload_cannot_grant",
+        "llm_output_cannot_override_denial",
+        "escapes_fail_closed_to_pass"
+      ],
+      "properties": {
+        "unknown_policy_becomes": { "type": "string", "enum": ["UNKNOWN", "ERROR", "FAIL"] },
+        "malformed_evidence_becomes": { "type": "string", "enum": ["ERROR", "FAIL", "UNKNOWN"] },
+        "missing_evaluator_becomes": { "type": "string", "enum": ["ERROR", "UNKNOWN", "FAIL"] },
+        "natural_language_payload_cannot_grant": { "type": "boolean", "const": true },
+        "llm_output_cannot_override_denial": { "type": "boolean", "const": true },
+        "escapes_fail_closed_to_pass": { "type": "boolean", "const": false }
+      }
+    },
+    "output_enum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "pass_definition", "fail_definition", "unknown_definition", "error_definition", "escalate_definition", "pass_cannot_be_forced_by_default"],
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["PASS", "FAIL", "UNKNOWN", "ERROR", "ESCALATE"] }
+        },
+        "pass_definition": { "type": "string", "minLength": 20 },
+        "fail_definition": { "type": "string", "minLength": 20 },
+        "unknown_definition": { "type": "string", "minLength": 20 },
+        "error_definition": { "type": "string", "minLength": 20 },
+        "escalate_definition": { "type": "string", "minLength": 20 },
+        "pass_cannot_be_forced_by_default": { "type": "boolean", "const": true }
+      }
+    },
+    "receipt_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "pins_policy_version", "pins_evidence_versions", "pins_engine_version", "pins_owner_intent_version"],
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "pins_policy_version": { "type": "boolean", "const": true },
+        "pins_evidence_versions": { "type": "boolean", "const": true },
+        "pins_engine_version": { "type": "boolean", "const": true },
+        "pins_owner_intent_version": { "type": "boolean", "const": true },
+        "required_receipt_fields": {
+          "type": "array",
+          "minItems": 6,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 3 }
+        }
+      }
+    },
+    "determinism_properties": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identical_inputs_produce_identical_outputs",
+        "serializable_inputs",
+        "serializable_outputs",
+        "replayable_without_live_network",
+        "no_external_rng_in_eval",
+        "no_clock_dependence_in_eval_unless_explicit"
+      ],
+      "properties": {
+        "identical_inputs_produce_identical_outputs": { "type": "boolean", "const": true },
+        "serializable_inputs": { "type": "boolean", "const": true },
+        "serializable_outputs": { "type": "boolean", "const": true },
+        "replayable_without_live_network": { "type": "boolean", "const": true },
+        "no_external_rng_in_eval": { "type": "boolean", "const": true },
+        "no_clock_dependence_in_eval_unless_explicit": { "type": "boolean", "const": true },
+        "test_vector_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 3 } }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rheknel_status", "host_impl_status", "future_engines_via_same_contract"],
+      "properties": {
+        "rheknel_status": { "type": "string", "enum": ["CANDIDATE_UNVALIDATED", "NOT_REFERENCED", "VALIDATED"] },
+        "host_impl_status": { "type": "string", "enum": ["REFERENCE_IMPLEMENTED_MOCK", "VALIDATED_LIVE_TARGET", "UNIMPLEMENTED"] },
+        "future_engines_via_same_contract": { "type": "boolean", "const": true },
+        "notes": { "type": "string" }
+      }
+    },
+    "rheknel_must_not_be_hard_coded": { "type": "boolean", "const": true },
+    "notes": { "type": "string" }
+  }
+}

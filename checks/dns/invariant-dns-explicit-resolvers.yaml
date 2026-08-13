@@ -1,24 +1,131 @@
 id: inv-dns-explicit-observable-resolvers
-title: Explicit and observable DNS resolvers
-description: Machines must expose resolver configuration and avoid unknown inherited DNS state.
-rationale: Explicit resolver visibility reduces outage and trust ambiguity.
-scope: developer-workstation
+version: '1.0.0'
+status: validated_mock
+layer: normative
+title: Explicit and observable DNS resolvers (multi-target estate)
+description: Every evaluated target must expose resolver configuration explicitly and avoid unknown inherited DNS state. Applicability is per target platform, NOT per local runtime host OS.
+rationale: Explicit resolver visibility reduces outage and trust ambiguity across heterogeneous estates. Tribunal runtime host may be OpenBSD/MBSD while evaluated targets span macOS/Windows/OpenWrt.
+scope:
+  target_class: developer_workstation
+  tags: [dns, resolvers, explicit-only]
 severity: high
-platforms:
-  - macos
-  - windows
-  - linux
-  - openwrt
-expected_state:
-  resolvers_explicit: true
-  resolvers_observable: true
-check:
+runtime_host_independent: true
+applicability:
+  target_platforms: [macos, windows, linux-openwrt, openwrt]
+  target_vendors: [apple-inc, microsoft-corp, openwrt-project]
+  evidence_tier_minimum: declared_only
+preconditions:
+  expressions:
+    - id: pre-dns-observe-command-materialized
+      rule:
+        observation_exists: obs-dns-nameserver-count
+      message: At least one nameserver-count observation must be materialized before deciding this invariant.
+  unknown_behavior:
+    on_missing_observation: UNKNOWN
+    on_precondition_false: SKIP_INAPPLICABLE
+required_observations:
+  - id: obs-dns-nameserver-count
+    name: number of distinct explicit nameserver values observed
+    schema:
+      type: integer
+      minItems: 0
+      maxItems: 16
+    evidence_tier_required: implemented
+    provenance_required:
+      signed: false
+      adapter_operation_ref: op-dns-observe-<platform>
+      must_be_in_evidence_bundle: true
+  - id: obs-dns-resolver-source
+    name: source declaration for resolver config
+    schema:
+      type: enum
+      enum: [scutil, resolv-conf, networksetup, netsh, uci-show-dhcp, uci-show-network]
+    evidence_tier_required: implemented
+    provenance_required:
+      signed: false
+      adapter_operation_ref: op-dns-observe-<platform>
+      must_be_in_evidence_bundle: true
+  - id: obs-dns-reachability-bool
+    name: declared nameservers reachable from evaluation target
+    schema:
+      type: boolean
+    evidence_tier_required: validated_mock
+    provenance_required:
+      signed: false
+      adapter_operation_ref: op-dns-observe-<platform>
+      must_be_in_evidence_bundle: true
+required_capabilities: [cap-dns-explicit-resolver-observe-v0]
+decision_rule:
+  id: dr-dns-explicit-resolvers-v1
+  rule_type: omnia_deterministic_v1
+  version: '1.0.0'
+  observations_map:
+    count: obs-dns-nameserver-count
+    source: obs-dns-resolver-source
+    reachable: obs-dns-reachability-bool
+  logic:
+    pass_if:
+      - id: pass-explicit-count-and-reachable
+        expression:
+          observation_all_match:
+            count_ge: 1
+            reachable: true
+    fail_if:
+      - id: fail-reachable-false
+        expression:
+          observation_not_equals:
+            reachable: true
+        message: Declared resolvers were not reachable from the evaluated target.
+      - id: fail-count-zero
+        expression:
+          observation_not_equals:
+            count_ge: 1
+        message: No explicit nameserver values materialized from the evaluated target.
+    unknown_if:
+      - id: unknown-missing-count
+        expression:
+          missing_observation: obs-dns-nameserver-count
+        message: Nameserver-count observation missing; never guess PASS for explicit-resolver invariance.
+      - id: unknown-missing-reachability
+        expression:
+          missing_observation: obs-dns-reachability-bool
+        message: Reachability boolean missing; operator must re-run the appropriate DNS observation without fabricating values.
+    error_if:
+      - id: error-count-source-contradiction
+        expression:
+          contradictory_observations:
+            - obs-dns-nameserver-count
+            - obs-dns-resolver-source
+        message: Materialized nameserver count and its declared source do not align (e.g. scutil source with zero count).
+outcomes:
+  PASS: On the specific evaluated target, explicit nameserver values were materialized with count>=1 and declared reachable.
+  FAIL: Explicit nameserver values are absent or declared unreachable.
+  UNKNOWN: One or more required DNS observations are missing; Tribunal must not invent observations to produce PASS.
+  ERROR: Observations are contradictory. Escalate to human.
+evidence_requirements:
+  classes_allowed: [deterministic_operation_return, schema_fixture, unit_test, live_target_evidence]
+  min_tier_for_pass: implemented
+remediation_refs:
+  playbook: playbooks/recovery/dns-explicit-resolvers.md
+source_refs:
+  normative: [foundation/dns.md]
+  operational:
+    - checks/dns/chk-dns-macos-observe.yaml
+    - checks/dns/chk-dns-windows-observe.yaml
+    - checks/dns/chk-dns-linux-openwrt-observe.yaml
+  explanatory: [references/openbsd/README.md]
+authority_ceiling:
+  max_authority: advisory_remediation_only
+  no_promotion_reasoning: true
+  forbidden_policy_domains: [nameserver-selection, default-route-change, vpn-reconnect]
+forbidden_actions:
+  - id: fa-dns-write
+    action: Write /etc/resolv.conf or platform equivalent directly
+    reason: Remediation is advisory playbook reference only; operator-owned write path.
+dependency_ids: []
+check_refs:
   ids:
     - chk-dns-macos-observe
     - chk-dns-windows-observe
     - chk-dns-linux-openwrt-observe
-remediation:
-  playbook: playbooks/recovery/dns-explicit-resolvers.md
-sources:
-  - foundation/dns.md
-last_verified: '2026-07-17'
+last_verified: '2026-08-13'

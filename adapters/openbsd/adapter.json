@@ -1,0 +1,138 @@
+{
+  "id": "adapter-openbsd-sealed-brick",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "OpenBSD Sealed Brick Base Adapter",
+  "ontology": {
+    "type": "operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "OpenBSD",
+    "vendor_name": "OpenBSD Project",
+    "interface_type": "shell_script",
+    "adapter_is_evidence_provider_only": true
+  },
+  "support_tier": "supported",
+  "status": "implemented",
+  "description": "Supported adapter mapping for OpenBSD sealed-brick target using base-system commands only. Provides typed untrusted observations implementing registered capabilities; never decides truth, policy, or remediation.",
+  "primary_platforms": ["openbsd"],
+  "primary_vendors": ["openbsd-project"],
+  "evidence_tier_claims": {
+    "declared_only": false,
+    "implemented": true,
+    "validated_mock": true,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "validated_mock",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-pf-load-live",
+      "action": "pfctl -f <candidate> on live routing appliance",
+      "reason": "Adapter provides observations only; live load is operator-owned."
+    },
+    {
+      "id": "fa-adapter-rcctl-change",
+      "action": "rcctl set/enable/start/stop live service state",
+      "reason": "Live service state mutation is outside adapter authority."
+    },
+    {
+      "id": "fa-adapter-emit-sensitive-collect",
+      "action": "Emit IP/MAC/hostname/interface-name/resolver-address/search-domain in public collect mode",
+      "reason": "--collect must return posture booleans/counts only; raw state is for --inspect-private only."
+    },
+    {
+      "id": "fa-adapter-write-state",
+      "action": "Write to /etc, /var/pfctl, /var/db, /etc/resolv.conf, or other system state paths",
+      "reason": "Adapter path is read-only evidence provider."
+    }
+  ],
+  "declared_capabilities": [
+    {
+      "id": "cap-openbsd-bounded-collect-v0",
+      "version": "1.0.0",
+      "name": "Bounded read-only v0 posture collection",
+      "operation": "op-openbsd-inspect-collect-public-v0",
+      "mode": "read_only",
+      "support_tier": "supported",
+      "status": "implemented",
+      "evidence_tier": "validated_mock",
+      "description": "Minimized public collection of OpenBSD networking and packet-filter posture booleans and counts. Does not emit IPs, MACs, interface names, routes, rule bodies, resolver values, search domains, or hostnames.",
+      "sources": [
+        "adapters/openbsd/README.md",
+        "playbooks/openbsd-sealed-brick/README.md"
+      ],
+      "provenance_refs": [
+        "checks/openbsd/chk-openbsd-v0-collection-boundary.yaml",
+        "tests/test_openbsd_contract.py"
+      ],
+      "observation_contract": {
+        "observations": [
+          {"id": "obs-ob-v0-collect-contract-version", "type": "enum_v0", "optional": false},
+          {"id": "obs-ob-v0-collect-output-mode", "type": "enum_public_minimized", "optional": false},
+          {"id": "obs-ob-v0-collect-result", "type": "enum_pass_fail_unknown_error", "optional": false}
+        ],
+        "output_schema": {
+          "format": "line_based_kv",
+          "encoding": "utf-8",
+          "top_level_keys": ["contract_version", "output_mode", "result"]
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      }
+    },
+    {
+      "id": "cap-openbsd-pf-syntax-check-offline",
+      "version": "1.0.0",
+      "name": "Offline pf syntax validation rehearsal",
+      "operation": "op-openbsd-pf-validate-offline",
+      "mode": "documentation_only",
+      "support_tier": "advisory",
+      "status": "declared_only",
+      "evidence_tier": "declared_only",
+      "description": "Operator-rehearsed offline pfctl -n syntax validation against candidate pf.conf files. Local only, no auto-load or mutation from this repo.",
+      "sources": [
+        "playbooks/openbsd-sealed-brick/README.md",
+        "references/openbsd/README.md"
+      ],
+      "provenance_refs": ["reports/trae-openbsd-sealed-brick.md"],
+      "observation_contract": {
+        "observations": [
+          {"id": "obs-pf-offline-result", "type": "enum_pass_fail_error", "optional": false}
+        ],
+        "output_schema": {
+          "format": "stdout_lines_presence",
+          "encoding": "utf-8",
+          "top_level_keys": ["pf_offline_result"]
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      }
+    }
+  ],
+  "validated_capability_ids": ["cap-openbsd-bounded-collect-v0"],
+  "last_verified": "2026-08-13",
+  "notes": "This adapter is SUPPORTED because it exposes at least one validated_mock capability. Directory name alone is intentionally NOT sufficient. validated_live_target is intentionally false because no live-hardware provenance is present in this repository."
+}

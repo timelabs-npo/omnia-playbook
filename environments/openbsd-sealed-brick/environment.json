@@ -1,0 +1,37 @@
+{
+  "id": "openbsd-sealed-brick",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "OpenBSD Sealed Brick Example Estate",
+  "description": "Example estate profile for a sealed OpenBSD controller appliance. Declares runtime host substrate vs estate targets explicitly, per Omnia v1 target-oriented (not host-os-oriented) applicability rule.",
+  "runtime_host": {
+    "platform": "openbsd",
+    "vendor": "openbsd-project",
+    "adapter_id_hint": "adapter-openbsd-sealed-brick",
+    "host_substrate_only": true
+  },
+  "estate_targets": [
+    {
+      "target_id": "router-sealed-brick-1",
+      "platform": "openbsd",
+      "vendor": "openbsd-project",
+      "adapter_id_hint": "adapter-openbsd-sealed-brick",
+      "capabilities_required": ["cap-openbsd-bounded-collect-v0"],
+      "evidence_tier_minimum": "validated_mock"
+    },
+    {
+      "target_id": "admin-mac-mini-1",
+      "platform": "macos",
+      "vendor": "apple-inc",
+      "adapter_id_hint": "adapter-macos-vendor",
+      "capabilities_required": ["cap-dns-explicit-resolver-observe-v0"],
+      "evidence_tier_minimum": "implemented"
+    }
+  ],
+  "adapters_legacy_list": ["openbsd", "macos"],
+  "owner_intent_refs": ["owner-intent-bluenikee-001"],
+  "disagreement_resolution_refs": [
+    "disagree-openbsd-sealed-brick-bounded-control",
+    "disagree-dns-explicit-resolvers"
+  ]
+}

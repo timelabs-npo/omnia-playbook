@@ -1,0 +1,137 @@
+{
+  "id": "causal-exp-dns-001",
+  "version": "1.0.0",
+  "status": "proposed",
+  "layer": "operational",
+  "title": "DNS resolver reachability causal experiment",
+  "scope": {
+    "target_platforms": ["linux", "macos"],
+    "target_classes": ["developer_workstation"],
+    "policy_boundary_ids": ["pb-lan-egress-01"]
+  },
+  "competing_hypotheses": [
+    {
+      "id": "hyp-a-resolver-a-faster",
+      "statement": "Resolver A exhibits lower median latency for recursive queries under baseline load.",
+      "predicts_observations_confirming": ["obs-dns-latency-resolver-a-below-threshold"]
+    },
+    {
+      "id": "hyp-b-resolver-b-stable",
+      "statement": "Resolver B exhibits fewer failures over the experiment time window.",
+      "predicts_observations_confirming": ["obs-dns-failures-resolver-b-below-threshold"]
+    }
+  ],
+  "target_flows": [
+    {
+      "flow_id": "flow-dns-recursive-01",
+      "expected_properties": {
+        "protocol": "udp/53",
+        "bandwidth_class": "low"
+      },
+      "intervention_point_ref": "int-point-resolver-swap-01"
+    }
+  ],
+  "baseline_metrics": {
+    "pre_experiment_observation_point_ids": ["obs-point-dns-egress-01"],
+    "pre_experiment_snapshot_ref": "snap-before-dns-exp-001",
+    "required_metric_ids": ["metric-dns-latency-p50", "metric-dns-failure-rate"],
+    "baseline_window_seconds": 300
+  },
+  "authority_required": {
+    "least_privilege_level": "bounded_reversible_mutation",
+    "mutation_ceiling": "resolver_configuration_only",
+    "never_invent_policy": true,
+    "approval_ref": "approval-template-dns-resolver-swap",
+    "unvetted_mutation_prohibited": true
+  },
+  "mutation_spec": {
+    "temporary_mutation_id": "mut-dns-resolver-swap-temp",
+    "mutation_class": "bounded_reversible_mutation",
+    "applies_to_intervention_point_ids": ["int-point-resolver-swap-01"],
+    "applies_to_flow_ids": ["flow-dns-recursive-01"],
+    "rollback_idempotent_command": "rb-cmd-restore-resolvconf --restore /etc/resolv.conf.bak",
+    "mutation_command": "mut-cmd-set-resolvers --primary 1.1.1.1 --secondary 8.8.8.8"
+  },
+  "blast_radius": {
+    "max_flows_impacted": 1,
+    "max_nodes_impacted": 1,
+    "max_users_impacted": 10,
+    "policy_boundary_envelope": ["pb-lan-egress-01"]
+  },
+  "time_bound_seconds": 600,
+  "rollback_procedure_ref": {
+    "id": "rb-proc-dns-001",
+    "standardized_rollback_ref": "playbooks/recovery/dns-explicit-resolvers.md",
+    "proven_tested_ref": "tests/test_rollback_contract.py",
+    "all_failure_paths_covered": true
+  },
+  "hypothesis_validators": [
+    {
+      "hypothesis_id": "hyp-a-resolver-a-faster",
+      "expected_observation_refs": ["obs-dns-latency-resolver-a-below-threshold"],
+      "deterministic_validator_rule_id": "dr-hyp-a-latency"
+    },
+    {
+      "hypothesis_id": "hyp-b-resolver-b-stable",
+      "expected_observation_refs": ["obs-dns-failures-resolver-b-below-threshold"],
+      "deterministic_validator_rule_id": "dr-hyp-b-failures"
+    }
+  ],
+  "commit_condition": {
+    "id": "cc-dns-all-hypotheses-resolved",
+    "predefined_success_criteria_ids": ["crit-all-hyp-resolved", "crit-no-anomalies"],
+    "triggers_permanent_application_only_if": "all_success_criteria_met_and_hypothesis_resolved",
+    "default_without_commit_is_rollback": true
+  },
+  "fail_closed_condition": {
+    "id": "fc-dns-anomaly-rollback",
+    "triggers_immediate_rollback_on_anomalous_impact": true,
+    "anomaly_metric_ids": ["metric-dns-failure-rate-spike", "metric-dns-latency-p99-spike"],
+    "service_restoration_required": true
+  },
+  "evidence_receipt_contract": {
+    "id": "erc-dns-exp-001",
+    "records_all_actions": true,
+    "records_all_observations": true,
+    "records_outcomes": true,
+    "cryptographic_verification": {
+      "algorithm": "JWS",
+      "requires_signed_receipt": true
+    },
+    "audit_ref": "audit-log-causal-exp-dns-001",
+    "post_experiment_analysis_refs": ["playbooks/diagnostics/dns.md"]
+  },
+  "evidence_method_hierarchy_used": {
+    "hierarchy_order": [
+      "passive_observational_evidence_no_modification",
+      "safe_active_probes_minimal_risk",
+      "bounded_fully_reversible_mutations_blast_radius_contained",
+      "controlled_causal_observations_during_approved_experiment",
+      "formal_rollback_or_commit_only_upon_completion_or_failure"
+    ],
+    "tribunal_must_propose_from_registered_only": true,
+    "must_attempt_passive_first": true
+  },
+  "network_model_refs_required": {
+    "operator_intent_ref_ids": ["oi-dns-explicit-001"],
+    "flow_ref_ids": ["flow-dns-recursive-01"],
+    "dependency_graph_ref": "dep-graph-net-001",
+    "path_ref_ids": ["path-dns-upstream-01"],
+    "policy_boundary_ref_ids": ["pb-lan-egress-01"],
+    "observation_point_ref_ids": ["obs-point-dns-egress-01"],
+    "intervention_point_ref_ids": ["int-point-resolver-swap-01"],
+    "before_evidence_snapshot_ref_id": "snap-before-dns-exp-001",
+    "after_evidence_snapshot_ref_id": "snap-after-dns-exp-001"
+  },
+  "dependency_ids": [],
+  "remediation_refs": {
+    "playbook": "playbooks/recovery/dns-explicit-resolvers.md",
+    "references": []
+  },
+  "source_refs": {
+    "normative": ["foundation/dns.md"],
+    "operational": ["playbooks/diagnostics/dns.md"],
+    "explanatory": []
+  },
+  "explanatory_notes": "Minimal valid causal experiment fixture for DNS resolver swap bounded test."
+}

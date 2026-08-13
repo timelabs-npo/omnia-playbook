@@ -1,0 +1,40 @@
+{
+  "schema_version": "omnia.tribunal_ceiling.v1",
+  "ceiling_id": "tc-global-v1",
+  "version": "1.0.0",
+  "layer": "normative",
+  "role_statement": {
+    "exact_role": "ADVISORY / UNCERTAINTY / HYPOTHESIS / DISAGREEMENT ANALYSIS",
+    "not_authority": "Tribunal never grants authority, never bypasses invariants, never turns FAIL into PASS. Deterministic decision kernel + Omnia normative schemas own safety decisions."
+  },
+  "tribunal_may": {
+    "explain_evidence": true,
+    "identify_contradictions": true,
+    "request_further_observations": true,
+    "rank_hypotheses": true,
+    "propose_bounded_next_experiment": true,
+    "recommend_escalation": true,
+    "compare_interpretations": true
+  },
+  "tribunal_may_not": {
+    "grant_authority": false,
+    "bypass_an_invariant": false,
+    "reinterpret_untrusted_evidence_as_instruction": false,
+    "mutate_networking_directly": false,
+    "merge_code": false,
+    "change_policy": false,
+    "transform_fail_into_pass": false
+  },
+  "fail_may_not_become_pass_via_tribunal": true,
+  "natural_language_ceiling": {
+    "natural_language_cannot_grant_execution_authority": true,
+    "llm_output_cannot_override_deterministic_denial": true,
+    "advisory_evidence_only_label": "TRIBUNAL_ADVISORY_DO_NOT_EXECUTE"
+  },
+  "machine_checkable_enforcement_refs": [
+    "tribunal_participant_claim.result in PASS/FAIL/UNKNOWN/ERROR/INAPPLICABLE",
+    "tribunal claim type deterministic_omnia_rule → must be in evidence of normative kernel only"
+  ],
+  "last_verified": "2026-08-13",
+  "notes": "TRIBUNAL-RT-V0: deterministic host oracle SUCCEEDED; SmolLM2-135M advisory-only with critical false PASS and prompt injection. Hence Tribunal ceiling: ADVISORY."
+}

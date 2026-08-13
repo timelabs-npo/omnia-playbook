@@ -1,7 +1,44 @@
 {
   "id": "example",
-  "name": "Example Environment",
-  "description": "Template profile for local and CI validation only.",
-  "platforms": ["macos", "windows", "linux", "openwrt"],
-  "adapters": ["apple", "google-cloud", "azure", "openwrt", "macos", "windows"]
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "Example Multi-platform Estate Template",
+  "description": "Template profile for local and CI validation. Runtime host substrate is separated from evaluated estate targets. Applicability is target-oriented, not host-oriented.",
+  "runtime_host": {
+    "platform": "macos",
+    "vendor": "apple-inc",
+    "adapter_id_hint": "adapter-macos-vendor",
+    "host_substrate_only": true
+  },
+  "estate_targets": [
+    {
+      "target_id": "dev-macos-1",
+      "platform": "macos",
+      "vendor": "apple-inc",
+      "adapter_id_hint": "adapter-macos-vendor",
+      "capabilities_required": ["cap-dns-explicit-resolver-observe-v0"],
+      "evidence_tier_minimum": "implemented"
+    },
+    {
+      "target_id": "dev-windows-1",
+      "platform": "windows",
+      "vendor": "microsoft-corp",
+      "adapter_id_hint": "adapter-windows-vendor",
+      "capabilities_required": ["cap-dns-explicit-resolver-observe-v0"],
+      "evidence_tier_minimum": "declared_only"
+    },
+    {
+      "target_id": "router-openwrt-1",
+      "platform": "openwrt",
+      "vendor": "openwrt-project",
+      "adapter_id_hint": "adapter-openwrt-vendor",
+      "capabilities_required": ["cap-dns-explicit-resolver-observe-v0"],
+      "evidence_tier_minimum": "declared_only"
+    }
+  ],
+  "adapters_legacy_list": ["macos", "windows", "openwrt"],
+  "owner_intent_refs": ["owner-intent-example-001"],
+  "disagreement_resolution_refs": [
+    "disagree-dns-explicit-resolvers"
+  ]
 }

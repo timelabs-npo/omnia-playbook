@@ -1,0 +1,90 @@
+{
+  "id": "adapter-openwrt-vendor",
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "OpenWrt/Linux DNS and bounded-read-only evidence adapter",
+  "ontology": {
+    "type": "device_operating_system",
+    "platform_vendor": "operating_system_vendor",
+    "platform_name": "OpenWrt",
+    "vendor_name": "OpenWrt Project",
+    "interface_type": "base_system_file",
+    "adapter_is_evidence_provider_only": true
+  },
+  "support_tier": "advisory",
+  "status": "declared_only",
+  "description": "Declared/advisory OpenWrt adapter manifest limited to DNS-explicit-resolver observation. Dumb evidence provider only; never decides truth, policy, or remediation. Adapter directory presence alone does NOT grant supported status outside the declared capability.",
+  "primary_platforms": ["openwrt", "linux-openwrt"],
+  "primary_vendors": ["openwrt-project"],
+  "evidence_tier_claims": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false,
+    "adapter_does_not_decide_truth": true
+  },
+  "evidence_tier_support": {
+    "highest_tier_for_supported_capability": "declared_only",
+    "mock_not_equivalent_to_live": true,
+    "live_tier_requires_provenance_ref": true
+  },
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "decides_truth": false,
+    "decides_policy": false,
+    "decides_remediation": false,
+    "output_is_typed_untrusted_evidence": true
+  },
+  "forbidden_actions": [
+    {
+      "id": "fa-adapter-uci-commit",
+      "action": "uci commit dhcp|network; /etc/init.d/dnsmasq restart; opkg install|remove",
+      "reason": "Adapter path is read-only evidence; mutations are operator-owned remediation only."
+    }
+  ],
+  "declared_capabilities": [
+    {
+      "id": "cap-dns-explicit-resolver-observe-v0",
+      "version": "1.0.0",
+      "name": "DNS explicit resolver observe for OpenWrt/Linux",
+      "operation": "op-dns-observe-openwrt",
+      "mode": "read_only",
+      "support_tier": "advisory",
+      "status": "declared_only",
+      "evidence_tier": "declared_only",
+      "description": "Read-only observation of explicit resolver configuration on Linux/OpenWrt targets via uci show dhcp; uci show network for the DNS-explicit-resolver invariant.",
+      "sources": [
+        "adapters/openwrt/README.md",
+        "foundation/dns.md",
+        "checks/dns/chk-dns-linux-openwrt-observe.yaml"
+      ],
+      "provenance_refs": [
+        "checks/dns/chk-dns-linux-openwrt-observe.yaml",
+        "tests/test_repository_artifacts.py"
+      ],
+      "observation_contract": {
+        "observations": [
+          {"id": "obs-dns-nameserver-count", "type": "integer", "optional": false},
+          {"id": "obs-dns-resolver-source", "type": "enum_uci_dhcp_or_network", "optional": false},
+          {"id": "obs-dns-reachability-bool", "type": "boolean", "optional": true}
+        ],
+        "output_schema": {
+          "format": "line_based_kv",
+          "encoding": "utf-8",
+          "top_level_keys": ["nameserver_count", "resolver_source", "reachability"]
+        }
+      },
+      "unknown_semantics": {
+        "when_observation_missing": "UNKNOWN",
+        "when_command_missing": "UNKNOWN"
+      },
+      "error_semantics": {
+        "on_timed_out": "ERROR",
+        "on_unauthorized_call": "ERROR"
+      }
+    }
+  ],
+  "validated_capability_ids": [],
+  "last_verified": "2026-08-13",
+  "notes": "Only the DNS v0 DECLARED capability is described; adapter directory alone is not support status. Validated operational mappings to be added later per separate evidence tier."
+}

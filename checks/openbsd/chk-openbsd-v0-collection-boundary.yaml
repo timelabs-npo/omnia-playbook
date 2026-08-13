@@ -1,0 +1,96 @@
+id: chk-openbsd-v0-collection-boundary
+version: '1.0.0'
+status: validated_mock
+layer: operational
+invariant_ref: inv-openbsd-sealed-brick-bounded-control
+target_platform: openbsd
+target_vendor: openbsd-project
+runtime_host_independent: true
+authority_ceiling:
+  max_authority: read_only_evidence
+  no_policy_invention: true
+  no_authority_promotion: true
+  forbids_policy_domains:
+    - pf-rule-widening
+    - sysctl-write
+    - rcctl-service-change
+    - route-mutation
+    - interface-bring-up
+forbidden_actions:
+  - id: fa-check-load-pf
+    action: pfctl -f <candidate>
+    reason: Operational check is read-only observation only; never mutate live policy.
+  - id: fa-check-write-etc
+    action: Write to /etc or /var/pfctl outside explicit operator paths
+    reason: Operational checks must not mutate system state.
+  - id: fa-check-emit-sensitive
+    action: Emit IP/MAC/hostname/interface-name/resolver-address/search-domain in public collect mode
+    reason: --collect must emit posture booleans/counts only; raw native state is for --inspect-private only.
+capability_ref:
+  capability_id: cap-openbsd-bounded-collect-v0
+  operation_id: op-openbsd-inspect-collect-public-v0
+  adapter_ref_hint: adapter-openbsd-sealed-brick
+observation_contract:
+  observations_emitted:
+    - id: obs-ob-v0-collect-contract-version
+      observation_ref: inv-openbsd-sealed-brick-bounded-control::obs-ob-v0-collect-contract-version
+      optional: false
+    - id: obs-ob-v0-collect-output-mode
+      observation_ref: inv-openbsd-sealed-brick-bounded-control::obs-ob-v0-collect-output-mode
+      optional: false
+    - id: obs-ob-v0-collect-result
+      observation_ref: inv-openbsd-sealed-brick-bounded-control::obs-ob-v0-collect-result
+      optional: false
+  output_schema:
+    format: line_based_kv
+    encoding: utf-8
+    top_level_keys:
+      - contract_version
+      - output_mode
+      - result
+evidence_tier_claim: validated_mock
+evidence_tier_support:
+  declared_only: false
+  implemented: true
+  validated_mock: true
+  validated_live_target: false
+  fixture_tests_only: true
+  live_target_provenance_ref_present: false
+command: ./checks/openbsd/inspect_openbsd_v0.sh --collect
+requires: [awk, uname, ifconfig, route, pfctl, rcctl, sysctl, cat, grep]
+timeout: 20
+exit_code_semantics:
+  expected: 0
+  observed_behavior:
+    on_nonzero: FAIL_OR_ERROR
+    on_zero_with_empty_output: UNKNOWN
+observation_semantics:
+  fail_if_missing_required: true
+  pass_if_all_present_and_match: true
+  expected_values:
+    - key: contract_version
+      value_type: enum
+      match_rule: equals
+      expected: v0
+    - key: output_mode
+      value_type: enum
+      match_rule: equals
+      expected: public_minimized
+    - key: result
+      value_type: enum
+      match_rule: in
+      expected_values: [PASS, FAIL, UNKNOWN, ERROR]
+unknown_semantics:
+  when_required_observation_missing: UNKNOWN
+  when_command_missing: UNKNOWN
+error_semantics:
+  on_timed_out: ERROR
+  on_contradictory_stdout: ERROR
+  on_unauthorized_subprocess: ERROR
+remediation_ref: playbooks/openbsd-sealed-brick/README.md
+provenance_refs:
+  fixture_refs:
+    - reports/trae-openbsd-sealed-brick.md
+    - schemas/fixtures/valid/check.openbsd-sealed-brick.valid.json
+  live_target_refs: []
+  never_claim_live_from_fixture: true

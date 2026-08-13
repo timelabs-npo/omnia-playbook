@@ -1,0 +1,89 @@
+{
+  "schema_version": "omnia.owner_intent.v1",
+  "id": "owner-intent-bluenikee-001",
+  "version": "1.0.0",
+  "layer": "normative",
+  "owner_id": "bluenikee-sovereign-admin",
+  "declared_before_failure": true,
+  "named_services": [
+    {
+      "id": "svc-public-internet-access",
+      "name": "Public Internet access",
+      "service_class": "internet_access",
+      "description": "Users may reach general-purpose Internet destinations from developer workstations and sealed-brick admin interfaces.",
+      "required": true,
+      "expectation_refs": ["exp-dns-explicit-resolvers-required"],
+      "applies_to_target_ids": ["workstation-macos-bluenikee-1", "workstation-windows-bluenikee-1", "router-sealed-brick-1"],
+      "invariant_refs_required_if_fail": ["inv-dns-explicit-observable-resolvers"]
+    },
+    {
+      "id": "svc-video-streaming",
+      "name": "Video streaming capability",
+      "service_class": "media_streaming",
+      "description": "Users are allowed to consume general video streaming platforms as part of normal operation.",
+      "required": true,
+      "expectation_refs": ["exp-outbound-https-permitted-for-443"],
+      "applies_to_target_ids": ["workstation-macos-bluenikee-1", "workstation-windows-bluenikee-1"]
+    },
+    {
+      "id": "svc-development-services",
+      "name": "Developer services",
+      "service_class": "developer_services",
+      "description": "Repository access, package indexes, signing services, and container registries required for normal engineering work.",
+      "required": true,
+      "expectation_refs": ["exp-dns-explicit-resolvers-required", "exp-tls-outbound-required"],
+      "applies_to_target_ids": ["workstation-macos-bluenikee-1", "workstation-windows-bluenikee-1"]
+    },
+    {
+      "id": "svc-remote-admin",
+      "name": "Remote administration",
+      "service_class": "remote_administration",
+      "description": "Authorized out-of-band access to sealed-brick appliances only for the sovereign admin role.",
+      "required": true,
+      "expectation_refs": ["exp-obv0-bounded-collection-required"],
+      "applies_to_target_ids": ["router-sealed-brick-1"],
+      "invariant_refs_required_if_fail": ["inv-openbsd-sealed-brick-bounded-control"]
+    },
+    {
+      "id": "svc-package-retrieval",
+      "name": "Package and software retrieval",
+      "service_class": "package_retrieval",
+      "description": "Retrieval of system packages and approved software repositories from declared mirrors only.",
+      "required": true,
+      "expectation_refs": ["exp-dns-explicit-resolvers-required"],
+      "applies_to_target_ids": ["router-sealed-brick-1", "workstation-macos-bluenikee-1", "workstation-windows-bluenikee-1"]
+    }
+  ],
+  "named_capabilities": [
+    {
+      "id": "cap-owner-bound-dns-explicit",
+      "name": "Explicit resolver observability",
+      "capability_class": "observability.dns",
+      "description": "Operator-intent requires explicit and observable DNS resolver configuration on every estate target.",
+      "required": true,
+      "supporting_service_ids": ["svc-public-internet-access", "svc-development-services", "svc-package-retrieval"]
+    },
+    {
+      "id": "cap-owner-bound-collect-v0",
+      "name": "Sealed-brick bounded v0 collect",
+      "capability_class": "observability.sealed_brick",
+      "description": "Sealed-brick administration requires bounded v0 read-only posture collection that never emits sensitive topology.",
+      "required": true,
+      "supporting_service_ids": ["svc-remote-admin"]
+    }
+  ],
+  "separation_of_concerns": {
+    "invariant_not_auto_service": true,
+    "service_not_auto_policy": true,
+    "observation_not_auto_invariant": true
+  },
+  "source_refs": {
+    "normative": ["foundation/identity.md", "foundation/networking.md", "foundation/dns.md", "foundation/secrets.md"],
+    "operational": [
+      "environments/bluenikee/environment.json",
+      "environments/openbsd-sealed-brick/environment.json"
+    ],
+    "explanatory": ["reports/trae-openbsd-sealed-brick.md"]
+  },
+  "notes": "Owner intent is declared PRE-FAILURE per Omnia v1 product rule. Tribunal must not ask a human during an incident whether these expected services/capabilities are actually required."
+}

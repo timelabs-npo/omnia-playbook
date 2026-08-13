@@ -1,14 +1,74 @@
 {
-  "id": "chk-dns-linux-openwrt-observe",
-  "invariant": "inv-dns-explicit-observable-resolvers",
+  "id": "chk-example-001",
+  "version": "1.0.0",
+  "status": "validated_mock",
+  "layer": "operational",
+  "invariant_ref": "inv-example-001",
+  "target_platform": "linux",
+  "target_vendor": "example-vendor",
+  "runtime_host_independent": true,
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "no_policy_invention": true,
+    "no_authority_promotion": true
+  },
+  "forbidden_actions": [],
+  "capability_ref": {
+    "capability_id": "cap-dns-inspect-v0",
+    "operation_id": "op-dns-read-resolvconf",
+    "adapter_ref_hint": "adapter-linux-example"
+  },
+  "observation_contract": {
+    "observations_emitted": [
+      {
+        "id": "em-001",
+        "observation_ref": "obs-dns-resolvers",
+        "optional": false
+      }
+    ],
+    "output_schema": {
+      "format": "line_based_kv",
+      "encoding": "utf-8_only",
+      "top_level_keys": ["nameserver", "search"]
+    }
+  },
+  "evidence_tier_claim": "validated_mock",
+  "evidence_tier_support": {
+    "declared_only": true,
+    "implemented": true,
+    "validated_mock": true,
+    "validated_live_target": false
+  },
   "command": "cat /etc/resolv.conf",
-  "platform": "linux-openwrt",
   "requires": ["cat"],
   "timeout": 10,
-  "expected_exit_code": 0,
-  "expected_output": {
-    "regex": "^nameserver\\\\s+"
+  "exit_code_semantics": {
+    "expected": 0,
+    "observed_behavior": {
+      "on_nonzero": "ERROR",
+      "on_zero_with_empty_output": "UNKNOWN"
+    }
   },
-  "failure_message": "Could not observe explicit DNS resolver state on Linux/OpenWrt.",
-  "remediation_playbook": "playbooks/recovery/dns-explicit-resolvers.md"
+  "observation_semantics": {
+    "fail_if_missing_required": true,
+    "pass_if_all_present_and_match": true,
+    "expected_values": []
+  },
+  "unknown_semantics": {
+    "when_required_observation_missing": "UNKNOWN",
+    "when_command_missing": "ERROR"
+  },
+  "error_semantics": {
+    "on_timed_out": "ERROR",
+    "on_contradictory_stdout": "ERROR",
+    "on_unauthorized_subprocess": "ERROR"
+  },
+  "remediation_ref": "playbooks/recovery/example.md",
+  "failure_message": "DNS resolver observation failed to produce required output.",
+  "provenance_refs": {
+    "unit_test_refs": [],
+    "fixture_refs": ["schemas/fixtures/valid/check.valid.json"],
+    "live_target_refs": []
+  },
+  "last_verified": "2026-08-13"
 }

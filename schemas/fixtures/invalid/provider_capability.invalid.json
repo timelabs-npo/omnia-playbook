@@ -1,0 +1,48 @@
+{
+  "schema_version": "omnia.provider.v1",
+  "provider_id": "pr-invalid-granting",
+  "name": "Attempted ontology-promoting provider",
+  "version": "0.0.0",
+  "layer": "normative",
+  "family": "DNS",
+  "evidence_class_declared": {
+    "may_report_identities": true,
+    "may_report_names": true,
+    "may_report_locators": true,
+    "may_report_paths": true,
+    "may_report_reachability": true,
+    "may_report_routing_state": true,
+    "may_report_trust_assertions": true,
+    "may_report_observations": true,
+    "may_report_capabilities": true,
+    "may_report_failure_state": true
+  },
+  "authority_boundary": {
+    "must_not_decide_omnia_policy": false,
+    "must_not_grant_itself_authority": false,
+    "must_not_claim_semantic_truth": false,
+    "must_not_mutate_external_state_unasked": false,
+    "provider_is_replaceable": false,
+    "forbidden_ontology_promotion_reasons": []
+  },
+  "output_is_typed_evidence_only": false,
+  "capabilities": [
+    {
+      "id": "cap-bad",
+      "operation": "set_policy",
+      "evidence_tier_max": "validated_live_target",
+      "output_schema_ref": "os",
+      "privacy_tier_output": "PUBLIC",
+      "provenance_required": false
+    }
+  ],
+  "unknown_semantics": { "when_provider_unreachable": "PASS", "when_output_malformed": "PASS" },
+  "error_semantics": { "on_timed_out": "PASS", "on_unauthorized": "PASS" },
+  "degraded_offline_semantics": {
+    "has_declared_offline_behavior": false,
+    "offline_behavior_never_silently_pass": false,
+    "offline_result": "PASS"
+  },
+  "openbsd_support_tier": "UNKNOWN",
+  "last_verified": "2026-08-13"
+}

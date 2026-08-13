@@ -1,0 +1,31 @@
+{
+  "schema_version": "omnia.disagreement.v1",
+  "id": "disagree-invalid-001",
+  "version": "1.0.0",
+  "layer": "operational",
+  "decision_class": "network_policy",
+  "disagreement_policy": {
+    "disagreement_allowed": true,
+    "must_publish_conflicting_premises": false,
+    "must_publish_evidence_interpretation": false
+  },
+  "resolution_evidence": {
+    "locate_differing_premise_refs": [],
+    "locate_differing_evidence_interpretation_refs": [],
+    "identify_discriminating_observation_ids": [],
+    "perform_bounded_measurement_if_authorized": []
+  },
+  "fail_closed": false,
+  "action_under_unresolved": "NO_SUCH_ENUM_ACTION_DO_ANYTHING",
+  "convergence_criteria": {
+    "sufficient_convergence_type": "simple_majority_vote_count_alone",
+    "required_evidence_tier": "declared_only",
+    "participant_claims_must_share_evidence_refs": false,
+    "must_recompute_after_measurement": false
+  },
+  "majority_vote_alone_must_not_override": false,
+  "recompute_workflow": ["step-out-of-order-first-measure-then-read"],
+  "owner_intent_refs": [],
+  "invariant_refs": [],
+  "explanatory_notes": "This fixture is invalid to enforce that simple-majority vote alone cannot override the Omnia semantic rule."
+}

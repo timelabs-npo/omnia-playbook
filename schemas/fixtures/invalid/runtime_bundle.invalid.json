@@ -1,0 +1,82 @@
+{
+  "schema_version": "omnia.runtime.v1",
+  "generated_at_utc": "DETERMINISTIC_PLACEHOLDER",
+  "source_commit": "unknown",
+  "canonical_digest_sha256": "DETERMINISTIC_PLACEHOLDER",
+  "layer_inclusion": {"normative": true, "operational": true, "explanatory_stripped": true},
+  "registry": {
+    "invariant_ids": [],
+    "capability_ids": [],
+    "operation_ids": [],
+    "check_ids": [],
+    "adapter_ids": [],
+    "environment_ids": [],
+    "owner_intent_ids": [],
+    "disagreement_resolution_ids": [],
+    "causal_experiment_ids": [],
+    "network_model_ids": [],
+    "deterministic_procedure_ids": []
+  },
+  "capabilities": [],
+  "operations": [],
+  "adapters": [],
+  "invariants": [],
+  "checks": [],
+  "environments": [],
+  "owner_intents": [],
+  "disagreement_resolutions": [],
+  "causal_experiments": [],
+  "network_models": [],
+  "tribunal_participant_claim_model": {
+    "claim_required_fields": [],
+    "participant_identity_independent_fields": [],
+    "no_specific_vendor_lock": true,
+    "no_specific_model_lock": true,
+    "deterministic_omnia_semantics_owner_is_omnia_not_participant": true,
+    "result_must_be_same_across_runtimes_for_deterministic": true
+  },
+  "deterministic_procedure_exports": [],
+  "multi_interpreter_conformance_refs": {
+    "majority_count_alone_must_not_override": false
+  },
+  "indexes": {
+    "by_target_platform_to_invariant_ids": {},
+    "by_target_vendor_to_invariant_ids": {},
+    "by_invariant_to_required_capability_ids": {},
+    "by_invariant_to_check_ids": {},
+    "by_capability_id_to_operation_ids": {},
+    "by_evidence_tier_to_check_ids": {},
+    "closure_refs": {}
+  },
+  "metrics": {
+    "counts": {
+      "invariants_runtime_addressable": -1,
+      "capabilities": 0,
+      "operations": 0,
+      "adapters_total": 0,
+      "adapters_by_evidence_tier": {},
+      "checks_total": 0
+    },
+    "sizes": {
+      "canonical_bundle_bytes": 0,
+      "normative_core_bytes_approx": 0,
+      "largest_rule_closure_bytes": 0,
+      "median_rule_closure_bytes": 0,
+      "representative_task_closure_bytes": {}
+    },
+    "closures": {
+      "largest_single_rule_dependency_closure_size": 0,
+      "median_rule_dependency_closure_size": 0,
+      "unresolved_semantic_reference_count": 0
+    }
+  },
+  "execution_contract": {
+    "tribunal_prompt_only": "",
+    "never_invent_policy": false,
+    "missing_required_evidence_is_unknown": false,
+    "use_declared_decision_rules_only": false,
+    "never_increase_authority": false,
+    "return_typed_result_plus_evidence_refs": false,
+    "model_swappability": {"no_model_name_dependency": false, "no_vendor_lock": false}
+  }
+}

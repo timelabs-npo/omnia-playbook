@@ -1,11 +1,66 @@
 {
   "id": "chk-invalid",
-  "invariant": "inv-dns-explicit-observable-resolvers",
+  "version": "1.0.0",
+  "status": "proposed",
+  "layer": "operational",
+  "invariant_ref": "inv-dns-explicit-observable-resolvers",
+  "target_platform": "linux-openwrt",
+  "runtime_host_independent": true,
+  "authority_ceiling": {
+    "max_authority": "read_only_evidence",
+    "no_policy_invention": true,
+    "no_authority_promotion": true
+  },
+  "forbidden_actions": [],
+  "capability_ref": {
+    "capability_id": "cap-short",
+    "operation_id": "op-short",
+    "adapter_ref_hint": "ad-short"
+  },
+  "observation_contract": {
+    "observations_emitted": [
+      {
+        "id": "em001",
+        "observation_ref": "obs-ref",
+        "optional": false
+      }
+    ],
+    "output_schema": {
+      "format": "line_based_kv",
+      "encoding": "utf-8_only",
+      "top_level_keys": ["k1"]
+    }
+  },
+  "evidence_tier_claim": "declared_only",
+  "evidence_tier_support": {
+    "declared_only": true,
+    "implemented": false,
+    "validated_mock": false,
+    "validated_live_target": false
+  },
   "command": "",
-  "platform": "linux-openwrt",
   "requires": ["cat"],
   "timeout": 0,
-  "expected_exit_code": -1,
-  "expected_output": {},
+  "exit_code_semantics": {
+    "expected": -1,
+    "observed_behavior": {
+      "on_nonzero": "ERROR",
+      "on_zero_with_empty_output": "UNKNOWN"
+    }
+  },
+  "observation_semantics": {
+    "fail_if_missing_required": true,
+    "pass_if_all_present_and_match": true
+  },
+  "unknown_semantics": {
+    "when_required_observation_missing": "UNKNOWN",
+    "when_command_missing": "UNKNOWN"
+  },
+  "error_semantics": {
+    "on_timed_out": "ERROR",
+    "on_contradictory_stdout": "ERROR",
+    "on_unauthorized_subprocess": "ERROR"
+  },
+  "remediation_ref": "playbooks/recovery/dns-explicit-resolvers.md",
   "failure_message": "x"
 }

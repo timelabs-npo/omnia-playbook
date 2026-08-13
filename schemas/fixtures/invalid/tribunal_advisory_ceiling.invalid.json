@@ -1,0 +1,35 @@
+{
+  "schema_version": "omnia.tribunal_ceiling.v1",
+  "ceiling_id": "tc-invalid-autoritarian",
+  "version": "1.0.0",
+  "layer": "normative",
+  "role_statement": {
+    "exact_role": "ADVISORY / UNCERTAINTY / HYPOTHESIS / DISAGREEMENT ANALYSIS",
+    "not_authority": "Intentional invalid"
+  },
+  "tribunal_may": {
+    "explain_evidence": true,
+    "identify_contradictions": true,
+    "request_further_observations": true,
+    "rank_hypotheses": true,
+    "propose_bounded_next_experiment": true,
+    "recommend_escalation": true,
+    "compare_interpretations": true
+  },
+  "tribunal_may_not": {
+    "grant_authority": true,
+    "bypass_an_invariant": true,
+    "reinterpret_untrusted_evidence_as_instruction": true,
+    "mutate_networking_directly": true,
+    "merge_code": true,
+    "change_policy": true,
+    "transform_fail_into_pass": true
+  },
+  "fail_may_not_become_pass_via_tribunal": false,
+  "natural_language_ceiling": {
+    "natural_language_cannot_grant_execution_authority": false,
+    "llm_output_cannot_override_deterministic_denial": false,
+    "advisory_evidence_only_label": "bad"
+  },
+  "last_verified": "2026-08-13"
+}

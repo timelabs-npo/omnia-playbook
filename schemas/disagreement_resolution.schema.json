@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/disagreement_resolution.schema.json",
+  "title": "Omnia v1 Disagreement Resolution Procedure (per decision class; no implicit majority vote)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "layer",
+    "decision_class",
+    "disagreement_policy",
+    "resolution_evidence",
+    "fail_closed",
+    "action_under_unresolved",
+    "convergence_criteria",
+    "majority_vote_alone_must_not_override"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.disagreement.v1" },
+    "id": { "type": "string", "minLength": 5 },
+    "version": { "type": "string" },
+    "layer": { "type": "string", "const": "normative" },
+    "decision_class": {
+      "type": "string",
+      "enum": [
+        "network_policy",
+        "dns_explicit_resolvers",
+        "openbsd_sealed_brick_bounded_control",
+        "causal_experiment_approval",
+        "causal_experiment_commit",
+        "owner_intent_service_violation",
+        "evidence_tier_elevation",
+        "authority_promotion"
+      ]
+    },
+    "disagreement_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disagreement_allowed", "must_publish_conflicting_premises", "must_publish_evidence_interpretation"],
+      "properties": {
+        "disagreement_allowed": { "type": "boolean" },
+        "must_publish_conflicting_premises": { "type": "boolean", "const": true },
+        "must_publish_evidence_interpretation": { "type": "boolean", "const": true }
+      }
+    },
+    "resolution_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["locate_differing_premise_refs", "locate_differing_evidence_interpretation_refs", "identify_discriminating_observation_ids", "perform_bounded_measurement_if_authorized"],
+      "properties": {
+        "locate_differing_premise_refs": { "type": "array", "items": { "type": "string" } },
+        "locate_differing_evidence_interpretation_refs": { "type": "array", "items": { "type": "string" } },
+        "identify_discriminating_observation_ids": { "type": "array", "items": { "type": "string" } },
+        "perform_bounded_measurement_if_authorized": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "fail_closed": { "type": "boolean" },
+    "action_under_unresolved": {
+      "type": "string",
+      "enum": [
+        "NO_ACTION_PERMITTED",
+        "ADVISORY_REMEDIATION_ONLY",
+        "PASSIVE_OBSERVE_ONLY",
+        "LAST_KNOWN_GOOD_RESTORE_ONLY",
+        "HUMAN_ESCALATION_REQUIRED"
+      ]
+    },
+    "convergence_criteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sufficient_convergence_type", "required_evidence_tier", "participant_claims_must_share_evidence_refs", "must_recompute_after_measurement"],
+      "properties": {
+        "sufficient_convergence_type": { "type": "string", "enum": ["deterministic_omnia_unanimous", "all_required_observations_materialized", "explicit_human_override"] },
+        "required_evidence_tier": { "type": "string", "enum": ["declared_only", "implemented", "validated_mock", "validated_live_target"] },
+        "participant_claims_must_share_evidence_refs": { "type": "boolean", "const": true },
+        "must_recompute_after_measurement": { "type": "boolean", "const": true }
+      }
+    },
+    "majority_vote_alone_must_not_override": { "type": "boolean", "const": true },
+    "recompute_workflow": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "owner_intent_refs": { "type": "array", "items": { "type": "string" } },
+    "invariant_refs": { "type": "array", "items": { "type": "string" } },
+    "explanatory_notes": { "type": "string" }
+  }
+}

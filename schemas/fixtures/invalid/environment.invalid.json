@@ -1,7 +1,16 @@
 {
   "id": "x",
-  "name": "Broken",
-  "description": "bad",
-  "platforms": [],
-  "adapters": []
+  "version": "1.0.0",
+  "layer": "operational",
+  "name": "x",
+  "runtime_host": {
+    "platform": "ab",
+    "vendor": "cd",
+    "adapter_id_hint": "adapter-hint-long",
+    "host_substrate_only": false
+  },
+  "estate_targets": [],
+  "description": "short",
+  "adapters_legacy_list": [],
+  "extra_field_not_in_schema_fails_additionalProperties": true
 }

@@ -1,13 +1,76 @@
 id: chk-dns-macos-observe
-invariant: inv-dns-explicit-observable-resolvers
+version: '1.0.0'
+status: implemented
+layer: operational
+invariant_ref: inv-dns-explicit-observable-resolvers
+target_platform: macos
+target_vendor: apple-inc
+runtime_host_independent: true
+authority_ceiling:
+  max_authority: read_only_evidence
+  no_policy_invention: true
+  no_authority_promotion: true
+  forbids_policy_domains: [nameserver-selection, default-route-change, vpn-reconnect]
+forbidden_actions:
+  - id: fa-write-resolver-conf
+    action: Write /etc/resolv.conf or scutil DNS keys
+    reason: Operational check is read-only observation only; never mutate target resolver state.
+capability_ref:
+  capability_id: cap-dns-explicit-resolver-observe-v0
+  operation_id: op-dns-observe-macos
+  adapter_ref_hint: adapter-macos-vendor
+observation_contract:
+  observations_emitted:
+    - id: obs-dns-nameserver-count
+      observation_ref: inv-dns-explicit-observable-resolvers::obs-dns-nameserver-count
+      optional: false
+    - id: obs-dns-resolver-source
+      observation_ref: inv-dns-explicit-observable-resolvers::obs-dns-resolver-source
+      optional: false
+    - id: obs-dns-reachability-bool
+      observation_ref: inv-dns-explicit-observable-resolvers::obs-dns-reachability-bool
+      optional: true
+  output_schema:
+    format: line_based_kv
+    encoding: utf-8
+    top_level_keys: [nameserver_count, resolver_source, reachability]
+evidence_tier_claim: implemented
+evidence_tier_support:
+  declared_only: false
+  implemented: true
+  validated_mock: false
+  validated_live_target: false
+  fixture_tests_only: false
+  live_target_provenance_ref_present: false
 command: scutil --dns
-platform: macos
-requires:
-  - scutil
+requires: [scutil]
 timeout: 15
-expected_exit_code: 0
-expected_output:
-  contains:
-    - nameserver
-failure_message: Could not observe explicit DNS resolver state on macOS.
-remediation_playbook: playbooks/recovery/dns-explicit-resolvers.md
+exit_code_semantics:
+  expected: 0
+  observed_behavior:
+    on_nonzero: FAIL_OR_ERROR
+    on_zero_with_empty_output: UNKNOWN
+observation_semantics:
+  fail_if_missing_required: true
+  pass_if_all_present_and_match: true
+  expected_values:
+    - key: nameserver_count
+      value_type: integer
+      match_rule: ge
+      expected: 1
+    - key: resolver_source
+      value_type: enum
+      match_rule: equals
+      expected: scutil
+unknown_semantics:
+  when_required_observation_missing: UNKNOWN
+  when_command_missing: UNKNOWN
+error_semantics:
+  on_timed_out: ERROR
+  on_contradictory_stdout: ERROR
+  on_unauthorized_subprocess: ERROR
+remediation_ref: playbooks/recovery/dns-explicit-resolvers.md
+provenance_refs:
+  fixture_refs: [schemas/fixtures/valid/check.dns-macos.valid.json]
+  live_target_refs: []
+  never_claim_live_from_fixture: true
