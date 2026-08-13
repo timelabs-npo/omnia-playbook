@@ -1,6 +1,7 @@
 {
   "version": "1.0",
   "generated_at": "2026-08-13T01:47:59Z",
+  "edge_convention": "All directed edges are read as: from --relation--> to.",
   "nodes": [
     {"id": "P_omnia_policy_gate", "type": "TIMELABS_PRIMITIVE", "label": "Omnia policy gate"},
     {"id": "P_omnia_log0", "type": "TIMELABS_PRIMITIVE", "label": "log.0 authoritative append record"},
