@@ -45,8 +45,14 @@ require_paths() {
     schemas/tribunal_participant_claim.schema.json schemas/disagreement_resolution.schema.json
     environments/example environments/bluenikee environments/openbsd-sealed-brick
     scripts/validate.sh scripts/diagnose.sh scripts/report.sh scripts/export_runtime_bundle.py
-    reports/.gitkeep reports/trae-openbsd-sealed-brick.md
+    reports/.gitkeep reports/trae-openbsd-sealed-brick.md reports/SEMANTIC_NEIGHBOURS_MATRIX.md reports/REUSE_DECISION_REGISTER.md reports/RECONCILIATION_MAIN_TRAE_CODEX_COPILOT.md
     references/apple references/google references/microsoft references/openbsd
+    schemas/deterministic_decision_kernel.schema.json schemas/provider_capability.schema.json
+    schemas/evidence_privacy_tier.schema.json schemas/openbsd_support_tier.schema.json schemas/tribunal_advisory_ceiling.schema.json
+    docs/adr/ADR-001-concern-separation.md docs/adr/ADR-002-provider-model.md docs/adr/ADR-003-deterministic-decision-boundary.md
+    docs/adr/ADR-004-tribunal-advisory-ceiling.md docs/adr/ADR-005-openbsd-platform-policy.md docs/adr/ADR-006-evidence-and-privacy-model.md
+    docs/adr/ADR-007-degraded-and-offline-semantics.md docs/adr/ADR-008-cross-cell-boundaries.md docs/adr/ADR-009-blueshoes-representation-handoff.md
+    scripts/blueshoes_live_test_runner.sh
   )
   local missing=0
   for item in "${required[@]}"; do
@@ -128,6 +134,11 @@ schema_map = {
     "owner_intent": root / "schemas/owner_operational_intent.schema.json",
     "tribunal_participant_claim": root / "schemas/tribunal_participant_claim.schema.json",
     "disagreement_resolution": root / "schemas/disagreement_resolution.schema.json",
+    "deterministic_decision_kernel": root / "schemas/deterministic_decision_kernel.schema.json",
+    "provider_capability": root / "schemas/provider_capability.schema.json",
+    "evidence_privacy_tier": root / "schemas/evidence_privacy_tier.schema.json",
+    "openbsd_support_tier": root / "schemas/openbsd_support_tier.schema.json",
+    "tribunal_advisory_ceiling": root / "schemas/tribunal_advisory_ceiling.schema.json",
 }
 
 for name, schema_path in schema_map.items():

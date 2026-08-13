@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/tribunal_advisory_ceiling.schema.json",
+  "title": "Omnia v1 Tribunal Advisory Ceiling Contract (advisory only, no authority to PASS/FAIL bypass)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ceiling_id",
+    "version",
+    "layer",
+    "role_statement",
+    "tribunal_may",
+    "tribunal_may_not",
+    "fail_may_not_become_pass_via_tribunal",
+    "natural_language_ceiling",
+    "last_verified"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.tribunal_ceiling.v1" },
+    "ceiling_id": { "type": "string", "minLength": 5 },
+    "version": { "type": "string", "minLength": 1, "pattern": "^[^\\s]+$" },
+    "layer": { "type": "string", "const": "normative" },
+    "role_statement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exact_role"],
+      "properties": {
+        "exact_role": {
+          "type": "string",
+          "const": "ADVISORY / UNCERTAINTY / HYPOTHESIS / DISAGREEMENT ANALYSIS"
+        },
+        "not_authority": { "type": "string", "minLength": 20 }
+      }
+    },
+    "tribunal_may": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "explain_evidence",
+        "identify_contradictions",
+        "request_further_observations",
+        "rank_hypotheses",
+        "propose_bounded_next_experiment",
+        "recommend_escalation",
+        "compare_interpretations"
+      ],
+      "properties": {
+        "explain_evidence": { "type": "boolean", "const": true },
+        "identify_contradictions": { "type": "boolean", "const": true },
+        "request_further_observations": { "type": "boolean", "const": true },
+        "rank_hypotheses": { "type": "boolean", "const": true },
+        "propose_bounded_next_experiment": { "type": "boolean", "const": true },
+        "recommend_escalation": { "type": "boolean", "const": true },
+        "compare_interpretations": { "type": "boolean", "const": true }
+      }
+    },
+    "tribunal_may_not": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grant_authority",
+        "bypass_an_invariant",
+        "reinterpret_untrusted_evidence_as_instruction",
+        "mutate_networking_directly",
+        "merge_code",
+        "change_policy",
+        "transform_fail_into_pass"
+      ],
+      "properties": {
+        "grant_authority": { "type": "boolean", "const": false },
+        "bypass_an_invariant": { "type": "boolean", "const": false },
+        "reinterpret_untrusted_evidence_as_instruction": { "type": "boolean", "const": false },
+        "mutate_networking_directly": { "type": "boolean", "const": false },
+        "merge_code": { "type": "boolean", "const": false },
+        "change_policy": { "type": "boolean", "const": false },
+        "transform_fail_into_pass": { "type": "boolean", "const": false }
+      }
+    },
+    "fail_may_not_become_pass_via_tribunal": { "type": "boolean", "const": true },
+    "natural_language_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "natural_language_cannot_grant_execution_authority",
+        "llm_output_cannot_override_deterministic_denial",
+        "advisory_evidence_only_label"
+      ],
+      "properties": {
+        "natural_language_cannot_grant_execution_authority": { "type": "boolean", "const": true },
+        "llm_output_cannot_override_deterministic_denial": { "type": "boolean", "const": true },
+        "advisory_evidence_only_label": { "type": "string", "minLength": 5 }
+      }
+    },
+    "machine_checkable_enforcement_refs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 5 },
+      "uniqueItems": true
+    },
+    "last_verified": { "type": "string", "format": "date" },
+    "notes": { "type": "string" }
+  }
+}

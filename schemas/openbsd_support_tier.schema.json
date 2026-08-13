@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timelabs-npo.github.io/omnia-playbook/schemas/openbsd_support_tier.schema.json",
+  "title": "Omnia v1 OpenBSD Evidence-Tier Honesty Contract (no promotion from MOCK to REAL_HOST/BERYL)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "tier_set_id",
+    "version",
+    "layer",
+    "tier_ordering",
+    "promotion_forbidden",
+    "wireless_mediatek_status",
+    "claim_honesty_rules",
+    "last_verified"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "omnia.openbsd_support.v1" },
+    "tier_set_id": { "type": "string", "minLength": 5 },
+    "version": { "type": "string", "minLength": 1, "pattern": "^[^\\s]+$" },
+    "layer": { "type": "string", "const": "normative" },
+    "tier_ordering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order", "promotion_requires_higher_or_equal"],
+      "properties": {
+        "order": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "UNKNOWN",
+              "OPENBSD_BASE_AVAILABLE",
+              "OPENBSD_PORT_AVAILABLE",
+              "MOCK_TESTED",
+              "VM_TESTED",
+              "REAL_HOST_TESTED",
+              "BERYL_TESTED"
+            ]
+          }
+        },
+        "promotion_requires_higher_or_equal": { "type": "boolean", "const": true }
+      }
+    },
+    "promotion_forbidden": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mock_must_not_claim_real_host",
+        "mock_must_not_claim_beryl",
+        "vm_must_not_claim_beryl",
+        "real_host_must_not_claim_beryl_without_beryl_observation"
+      ],
+      "properties": {
+        "mock_must_not_claim_real_host": { "type": "boolean", "const": true },
+        "mock_must_not_claim_beryl": { "type": "boolean", "const": true },
+        "vm_must_not_claim_beryl": { "type": "boolean", "const": true },
+        "real_host_must_not_claim_beryl_without_beryl_observation": { "type": "boolean", "const": true }
+      }
+    },
+    "wireless_mediatek_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wifi_success_must_be_observed_locally_before_claiming", "mediatek_success_must_be_observed_locally_before_claiming"],
+      "properties": {
+        "wifi_success_must_be_observed_locally_before_claiming": { "type": "boolean", "const": true },
+        "mediatek_success_must_be_observed_locally_before_claiming": { "type": "boolean", "const": true },
+        "current_highest_claimable_without_observation": { "type": "string", "const": "UNKNOWN" }
+      }
+    },
+    "claim_honesty_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "no_kernel_modification_claim_unless_actually_patched_src",
+        "no_real_host_claim_unless_observations_available",
+        "no_production_mutation_claim_unless_boundary_observed"
+      ],
+      "properties": {
+        "no_kernel_modification_claim_unless_actually_patched_src": { "type": "boolean", "const": true },
+        "no_real_host_claim_unless_observations_available": { "type": "boolean", "const": true },
+        "no_production_mutation_claim_unless_boundary_observed": { "type": "boolean", "const": true }
+      }
+    },
+    "last_verified": { "type": "string", "format": "date" },
+    "notes": { "type": "string" }
+  }
+}

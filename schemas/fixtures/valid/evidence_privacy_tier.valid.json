@@ -1,0 +1,56 @@
+{
+  "schema_version": "omnia.evidence_privacy.v1",
+  "tier_set_id": "ep-openbsd-sealed-brick-v1",
+  "version": "1.0.0",
+  "layer": "normative",
+  "tiers": {
+    "PUBLIC_EVIDENCE": {
+      "definition": "Safe to publish in receipts, repository, or GitHub issue: boolean compliance posture, aggregate counts, schema/version identifiers, no topology or real addresses.",
+      "allowed_leakage_surface": ["counts", "booleans", "classification_enum", "hashed_policy_id", "schema_version", "support_tier"],
+      "machine_consumable_only_minimum": true
+    },
+    "PRIVATE_EVIDENCE": {
+      "definition": "Trust-sensitive but may be shared with explicitly authorized entities: signed receipts, specific ASPA IDs, provider capability references without topology.",
+      "handling_required": ["owner_approval_before_publication", "minimize_fields", "redaction_pass_required"],
+      "must_not_be_public_output": true
+    },
+    "LOCAL_ONLY_RAW_OBSERVATION": {
+      "definition": "Never leaves execution host: raw resolver answers, raw pfctl output, interface names, full RIB dumps, any IP/MAC/CIDR, hostnames, routing state, raw timing.",
+      "must_not_leave_host": true,
+      "forbidden_publication": ["raw-resolver-addresses", "raw-interface-names", "raw-routing-prefixes", "raw-topology-state", "raw-timing-samples"]
+    },
+    "DERIVED_BOOLEAN_POSTURE": {
+      "definition": "Publicly publishable reduction of raw observations: true/false, counts, supported/unsupported, reachable/unreachable, roa_valid_count_in_range. Provenance still recorded in private.",
+      "minimum_evidence_required": ["raw-observation-signed", "redactor-version", "tier-non-promotion-flag"],
+      "must_not_reverse_engineer_raw": true
+    }
+  },
+  "public_exposure_minimum_rule": {
+    "rule_id": "pub-min-v1",
+    "expose_only_minimum_for_claim": true,
+    "provenance_must_still_be_recorded_in_private": true
+  },
+  "leakage_audits_required": {
+    "values": true,
+    "nested_structures": true,
+    "alternative_keys": true,
+    "serialized_blobs": true,
+    "hostnames": true,
+    "resolver_data": true,
+    "addresses": true,
+    "interface_names": true,
+    "topology": true,
+    "routing_state": true,
+    "timing": true,
+    "identifiers": true,
+    "extra_channels": ["base64-encoded-blobs", "json-escaped-strings", "pflog0-dumps", "carp-demote-values"]
+  },
+  "redaction_contract_version": {
+    "version": "redact.v1",
+    "privacy_not_comprehensive_unless_tested": true,
+    "tier_non_promotion": {
+      "local_raw_may_not_become_public_without_owner_explicit_approval": true
+    }
+  },
+  "notes": "Adapters must use DUMB DOCTRINE: emit booleans/counts not raw. Pre-prior-gate openbsd-v0 collection boundary: 'public output is boolean + count only'."
+}

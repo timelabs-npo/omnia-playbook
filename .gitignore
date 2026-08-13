@@ -1,6 +1,8 @@
 reports/*.json
 reports/*.md
 !reports/trae-openbsd-sealed-brick.md
+!reports/SEMANTIC_NEIGHBOURS_MATRIX.md
+!reports/REUSE_DECISION_REGISTER.md
 !reports/.gitkeep
 reports/blueshoes/receipts/
 __pycache__/

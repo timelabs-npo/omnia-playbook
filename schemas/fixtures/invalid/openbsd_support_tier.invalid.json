@@ -1,0 +1,35 @@
+{
+  "schema_version": "omnia.openbsd_support.v1",
+  "tier_set_id": "ob-tier-invalid-promotion",
+  "version": "1.0.0",
+  "layer": "normative",
+  "tier_ordering": {
+    "order": [
+      "UNKNOWN",
+      "OPENBSD_BASE_AVAILABLE",
+      "OPENBSD_PORT_AVAILABLE",
+      "MOCK_TESTED",
+      "VM_TESTED",
+      "REAL_HOST_TESTED",
+      "BERYL_TESTED"
+    ],
+    "promotion_requires_higher_or_equal": false
+  },
+  "promotion_forbidden": {
+    "mock_must_not_claim_real_host": false,
+    "mock_must_not_claim_beryl": false,
+    "vm_must_not_claim_beryl": false,
+    "real_host_must_not_claim_beryl_without_beryl_observation": false
+  },
+  "wireless_mediatek_status": {
+    "wifi_success_must_be_observed_locally_before_claiming": false,
+    "mediatek_success_must_be_observed_locally_before_claiming": false,
+    "current_highest_claimable_without_observation": "BERYL_TESTED"
+  },
+  "claim_honesty_rules": {
+    "no_kernel_modification_claim_unless_actually_patched_src": false,
+    "no_real_host_claim_unless_observations_available": false,
+    "no_production_mutation_claim_unless_boundary_observed": false
+  },
+  "last_verified": "2026-08-13"
+}
