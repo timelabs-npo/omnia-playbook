@@ -18,7 +18,8 @@
 | WireGuard | REUSE_DIRECTLY | Mature audited tunnel primitive; supports explicit, reversible overlay paths; no need to reinvent base encrypted tunnel. |
 | OPA (Rego) | WRAP_AS_PROVIDER | Matches policy decision surface for constraints/authority envelopes; keep Omnia-specific receipt/provenance layers external. |
 | Cedar | WRAP_AS_PROVIDER | Typed authorization language useful for explicit owner intent and bounded action authorizations. |
-| in-toto + Sigstore Rekor | WRAP_AS_PROVIDER | Existing attestation + transparency primitives map to receipt/provenance chain with stronger ecosystem tooling. |
+| Sigstore Rekor transparency log primitive | WRAP_AS_PROVIDER | Append-only transparency log with inclusion proofs maps to receipt/provenance chain. |
+| in-toto layout model | BENCHMARK | in-toto layouts target build-step attestation; applicability to general Timelabs evidence receipts requires comparative evaluation before adoption. |
 | TUF delegation and rollback protections | EXTRACT_PRIMITIVE | Role delegation, threshold signatures, freeze/rollback notions are directly reusable without adopting full software-update surface. |
 | Event Sourcing + deterministic projectors | EXTRACT_PRIMITIVE | Direct semantic ancestor for `log.0` + disposable projections; can be narrowed to Timelabs contracts. |
 | SCION path semantics | BENCHMARK | Valuable comparator for path-aware trust roots; direct integration requires major control-plane assumptions outside current scope. |
@@ -28,7 +29,8 @@
 | VPP/DPDK/P4 | BENCHMARK | Useful for capability boundaries/performance baselines; not required for first bounded mutation doctrine. |
 | Majority-vote-only tribunal | REJECT | Violates Timelabs “consensus is evidence, not truth” and Blueshoes anti-consensus invariant unless grounded in reproducible evidence tiers. |
 | Fully cloud-authoritative runtime state | REJECT | Contradicts edge sovereignty invariant (falsifiable via cloud outage safety test). |
-| Chinese 标识网络 / 算力网络 decompositions | EXTRACT_PRIMITIVE | Provides missing decomposition of identity-resolution-compute-routing not captured by current English-only vocabulary. |
+| 算力网络 compute-aware routing primitive | EXTRACT_PRIMITIVE | Genuine Chinese-origin emphasis: compute-routing as first-class path-selection factor, with distinct research depth beyond Western edge-computing framing. |
+| 标识网络 naming/identity/locator split vocabulary | HISTORICAL_PRIOR_ART | Naming/identity/locator separation already exists in HIP, LISP, ILNP, DNS-SD. Chinese emphasis provides useful vocabulary but not a novel decomposition. Reclassified from EXTRACT_PRIMITIVE. |
 
 ## Unknown bucket (needs deeper dismantling)
 - GNUnet/GNS deep comparison against Timelabs trust-root + naming goals.

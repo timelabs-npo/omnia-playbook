@@ -16,7 +16,7 @@
 | Authority ceiling | Governance/Safety | Explicit cap on runtime mutation authority | `local-agent/ssh-policy.md`; Trae branch OpenBSD invariant/check authority blocks | SPECIFIED |
 | Unknown-is-not-pass semantics | Governance | Missing/contradictory evidence maps to UNKNOWN/ERROR instead of PASS | Trae branch `invariant-openbsd-sealed-brick.yaml` | SPECIFIED |
 | Contract-first ingress | Governance | Versioned input contract gates execution before collection | Codex branch `fail-fast-policy.md` | SPECIFIED |
-| Append-only local source record (`log.0`) | Evidence | Exact-byte framed event chain as authoritative local record | Codex branch `docs/architecture/log0-multi-nqlite.md`; `scripts/log0.py` | IMPLEMENTED |
+| Append-only local source record (`log.0`) | Evidence | Exact-byte framed event chain as authoritative local record | Codex branch `docs/architecture/log0-multi-nqlite.md`; `scripts/log0.py` | SPECIFIED (main branch); IMPLEMENTED (unmerged Codex branch) |
 | Projection honesty | Evidence epistemics | Every derived view declares what is preserved vs dropped | Codex branch `projection-honesty.schema.json` | SPECIFIED |
 | Replay over committed sequence | Determinism | Logical sequence order outranks wall-clock ordering | Codex branch `log0-multi-nqlite.md` | SPECIFIED |
 | Disposable projections (catalog/assurance/workflow) | Data architecture | Rebuildable derived stores with watermarks, non-authoritative | Codex branch `schemas/sql/*.sql` + docs | SPECIFIED |
@@ -29,7 +29,7 @@
 | LLM boundary (advisory only) | Agent governance | AI may suggest/analyze, but not mutate edge runtime directly | Blueshoes `docs/rfcs/0001-runtime-doctrine.md` | SPECIFIED |
 | World-state frame with provenance class | World model | Explicit source-labelled world frames (SIM/LIVE/REPLAY/STALE) | HME `CLAIMS.md`, `architecture/SYSTEM.md` | IMPLEMENTED |
 | Layered world transformation (L0..L9) | World model epistemics | Separate observation/features/state/pose/render/narrative layers | HME `ONTOLOGY_SURGERY.md` | SPECIFIED |
-| Deterministic pose replay | Simulation determinism | Same input schedule yields byte-identical pose traces across runtimes | HME `frontier/world-engine-v0.1/README.md` | REPRODUCED |
+| Deterministic pose replay | Simulation determinism | Same input schedule yields byte-identical pose traces across runtimes | HME `frontier/world-engine-v0.1/README.md` | REPRODUCED (UNVERIFIED — reproduction protocol and independent verifier not documented; cross-repo claim) |
 | State membrane + dwell hysteresis | Agent/world dynamics | Temporal boundary operator preventing flicker transitions | HME `WORLDMATH.md` | IMPLEMENTED |
 | Evidence chain for world output | Evidence | Hash-linked frame/run-level evidence for replay assertions | HME `WORLDMATH.md`; `%LOCALAPPDATA%/World2/world-state.json` claim | SPECIFIED |
 | Owner pre-failure operational intent | Governance | Declared service/capability intent before incidents | Trae `owner_operational_intent.schema.json` | SPECIFIED |

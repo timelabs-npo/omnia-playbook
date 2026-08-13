@@ -27,15 +27,17 @@
 - in-toto/Sigstore/TUF (evidence provider lane)
 - libp2p discovery stack (rendezvous/discovery provider lane)
 
-## POSSIBLY GENUINELY NEW
-- Projection-honesty contract shape (explicit preserve/drop/aggregation + deterministic replay invariant) if carried through implementation and adoption.
-- Cross-cell constitutional composition linking Omnia constraints, Tribunal disagreement contracts, and Blueshoes edge sovereignty in one typed runtime contract.
+## POSSIBLY GENUINELY NEW (post-falsification: reduced)
+- ~~Projection-honesty contract shape~~ — **Downgraded to KNOWN_COMBINATION** with distinctive enforcement-contract emphasis. Data lineage, model cards, and view definitions cover similar ground. May be re-upgraded if deeper literature search confirms no prior enforced-contract precedent.
+- Cross-cell constitutional composition linking Omnia constraints, Tribunal disagreement contracts, and Blueshoes edge sovereignty in one typed runtime contract — remains candidate but is SPECIFIED only, with no implementation evidence.
 
-## CHINESE ONTOLOGY DELTAS
-- **标识网络** introduces explicit separation between human naming, cryptographic identity, and locator resolution.
-- **算力网络** adds compute-routing as first-class path-selection factor.
-- **意图驱动网络** frames intent compilation as lifecycle pipeline, not static ACL editing.
-- **具身智能 + 世界模型** in Chinese usage is wider than RL latent-world-model framing and better aligns with World2/HME embodiment goals.
+## CHINESE ONTOLOGY DELTAS (post-falsification: narrowed)
+- **算力网络** adds compute-routing as first-class path-selection factor — **GENUINE_DELTA** (distinct Chinese research emphasis).
+- **语义通信** (semantic communication) — **GENUINE_DELTA** (active Chinese 6G research with distinctive theoretical framing).
+- **具身智能 + 世界模型** in Chinese usage is wider than RL latent-world-model framing — **PARTIAL_DELTA** (broader usage, not unique concept).
+- ~~**标识网络** naming/identity/locator split~~ — **TRANSLATION_ONLY**. This decomposition exists in HIP, LISP, ILNP, DNS-SD. Chinese emphasis provides vocabulary but not a novel decomposition.
+- **意图驱动网络** lifecycle framing — **TRANSLATION_ONLY** with emphasis difference. IETF IBN work covers similar ground.
+- ⚠ All entries derived from English secondary sources. No Chinese primary sources (CAICT, CCSA, CNKI) verified in this sweep.
 
 ## NEXT EXCAVATIONS
 1. GNUnet/GNS deep dismantling against Timelabs naming/identity sovereignty goals.
