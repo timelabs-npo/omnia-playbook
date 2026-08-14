@@ -21,17 +21,27 @@ The data model fields are defined via JSON Schemas:
 
 Each schema includes one valid and one intentionally invalid fixture in `schemas/fixtures/`.
 
+## Rheknel bus
+
+`tools/compile_omnia_bus.py` compiles selected machine-readable invariant/check documents plus explicit assurance, freshness, evidence, and provenance metadata into the exact-version `OMNA` ABI 1.0 binary consumed by Rheknel. The compiler is deterministic, rejects unsupported or lossy values, and preserves repository boundaries: Omnia produces data; Rheknel evaluates it.
+
+The normative wire contract and loss guarantees are in [`docs/OMNIA_RHEKNEL_ABI.md`](docs/OMNIA_RHEKNEL_ABI.md). Reproducible positive and adversarial fixtures are under [`artifacts/omnia-bus-v1/`](artifacts/omnia-bus-v1/README.md).
+
 ## Commands
 
 ```bash
 make validate
 make diagnose
 make report
+make compile-bus
+make verify-bus
 ```
 
 - `validate`: checks structure, YAML/JSON syntax, schema/fixture validation, shell linting, and internal Markdown links.
 - `diagnose`: runs read-only host-supported checks (currently DNS invariant inspection).
 - `report`: writes timestamped Markdown + JSON diagnostic reports to `reports/`.
+- `compile-bus`: rebuilds the committed compact fixtures and SHA-256 manifest.
+- `verify-bus`: proves a byte-identical rebuild and runs the codec/adversarial tests.
 
 No command mutates DNS, networking, credentials, packages, firewall, or system configuration.
 
