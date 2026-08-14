@@ -1,0 +1,62 @@
+utc=2026-08-14T14:13:14Z
+repository=timelabs-npo/omnia-playbook
+baseline_main=c9220eee388bba1b4d256d0a6ebd241cf5060102
+branch=integration/rhea-link-v1
+pre_commit_head=713d34b5afaa25a443daf187d7f72e39d5430ed3
+host=Darwin <local-host> 27.0.0 Darwin Kernel Version 27.0.0: Wed Aug  5 22:05:49 PDT 2026; root:xnu-13432.1.6.501.1~1/RELEASE_ARM64_T8103 arm64
+Python 3.14.6
+ruby 2.6.10p210 (2022-04-12 revision 67958) [universal.arm64e-darwin26]
+
+[make validate]
+./scripts/validate.sh
+Internal markdown links passed
+Schema/fixture validation passed
+
+[make test]
+python3 -m unittest discover -s tests -p 'test_*.py'
+...........
+----------------------------------------------------------------------
+Ran 11 tests in 0.037s
+
+OK
+
+[make verify-bus]
+python3 tools/build_bus_fixtures.py
+python3 -m unittest tests.test_omnia_bus -v
+test_boundary_fixture_uses_exact_uint64_values (tests.test_omnia_bus.TestOmniaBus.test_boundary_fixture_uses_exact_uint64_values) ... ok
+test_compiler_rejects_missing_provenance (tests.test_omnia_bus.TestOmniaBus.test_compiler_rejects_missing_provenance) ... ok
+test_compiler_rejects_source_digest_mismatch (tests.test_omnia_bus.TestOmniaBus.test_compiler_rejects_source_digest_mismatch) ... ok
+test_lossy_float_quantization_is_rejected (tests.test_omnia_bus.TestOmniaBus.test_lossy_float_quantization_is_rejected) ... ok
+test_negative_fixtures_are_reproducible_and_rejected (tests.test_omnia_bus.TestOmniaBus.test_negative_fixtures_are_reproducible_and_rejected) ... ok
+test_rebuild_is_byte_identical_and_matches_golden_hash (tests.test_omnia_bus.TestOmniaBus.test_rebuild_is_byte_identical_and_matches_golden_hash) ... ok
+test_reference_decode_preserves_source_semantics (tests.test_omnia_bus.TestOmniaBus.test_reference_decode_preserves_source_semantics) ... ok
+test_strict_no_upgrade (tests.test_omnia_bus.TestOmniaBus.test_strict_no_upgrade) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.034s
+
+OK
+git diff --exit-code -- artifacts/omnia-bus-v1
+
+[sizes]
+     381 checks/dns/chk-dns-linux-openwrt-observe.yaml
+     354 checks/dns/chk-dns-macos-observe.yaml
+     430 checks/dns/chk-dns-windows-observe.yaml
+     667 checks/dns/invariant-dns-explicit-resolvers.yaml
+    2543 bus/fixtures/dns-macos.bundle.json
+    2432 artifacts/omnia-bus-v1/omnia-dns-macos.omnb
+    6807 total
+
+[fixture hashes]
+9c0e1ee2bbf2b0c9632aaaf34d1cd8ed812455ade2213ac77bd052da03c96cba  boundary.omnb
+d6a869d3cfdfef348174fef6b16b740812399c161b6feb3f8db99c86c9c865f9  contradictory.omnb
+02efad727f0c57813397ab16a9fd00b5c679a0dc1e93c0e6a570c30d1eddc2f4  malformed.omnb
+c84075b7c8b28b16e3a97fa48b858a67530f42f55a5c4c051f9ad3e0f2b3c729  omnia-dns-macos.omnb
+2d5ffbedff5fe8ec8e5a368fd281c4346b3869b09e73d57dfb9f00b8baf78ee0  provenance-missing.omnb
+afaaa99a1888a6c5cffe220d42c03da5bdf6477a29947a10909e204bebefdf74  unsupported-version.omnb
+
+[diff check]
+
+[portability boundary]
+openbsd_live=not_run_in_this_host_receipt
+mbsd_target=OpenWrt-23.05.4-Linux-MT7981-not-OpenBSD

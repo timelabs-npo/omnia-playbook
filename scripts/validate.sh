@@ -77,10 +77,9 @@ PY
 }
 
 lint_shell_scripts() {
-  mapfile -t shell_files < <(find "${ROOT_DIR}/scripts" "${ROOT_DIR}/checks" -type f -name '*.sh' | sort)
-  if [ "${#shell_files[@]}" -gt 0 ]; then
-    shellcheck "${shell_files[@]}"
-  fi
+  while IFS= read -r shell_file; do
+    shellcheck "${shell_file}"
+  done < <(find "${ROOT_DIR}/scripts" "${ROOT_DIR}/checks" -type f -name '*.sh' | sort)
 }
 
 check_internal_markdown_links() {

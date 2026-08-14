@@ -1,0 +1,38 @@
+{
+  "abi": "1.0",
+  "entries": [
+    {
+      "bytes": 2433,
+      "path": "boundary.omnb",
+      "sha256": "9c0e1ee2bbf2b0c9632aaaf34d1cd8ed812455ade2213ac77bd052da03c96cba"
+    },
+    {
+      "bytes": 2490,
+      "path": "contradictory.omnb",
+      "sha256": "d6a869d3cfdfef348174fef6b16b740812399c161b6feb3f8db99c86c9c865f9"
+    },
+    {
+      "bytes": 2431,
+      "path": "malformed.omnb",
+      "sha256": "02efad727f0c57813397ab16a9fd00b5c679a0dc1e93c0e6a570c30d1eddc2f4"
+    },
+    {
+      "bytes": 2432,
+      "path": "omnia-dns-macos.omnb",
+      "sha256": "c84075b7c8b28b16e3a97fa48b858a67530f42f55a5c4c051f9ad3e0f2b3c729"
+    },
+    {
+      "bytes": 2312,
+      "path": "provenance-missing.omnb",
+      "sha256": "2d5ffbedff5fe8ec8e5a368fd281c4346b3869b09e73d57dfb9f00b8baf78ee0"
+    },
+    {
+      "bytes": 2432,
+      "path": "unsupported-version.omnb",
+      "sha256": "afaaa99a1888a6c5cffe220d42c03da5bdf6477a29947a10909e204bebefdf74"
+    }
+  ],
+  "schema": "omnia.rheknel.fixture-manifest/v1",
+  "source_baseline": "timelabs-npo/omnia-playbook@c9220eee388bba1b4d256d0a6ebd241cf5060102",
+  "source_manifest": "bus/fixtures/dns-macos.bundle.json"
+}

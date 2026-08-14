@@ -1,0 +1,67 @@
+{
+  "schema": "omnia.rheknel.bundle-source/v1",
+  "abi_major": 1,
+  "abi_minor": 0,
+  "bundle_id": "omnia-dns-macos-golden-v1",
+  "target_platform": "macos",
+  "created_at": 1786665600,
+  "fresh_until": 1789257600,
+  "documents": [
+    {
+      "path": "checks/dns/invariant-dns-explicit-resolvers.yaml",
+      "kind": "invariant",
+      "assessed_at": 1786665600,
+      "fresh_until": 1789257600,
+      "states": {
+        "consistency": "pass",
+        "applicability": "applicable",
+        "verifiability": "verified",
+        "reliability": "reliable"
+      },
+      "evidence_ids": ["sha256:330d8ca40f50081dd7e7de11d51e33a7bd6764037d845e38d61d932a3bc6c865"],
+      "provenance_ids": ["git:timelabs-npo/omnia-playbook@c9220eee388bba1b4d256d0a6ebd241cf5060102:checks/dns/invariant-dns-explicit-resolvers.yaml"]
+    },
+    {
+      "path": "checks/dns/chk-dns-macos-observe.yaml",
+      "kind": "check",
+      "assessed_at": 1786665600,
+      "fresh_until": 1789257600,
+      "states": {
+        "consistency": "pass",
+        "applicability": "applicable",
+        "verifiability": "verified",
+        "reliability": "reliable"
+      },
+      "evidence_ids": ["sha256:e20450fab1d2e9a81c748bfa62555bec29fee882abbd6e30056e4ba43ad80d1d"],
+      "provenance_ids": ["git:timelabs-npo/omnia-playbook@c9220eee388bba1b4d256d0a6ebd241cf5060102:checks/dns/chk-dns-macos-observe.yaml"]
+    },
+    {
+      "path": "checks/dns/chk-dns-windows-observe.yaml",
+      "kind": "check",
+      "assessed_at": 1786665600,
+      "fresh_until": 1789257600,
+      "states": {
+        "consistency": "pass",
+        "applicability": "not_applicable",
+        "verifiability": "verified",
+        "reliability": "reliable"
+      },
+      "evidence_ids": ["sha256:9ab00cc1cb356ec6e24ce4681ea927053df251909a83febc08e5150733617fc2"],
+      "provenance_ids": ["git:timelabs-npo/omnia-playbook@c9220eee388bba1b4d256d0a6ebd241cf5060102:checks/dns/chk-dns-windows-observe.yaml"]
+    },
+    {
+      "path": "checks/dns/chk-dns-linux-openwrt-observe.yaml",
+      "kind": "check",
+      "assessed_at": 1786665600,
+      "fresh_until": 1789257600,
+      "states": {
+        "consistency": "pass",
+        "applicability": "not_applicable",
+        "verifiability": "verified",
+        "reliability": "reliable"
+      },
+      "evidence_ids": ["sha256:79a580e9fee8f51d93519efabefa03e9ba63592f2456f4edf4fc37f2e01e2c0b"],
+      "provenance_ids": ["git:timelabs-npo/omnia-playbook@c9220eee388bba1b4d256d0a6ebd241cf5060102:checks/dns/chk-dns-linux-openwrt-observe.yaml"]
+    }
+  ]
+}
