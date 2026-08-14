@@ -1,0 +1,16 @@
+{
+  "schema": "rhea.component-manifest/v1",
+  "id": "omnia-playbook",
+  "repository": "timelabs-npo/omnia-playbook",
+  "role": "required-contract-and-assurance-provider",
+  "provides": ["omnia.assurance/v1"],
+  "consumers": [
+    {
+      "component": "rheknel",
+      "repository": "timelabs-npo/rheknel",
+      "required_by_consumer": true
+    }
+  ],
+  "coordination_root": "timelabs-npo/rhea-project",
+  "boundary": "separate-repository"
+}
