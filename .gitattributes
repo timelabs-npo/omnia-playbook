@@ -1,0 +1,3 @@
+schemas/flow-observation.schema.json text eol=lf
+schemas/native-flow-sample.schema.json text eol=lf
+schemas/fixtures/flow/*.json text eol=lf
