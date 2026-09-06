@@ -312,6 +312,15 @@
       "sha256": "1abb280c0ce3a0d138eb8a8c1e03bfdf5491b22d48d444ed447bbc47eec4a0db"
     },
     {
+      "id": "reject-integral-float-profile",
+      "kind": "native",
+      "path": "reject-integral-float-profile.json",
+      "accepted": false,
+      "schema_valid": null,
+      "expected": {},
+      "sha256": "277014e6a61a305820d158d881cb616c67700920ce66c5c9cb79bdf43595a14d"
+    },
+    {
       "id": "reject-overflow-birth",
       "kind": "native",
       "path": "reject-overflow-birth.json",
@@ -454,6 +463,15 @@
       "schema_valid": false,
       "expected": {},
       "sha256": "516cbb24871bd0958d50e3ba6024c7766f04177cb4db35319974da2a4e15ff13"
+    },
+    {
+      "id": "reject-wire-integral-float-profile",
+      "kind": "observation",
+      "path": "reject-wire-integral-float-profile.json",
+      "accepted": false,
+      "schema_valid": true,
+      "expected": {},
+      "sha256": "8c5b3e830503c501a4b0c4f27acfb6b57949ced7470d6f074c07dcd60a754ddc"
     },
     {
       "id": "reject-wire-overflow-profile",

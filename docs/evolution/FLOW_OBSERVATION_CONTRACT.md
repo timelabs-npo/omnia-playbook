@@ -22,6 +22,9 @@ different gates. NetBSD remains a valid wire platform. The requested native
 interfaces cover Darwin, Windows, Linux and OpenBSD only. JSON integers beyond
 the implementation's unsigned 64-bit range are rejected by the Blueshoes profile;
 JSON Schema itself has no such finite integer bound.
+The application profile also requires integer JSON tokens for counters, ports,
+PIDs and birth values; mathematically integral floating-point tokens such as `0.0`
+or `0e0` remain schema-valid but are rejected by the Rust integer profile.
 
 ## Native sample profile
 

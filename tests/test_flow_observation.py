@@ -47,7 +47,7 @@ class FlowContractTests(unittest.TestCase):
                              format_checker=FormatChecker()) for k, v in cls.schemas.items()}
 
     def test_corpus_integrity_and_scope(self):
-        self.assertEqual(47, len(self.manifest['cases']))
+        self.assertEqual(49, len(self.manifest['cases']))
         self.assertEqual({'NOT_EXECUTED'}, set(self.manifest['native_gates'].values()))
         self.assertEqual(self.manifest['schema_sha256'], hashlib.sha256(
             lf_bytes(ROOT / 'schemas/flow-observation.schema.json')).hexdigest())
@@ -72,7 +72,12 @@ class FlowContractTests(unittest.TestCase):
                     if case['kind'] == 'native':
                         accepted = len({r['record_id'] for r in records}) == len(records)
                     for rec in records:
-                        if any(v is not None and v > 2**64 - 1 for v in rec['counters'].values()):
+                        integers = list(rec['counters'].values())
+                        integers.extend(rec[end].get('port') for end in ('source', 'destination'))
+                        if rec.get('process'):
+                            integers.extend(rec['process'][key] for key in ('pid', 'birth_before', 'birth_after'))
+                        # Rust's integer profile requires integer JSON tokens, not 0.0/0e0.
+                        if any(v is not None and (type(v) is not int or v > 2**64 - 1) for v in integers):
                             accepted = False
                         proc = rec.get('process')
                         if proc and proc['kind'] != KINDS[doc['platform']]:
