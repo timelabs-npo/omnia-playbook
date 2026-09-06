@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install validation deps
-        run: python3 -m pip install --upgrade pip jsonschema
+        run: python3 -m pip install --upgrade pip jsonschema rfc3339-validator==0.1.4
       - name: Validate repository
         run: make validate
       - name: Run safe unit tests
