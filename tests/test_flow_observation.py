@@ -47,7 +47,7 @@ class FlowContractTests(unittest.TestCase):
                              format_checker=FormatChecker()) for k, v in cls.schemas.items()}
 
     def test_corpus_integrity_and_scope(self):
-        self.assertEqual(45, len(self.manifest['cases']))
+        self.assertEqual(47, len(self.manifest['cases']))
         self.assertEqual({'NOT_EXECUTED'}, set(self.manifest['native_gates'].values()))
         self.assertEqual(self.manifest['schema_sha256'], hashlib.sha256(
             lf_bytes(ROOT / 'schemas/flow-observation.schema.json')).hexdigest())
