@@ -1,74 +1,50 @@
-<p align="center">
-  <img src="docs/readme/hero.svg" alt="Omnia Playbook — Dance the checks before you touch reality" width="100%" />
-</p>
+# Omnia Playbook
 
-<h1 align="center">OMNIA PLAYBOOK</h1>
-<p align="center"><strong>GIVE SURPRISE A BASELINE AND A NAME.</strong></p>
-<p align="center"><em>If the machine has an alibi, ask for the observation.</em></p>
+Omnia Playbook is a reference for checking a system, explaining what was observed, and preparing a clear correction task. It connects requirements, platform behavior, read-only checks, evidence and documented procedures. It does not provide an automatic repair or sync service.
 
-<p align="center">
-  <a href="https://blueshoes.space/rhea/">The Rhea family</a> ·
-  <a href="foundation/">Invariants</a> ·
-  <a href="checks/">Checks</a> ·
-  <a href="playbooks/">Playbooks</a>
-</p>
+## Start here
 
-Yesterday the network worked. Today a familiar name leads somewhere unexpected. Someone says “just change the DNS.” Someone else blames the router. The most confident explanation arrives first. The evidence has yet to leave the machine.
+- [Guide index](docs/README.md) — choose the right layer for a request.
+- [AI helper guide](docs/ai-helper.md) — keep scope, evidence, authority and completion clear.
+- [Desktop correction review](adapters/timelabs/omnia-vault/reviews/2026-09-12/CORRECTION_TASK.md) — a public-safe example with a full function inventory and acceptance cases.
+- [System care and file requirements](docs/requirements/continuity/technical-spec.md) — the requested behavior, [44-entry registry](docs/requirements/continuity/registry.md) and [UML contracts](docs/requirements/continuity/uml-contracts.md).
+- [Contribution rules](CONTRIBUTING.md) — where material belongs and which checks to run.
 
-**Omnia Playbook is an operational knowledge corpus for making infrastructure explain itself:** what must remain true, how a platform expresses it, what a check actually observed, and which procedure could address the result.
+The review and requirements are descriptive. They are not proof that the app was corrected, that a network was tested, or that all listed providers are connected. Detailed private evidence belongs outside this public repository.
 
-**On `main` today:** invariant/check/environment schemas, fixtures, foundation documents, platform adapter scaffolds, a read-only DNS diagnostic and report scripts. The executable checks are narrower than the platform directory list. This is an early corpus, with a known validation failure detailed below.
+## What works here today
 
-## Start with the resolver you actually have
+The executable scope is a read-only DNS diagnostic and report scripts. The repository also has invariant/check/environment schemas, fixtures, foundation documents, and platform adapter scaffolds. Several directories describe intended work rather than implemented checks.
 
-A DNS resolver helps turn a name into an address. If its configuration changes unexpectedly, a useful first question is simple: **which resolver is this machine configured to ask?**
+The new AI helper and continuity documents add a knowledge layer. They add no background agent, privileged executor, network rule, provider connection, or cleanup action.
 
-The [DNS invariant](foundation/dns.md) gives that question a home. The [diagnostic script](scripts/diagnose.sh) has inspection paths for macOS, Linux/OpenWrt and Windows. An observation can record what those commands return. It cannot, by itself, prove that the resolver is trustworthy or identify the cause of every connection failure.
+## How to use the layers
 
-That modest distinction is powerful. It gives an operator something to challenge, compare and reproduce before a proposed “fix” rewrites the evidence.
-
-## Knowledge has routes, too
-
-**Topology is the connection structure.** On a network, it asks which machines can reach which others. In an operational corpus, it asks which claim leads to which invariant, platform mapping, observation and procedure. A command copied into a chat has almost none of those connections. A check with provenance can lead you back to its assumptions.
-
-**Geometry gives those connections a measure.** How many unsupported assumptions sit between a symptom and a diagnosis? How old is the observation? How costly would a mistaken repair be? Those are useful questions for comparing investigative paths; they are not scores the current scripts compute.
-
-**Flow is what travels through the structure:** observations become reports, reports inform proposals, and an authorized operator may choose a procedure. The place where information becomes permission matters more than the number of dashboards upstream.
+| Location | Purpose |
+|---|---|
+| [docs/](docs/) | Explain the review method, requirements and evidence limits |
+| [foundation/](foundation/) | Define what should remain true and why |
+| [adapters/](adapters/) | Explain platform and vendor-specific behavior; several entries are placeholders |
+| [checks/](checks/) | Observe without changing configuration; DNS is the current implemented slice |
+| [playbooks/](playbooks/) | Describe procedures; a procedure is not evidence that it ran |
+| [references/](references/) | Keep sources near the claims they support |
+| [reports/](reports/) | Hold generated observations with their time and limits |
 
 ```text
-invariant ──► platform mapping ──► read-only check ──► observation
-                                                         │
-                                                         ▼
-                                                      report
-                                                         │
-                                              human assessment
-                                                         │
-                                                         ▼
-                                               proposed procedure
-                                                         │
-                                        separate execution authority
+requirement → platform mapping → read-only check → observation
+                                                    ↓
+                                                  report
+                                                    ↓
+                                              proposed action
+                                                    ↓
+                                      separately authorized execution
 ```
 
-*A map of responsibilities. The repository does not implement an automatic execution pipeline.*
+A process running, a port answering, a route being listed, and a successful application request are different observations. A local write, a remote backup and a restored file also need separate evidence. Keep those distinctions in both reports and product status.
 
-Control the default explanation and you can steer every repair. **Make the route from claim to evidence visible, and that power becomes contestable.**
+## Run and read the checks
 
-## Each layer has a job
-
-| Location | Responsibility |
-|---|---|
-| [foundation/](foundation/) | State platform-independent invariants and their rationale |
-| [adapters/](adapters/) | Map them into platform-specific terms; several entries are placeholders |
-| [checks/](checks/) | Observe without changing the configuration; DNS is the present slice |
-| [playbooks/](playbooks/) | Describe procedures; their presence is not proof of execution |
-| [references/](references/) | Keep source context close to the claims it supports |
-| [reports/](reports/) | Hold generated observations, with their time and limits |
-
-The Kouretes' shield-dance is the project's image for coordination under noise. Here the choreography has a practical rule: a diagnostic does not quietly promote itself into an executor. Current diagnostic commands do not change DNS, networking, credentials, packages or firewall configuration. Report generation writes local output files.
-
-## Run a check. Read what it says.
-
-From the repository root, the existing entry points are:
+Run these as separate steps from the repository root:
 
 ```bash
 make validate
@@ -76,39 +52,38 @@ make diagnose
 make report
 ```
 
-Run them as separate steps and inspect each result. The [Makefile](Makefile) and [scripts](scripts/) are the source of their behavior. Full validation uses Bash, Ruby, Python with `jsonschema`, `jq` and `shellcheck`; diagnosis also depends on the host's resolver inspection tool.
+Inspect each result. The [Makefile](Makefile) and [scripts](scripts/) define their actual behavior. Full validation uses Bash, Ruby, Python with `jsonschema`, `jq` and `shellcheck`. Diagnosis also needs the host's resolver inspection tool. Report generation writes local files and may include private network data; review locally before sharing.
 
-Verification snapshot, **2026-09-06**, against main baseline [`0b2edc1085`](https://github.com/timelabs-npo/omnia-playbook/commit/0b2edc1085482c576afa694d7310d34ac6cd87f0):
+The [DNS invariant](foundation/dns.md) asks which resolver a machine is configured to use. The [diagnostic](scripts/diagnose.sh) has inspection paths for macOS, Linux/OpenWrt and Windows. It does not by itself prove that a resolver is trusted or explain every connection failure.
+
+### Known baseline limits
+
+The earlier verification on 6 September 2026 used main baseline [`0b2edc1085`](https://github.com/timelabs-npo/omnia-playbook/commit/0b2edc1085482c576afa694d7310d34ac6cd87f0):
 
 | Command | Observed result and limit |
 |---|---|
-| `make validate` | **FAILED:** the required directories `checks/routing`, `checks/connectivity`, `checks/certificates`, `checks/secrets` and `checks/system` are absent. Later validation stages therefore did not run. |
-| `make diagnose` | Exited **0 on one macOS host**, with `Observed resolvers: n/a`. This is not confirmation of the expected resolver or validation of other hosts/platforms. Read the diagnostic fields, not just the exit code. |
-| `make report` | Available in source; **not executed in this verification pass**. It writes timestamped Markdown/JSON observations into `reports/`. |
+| `make validate` | Failed because `checks/routing`, `checks/connectivity`, `checks/certificates`, `checks/secrets` and `checks/system` were absent. Later validation stages did not run. |
+| `make diagnose` | Exited 0 on one macOS host, with `Observed resolvers: n/a`. This did not confirm the expected resolver or other platforms. |
+| `make report` | Not executed in that pass. |
 
-Reports can contain local resolver and network details. Review them locally before sharing; publish synthetic fixtures or redacted evidence when contributing.
+See [this documentation update's verification](docs/verification-2026-09-12.md) for fresh results. Keep an existing failure visible; do not turn it into a pass by adding empty placeholder checks.
 
-## Give the next surprise somewhere to land
+## Contribute a useful change
 
-The next horizon is a broader, reproducible corpus: more diagnostic families, sharper platform semantics, and observations that remain understandable outside the machine that produced them. Typed records and explicit provenance can make operational knowledge portable. A universal append-only memory or automatic remediation system is still a direction, not a current capability.
+Define the requirement, map the platform, add a read-only check and synthetic fixtures where needed, describe the procedure, and report the actual validation results. Keep vendor-specific implementation details in adapters. Never commit credentials, account identifiers, private topology or raw private logs. Follow [SECURITY.md](SECURITY.md) for private reporting.
 
-A contribution has a short route: define the invariant, map the platform, add the read-only check and fixtures, document the procedure, then inspect the validation and diagnostic results. Keep a proposed action separate from the receipt that proves it ran. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the [DNS diagnostic playbook](playbooks/diagnostics/dns.md).
+Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [AI helper guide](docs/ai-helper.md), and the [DNS diagnostic playbook](playbooks/diagnostics/dns.md).
 
-## The family around the checks
+## Related projects
 
-These are component roles and research directions, not a claim of one integrated runtime.
+These are separate components and research directions, not one verified integrated runtime.
 
-| Project | Its part |
+| Project | Role |
 |---|---|
-| [Rhea](https://github.com/timelabs-npo/rhea-project) | Proposals, coordination and staged architecture |
-| [Rheknel](https://github.com/timelabs-npo/rheknel) | Deterministic admission research |
-| [Omnia Playbook](https://github.com/timelabs-npo/omnia-playbook) | Invariants, observations and operational procedures |
-| [Omnia Vault](https://github.com/timelabs-npo/omnia-vault) | Identity, ancestry and state preservation research |
-| [Blueshoes](https://github.com/timelabs-npo/Blueshoes) | Network observation and adaptive flow research |
-| [MBSD](https://github.com/timelabs-npo/mbsd) | The operating substrate and its boundaries |
+| [Rhea](https://github.com/timelabs-npo/rhea-project) | Proposals and coordination |
+| [Rheknel](https://github.com/timelabs-npo/rheknel) | Research into checks before admitting an action |
+| [Omnia Vault](https://github.com/timelabs-npo/omnia-vault) | Identity, history and state preservation research |
+| [Blueshoes](https://github.com/timelabs-npo/Blueshoes) | Network observation and traffic control research |
+| [MBSD](https://github.com/timelabs-npo/mbsd) | Operating-system boundaries |
 
-[Explore the public family map](https://blueshoes.space/rhea/).
-
-[BSD 3-Clause License](LICENSE). Open infrastructure research by Timelabs Non-Profit Corp.
-
-<p align="center"><strong>CHECK FIRST. KEEP THE RECEIPT. MAKE POWER EXPLAIN ITSELF.</strong></p>
+[BSD 3-Clause License](LICENSE). Maintained by Timelabs Non-Profit Corp.
