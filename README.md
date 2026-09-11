@@ -4,13 +4,16 @@ Omnia Playbook is a reference for checking a system, explaining what was observe
 
 ## Start here
 
+- [Current technical reset](adapters/timelabs/omnia-vault/reviews/2026-09-12/technical-reset/README.md) — refine the actual contracts before implementation; all macOS prototypes are discarded as the baseline.
 - [Guide index](docs/README.md) — choose the right layer for a request.
 - [AI helper guide](docs/ai-helper.md) — keep scope, evidence, authority and completion clear.
-- [Desktop correction review](adapters/timelabs/omnia-vault/reviews/2026-09-12/CORRECTION_TASK.md) — a public-safe example with a full function inventory and acceptance cases.
-- [System care and file requirements](docs/requirements/continuity/technical-spec.md) — the requested behavior, [44-entry registry](docs/requirements/continuity/registry.md) and [UML contracts](docs/requirements/continuity/uml-contracts.md).
+- [Historical desktop correction review](adapters/timelabs/omnia-vault/reviews/2026-09-12/CORRECTION_TASK.md) — a public-safe source snapshot; its repair directions are superseded by the technical reset.
+- [Earlier system care and file requirements](docs/requirements/continuity/technical-spec.md) — supporting detail, [44-entry registry](docs/requirements/continuity/registry.md) and [UML contracts](docs/requirements/continuity/uml-contracts.md); the reset governs current scope and decisions.
 - [Contribution rules](CONTRIBUTING.md) — where material belongs and which checks to run.
 
 The review and requirements are descriptive. They are not proof that the app was corrected, that a network was tested, or that all listed providers are connected. Detailed private evidence belongs outside this public repository.
+
+Current work is technical refinement, with product implementation locked. Network continuity is one critical workstream; the requested beta still includes every selected storage provider and the accepted sync and archive behavior. The LIT candidate is not frozen, no engine is admitted, and no compliant reset receipts or accepted chain are claimed.
 
 ## What works here today
 

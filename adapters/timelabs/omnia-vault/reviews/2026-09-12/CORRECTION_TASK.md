@@ -1,5 +1,7 @@
 # Timelabs: correct the working controls and settings
 
+> **Superseded by the [technical reset](technical-reset/README.md).** This document is historical source-review evidence, not the current implementation task. All current macOS prototypes are discarded as the baseline. Do not execute the repair, preservation or layout directions below. Technical refinement must converge before implementation; network work does not reduce the full beta's provider, sync or archive scope.
+
 > Public copy of a local review dated 12 September 2026. Host names, addresses and private paths are replaced with aliases. Source references name a separate product checkout; these files are not an implementation in omnia-playbook. Detailed security findings stay in the private review pack. Recheck source and runtime before applying a correction.
 
 

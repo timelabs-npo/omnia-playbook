@@ -6,9 +6,13 @@ This guide generalizes a desktop and network review method. It does not contain 
 
 ## Read the current material in order
 
-The [guides index](README.md) connects the current correction review and the continuity requirements. Start with the [correction task](../adapters/timelabs/omnia-vault/reviews/2026-09-12/CORRECTION_TASK.md), then its inventories and [coverage record](../adapters/timelabs/omnia-vault/reviews/2026-09-12/REVIEW_SCOPE.md). Use the [technical specification](requirements/continuity/technical-spec.md), [registry](requirements/continuity/registry.md), and [contracts](requirements/continuity/uml-contracts.md) to retain the wider accepted outcome.
+Start with the [current technical reset](../adapters/timelabs/omnia-vault/reviews/2026-09-12/technical-reset/README.md), then its [technical contract](../adapters/timelabs/omnia-vault/reviews/2026-09-12/technical-reset/TECHNICAL_CONTRACT.md), [LIT gate](../adapters/timelabs/omnia-vault/reviews/2026-09-12/technical-reset/LIT_GATE.md), [network contract](../adapters/timelabs/omnia-vault/reviews/2026-09-12/technical-reset/NETWORK_CONTRACT.md) and [requirements register](../adapters/timelabs/omnia-vault/reviews/2026-09-12/technical-reset/REQUIREMENTS.md). The [guides index](README.md) connects those documents to supporting research and historical reviews.
 
-The dated review is a source snapshot, not proof of implementation. Requirements are descriptive contracts, not an active engine. The correction task's smaller beta scope takes precedence over optional suggestions in its appendices; deferred implementation does not silently cancel a previously accepted requirement.
+All current macOS prototypes are discarded as the product baseline. The earlier [correction task](../adapters/timelabs/omnia-vault/reviews/2026-09-12/CORRECTION_TASK.md) and its inventories remain historical source evidence; their directions to repair or extend the prototypes are superseded. No new macOS/product implementation begins before the technical contract converges and its implementation gate is accepted. LIT oracle work and engine qualification follow their separate prerequisite gates.
+
+Network continuity is the current critical workstream, not a smaller full beta. Every selected provider remains requested for beta: iCloud Drive, Google Drive, OneDrive, S3/MinIO, Mac folders, Windows folders and NAS. Accepted sync and archive outcomes retain their own acceptance work. The earlier [technical specification](requirements/continuity/technical-spec.md), [registry](requirements/continuity/registry.md) and [contracts](requirements/continuity/uml-contracts.md) supply supporting detail, not authority to inherit old layouts, implementation choices or narrower scope.
+
+The LIT candidate is not frozen. No engine is admitted against it and no compliant reset receipt or accepted chain is claimed. Documentation and hashes are not a substitute for the blocked conformance and verification work.
 
 ## Start with the request
 
@@ -23,7 +27,7 @@ Write a short scope record before proposing work:
 | Authority | The target and operations already authorized |
 | Completion | The result that would demonstrate the requested work is done |
 
-Keep earlier accepted requirements when a later message adds a correction. Do not quietly reduce the provider list, change a two-way sync into one-way copying, replace an existing settings surface, or introduce a new network architecture to make a demonstration easier.
+Keep earlier accepted requirements when a later message adds a correction, and apply an explicit reset where the user replaces the baseline. Do not quietly reduce the provider list, change a two-way sync into one-way copying, or introduce a new network architecture to make a demonstration easier. The current reset discards prototype designs; it does not cancel the accepted outcomes.
 
 Documentation is not authority to execute. Apply the [local agent policy](../local-agent/ssh-policy.md) to any host access. Executable checks contributed here must remain read-only; remediation stays in documented procedures under the current [contribution rules](../CONTRIBUTING.md).
 
@@ -31,11 +35,13 @@ Documentation is not authority to execute. Apply the [local agent policy](../loc
 
 Check the entry point, build configuration, selected frontend, backend commands, installed component, and running version. A similar file or an older frontend does not prove that the current build uses it.
 
-For a desktop product, distinguish a native settings pane, a menu bar item, and a separate application window. A window styled like system settings does not become an operating-system pane. Preserve a working native surface unless the user explicitly changes that requirement.
+For a desktop product, distinguish a native settings pane, a menu bar item, and a separate application window. A window styled like system settings does not become an operating-system pane. Here, inspection of a prototype is historical evidence only; it is not a reason to preserve or patch it. The main work window must move, resize and minimize normally and support keyboard use. A tray popup is optional compact status, and actual System Settings integration is native configuration only.
 
 Put platform-specific implementation guidance under [adapters](../adapters/). Keep this guide independent of a particular framework or machine layout.
 
 ## Trace every visible function
+
+This is a source-review method, not permission to create another layout during the current refinement phase. Use it to identify unsupported claims and missing contracts.
 
 Use a review table that connects the screen to the implementation:
 
@@ -46,6 +52,8 @@ Use a review table that connects the screen to the implementation:
 Include navigation, menu items, buttons, fields, toggles, badges, tables, error text and empty states. Trace hidden command entry points too: removing a button does not disable a callable mutation.
 
 Keep labels such as **System**, **Files**, **Network**, **Cleanup**, **Details**, **About**, **Review app files**, **Start connection**, and **Restart connection** only when they match the function. Keep recognizable provider names and necessary identifiers. Move implementation slogans and internal module names out of the normal product flow. Required license notices retain their proper names.
+
+These are examples, not approved navigation. Product labels use plain English. Timelabs appears only in About or legal information, never in navigation or feature and workspace titles. NDI remains a reference toolkit, not a runtime integration requirement.
 
 ## Distinguish facts from claims
 
@@ -77,6 +85,8 @@ The existing [check schema](../schemas/check.schema.json) describes executable c
 
 ## Write a concrete correction task
 
+This method applies after the current technical contract and implementation gate are accepted. Until then, refine responsibilities, supported APIs, state changes, failure behavior and verification. Do not use the superseded correction task as an instruction to resume implementation.
+
 Lead with the problem and the behavior that should replace it. Then provide:
 
 1. Scope and preserved working behavior.
@@ -86,7 +96,7 @@ Lead with the problem and the behavior that should replace it. Then provide:
 5. Acceptance cases and expected observations.
 6. Required return material: changed files, checks actually run, results and remaining limits.
 
-Correct false success and misleading control scope before polishing the layout. Prefer a small correction to the existing system. Do not build a new subsystem solely to justify an unsupported card or label.
+Correct false success and misleading control scope before polishing a layout. Use the accepted baseline and scope; the present macOS prototypes are not that baseline. Do not build a new subsystem solely to justify an unsupported card or label.
 
 For useful controls, describe **Check → Working → Check result → Completed or Failed**. This is a behavior contract to implement and test, not a statement that this repository already supplies a command lifecycle. Overlapping changes to the same resource, late responses and timeouts need explicit handling.
 
