@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-08-13T01:47:59Z",
+  "scope": {
+    "local_repository": "timelabs-npo/omnia-playbook",
+    "local_branch": "copilot/timelabs-semantic-neighbour-excavation",
+    "sampled_remote_branches": [
+      "origin/main",
+      "origin/codex/council-readiness",
+      "origin/trae/a0l-audit"
+    ],
+    "sampled_related_repositories": [
+      "timelabs-npo/Blueshoes",
+      "timelabs-npo/rhea-project",
+      "timelabs-npo/.github",
+      "serg-alexv/hme"
+    ]
+  },
+  "timelabs_primary_sources": [
+    {"source": "README.md", "repo": "timelabs-npo/omnia-playbook", "evidence_state": "SPECIFIED"},
+    {"source": "schemas/invariant.schema.json", "repo": "timelabs-npo/omnia-playbook", "evidence_state": "IMPLEMENTED"},
+    {"source": "schemas/check.schema.json", "repo": "timelabs-npo/omnia-playbook", "evidence_state": "IMPLEMENTED"},
+    {"source": "scripts/diagnose.sh", "repo": "timelabs-npo/omnia-playbook", "evidence_state": "IMPLEMENTED"},
+    {"source": "scripts/report.sh", "repo": "timelabs-npo/omnia-playbook", "evidence_state": "IMPLEMENTED"},
+    {"source": "local-agent/ssh-policy.md", "repo": "timelabs-npo/omnia-playbook", "evidence_state": "SPECIFIED"},
+    {"source": "docs/architecture/log0-multi-nqlite.md", "repo": "timelabs-npo/omnia-playbook@origin/codex/council-readiness", "evidence_state": "SPECIFIED"},
+    {"source": "scripts/log0.py", "repo": "timelabs-npo/omnia-playbook@origin/codex/council-readiness", "evidence_state": "IMPLEMENTED"},
+    {"source": "docs/architecture/fail-fast-policy.md", "repo": "timelabs-npo/omnia-playbook@origin/codex/council-readiness", "evidence_state": "SPECIFIED"},
+    {"source": "schemas/projection-honesty.schema.json", "repo": "timelabs-npo/omnia-playbook@origin/codex/council-readiness", "evidence_state": "SPECIFIED"},
+    {"source": "checks/openbsd/invariant-openbsd-sealed-brick.yaml", "repo": "timelabs-npo/omnia-playbook@origin/trae/a0l-audit", "evidence_state": "SPECIFIED"},
+    {"source": "checks/openbsd/inspect_openbsd_v0.sh", "repo": "timelabs-npo/omnia-playbook@origin/trae/a0l-audit", "evidence_state": "IMPLEMENTED"},
+    {"source": "schemas/disagreement_resolution.schema.json", "repo": "timelabs-npo/omnia-playbook@origin/trae/a0l-audit", "evidence_state": "SPECIFIED"},
+    {"source": "schemas/owner_operational_intent.schema.json", "repo": "timelabs-npo/omnia-playbook@origin/trae/a0l-audit", "evidence_state": "SPECIFIED"},
+    {"source": "docs/TRIBUNAL_PROTOCOL.md", "repo": "timelabs-npo/Blueshoes", "evidence_state": "SPECIFIED"},
+    {"source": "docs/CLOUD_CONSTITUTION.md", "repo": "timelabs-npo/Blueshoes", "evidence_state": "SPECIFIED"},
+    {"source": "docs/rfcs/0001-runtime-doctrine.md", "repo": "timelabs-npo/Blueshoes", "evidence_state": "SPECIFIED"},
+    {"source": "docs/rfcs/0002-rollback-model.md", "repo": "timelabs-npo/Blueshoes", "evidence_state": "SPECIFIED"},
+    {"source": "architecture/SYSTEM.md", "repo": "serg-alexv/hme", "evidence_state": "SPECIFIED"},
+    {"source": "frontier/world-engine-v0.1/README.md", "repo": "serg-alexv/hme", "evidence_state": "REPRODUCED"},
+    {"source": "frontier/world-engine-v0.1/docs/ONTOLOGY_SURGERY.md", "repo": "serg-alexv/hme", "evidence_state": "SPECIFIED"},
+    {"source": "frontier/world-engine-v0.1/docs/WORLDMATH.md", "repo": "serg-alexv/hme", "evidence_state": "SPECIFIED"},
+    {"source": "CLAIMS.md", "repo": "serg-alexv/hme", "evidence_state": "SPECIFIED"}
+  ],
+  "external_neighbour_sources": [
+    {"source": "RFC 9300 / RFC 9299", "topic": "LISP", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 7401", "topic": "HIP", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 6740", "topic": "ILNP", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 8569", "topic": "NDN/CCNx architecture", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 8445", "topic": "ICE", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 9000", "topic": "QUIC", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 8684", "topic": "MPTCP", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 9298 / RFC 9484", "topic": "CONNECT-UDP / CONNECT-IP", "evidence_state": "SPECIFIED"},
+    {"source": "RFC 6811", "topic": "RPKI origin validation", "evidence_state": "SPECIFIED"},
+    {"source": "OpenBSD PF FAQ", "topic": "PF/CARP/pfsync", "evidence_state": "SPECIFIED"},
+    {"source": "scion-architecture.net", "topic": "SCION", "evidence_state": "SPECIFIED"},
+    {"source": "CAICT / Chinese future-network whitepaper traditions", "topic": "未来网络/算力网络/确定性网络", "evidence_state": "INFERRED"},
+    {"source": "Chinese university embodied-intelligence survey traditions", "topic": "世界模型/具身智能", "evidence_state": "INFERRED"}
+  ],
+  "notes": [
+    "Network access constraints prevented direct web-fetch retrieval for some domains; standards references are retained as SPECIFIED citations by identifier.",
+    "Chinese lexicon entries are evidence-backed where explicit terminology traditions were found; some ontology-delta conclusions remain INFERRED pending deeper primary-paper extraction."
+  ]
+}
