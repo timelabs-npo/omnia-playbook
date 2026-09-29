@@ -1,0 +1,29 @@
+{
+  "schema": "omnia.rheknel.bundle-source/v1",
+  "abi_major": 1,
+  "abi_minor": 0,
+  "bundle_id": "omnia-rheknel-p0-replace-file-v1",
+  "target_platform": "rheknel-p0",
+  "created_at": 1790640000,
+  "fresh_until": 1793232000,
+  "documents": [
+    {
+      "path": "checks/p0/invariant-replace-file.json",
+      "kind": "invariant",
+      "assessed_at": 1790640000,
+      "fresh_until": 1793232000,
+      "states": {
+        "consistency": "pass",
+        "applicability": "applicable",
+        "verifiability": "verified",
+        "reliability": "reliable"
+      },
+      "evidence_ids": [
+        "sha256:f935cfb2e67518bb3fe446497ceb38d8d835d1944bb9f11e789fde2857209ba0"
+      ],
+      "provenance_ids": [
+        "git:timelabs-npo/omnia-playbook@a200fcf01694d962801d0249e1cfea6f154b36d1:checks/p0/invariant-replace-file.json"
+      ]
+    }
+  ]
+}
