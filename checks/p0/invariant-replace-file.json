@@ -3,8 +3,8 @@
     "audit_required": true,
     "autonomous": true,
     "enforcement_mode": "infrastructure",
-    "expected_new_sha256": "7aa7a5359173d05b63cfd682e3c38487f3cb4f7f1d60659fe59fab1505977d4c",
-    "expected_old_sha256": "01d09d19c2139a46aebfb577780d123d7396e97201bc7ead210a2ebff8239dee",
+    "expected_new_sha256": "efceb412448a47a7e85909d3ee3800aea941d9cd8125cce19f8b65ccff8eaf3b",
+    "expected_old_sha256": "2f58779ddbbaf9113f455bc6145e9914a6c3c5bd4009c3ada730403425a47eac",
     "target": "/var/lib/rheknel-protected/result.bin",
     "type": "replace_file"
   },
